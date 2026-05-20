@@ -4,6 +4,8 @@ from typing import Annotated
 import typer
 
 from recipe_importer import __version__
+from recipe_importer.fetch import fetch_sources
+from recipe_importer.paths import KbPaths
 from recipe_importer.schema import export_schemas
 
 app = typer.Typer(no_args_is_help=True)
@@ -20,6 +22,16 @@ def main() -> None:
 def version() -> None:
     """Print the recipe importer version."""
     typer.echo(f"recipe-importer {__version__}")
+
+
+@app.command()
+def fetch(
+    source_list: Annotated[Path, typer.Argument()] = Path("recipe-kb/sources/source-list.yml"),
+) -> None:
+    """Fetch configured sources and persist snapshot metadata."""
+    paths = KbPaths(Path.cwd()).ensure()
+    for path in fetch_sources(source_list, paths):
+        typer.echo(str(path))
 
 
 @schema_app.command("export")
