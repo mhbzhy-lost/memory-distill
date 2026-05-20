@@ -1,0 +1,64 @@
+{
+  "$defs": {
+    "Source": {
+      "properties": {
+        "expected_failure_hints": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Expected Failure Hints",
+          "type": "array"
+        },
+        "refresh_policy": {
+          "default": "manual",
+          "title": "Refresh Policy",
+          "type": "string"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "source_type": {
+          "title": "Source Type",
+          "type": "string"
+        },
+        "stacks": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Stacks",
+          "type": "array"
+        },
+        "url": {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "url",
+        "source_type",
+        "stacks"
+      ],
+      "title": "Source",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/Source"
+      },
+      "title": "Sources",
+      "type": "array"
+    }
+  },
+  "required": [
+    "sources"
+  ],
+  "title": "SourceList",
+  "type": "object"
+}

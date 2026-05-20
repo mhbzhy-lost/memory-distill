@@ -1,0 +1,49 @@
+{
+  "$defs": {
+    "ReviewDecision": {
+      "enum": [
+        "accept",
+        "reject",
+        "narrow_scope",
+        "merge_existing",
+        "needs_more_evidence",
+        "mark_stale",
+        "deprecate",
+        "keep_separate",
+        "reject_duplicate"
+      ],
+      "title": "ReviewDecision",
+      "type": "string"
+    }
+  },
+  "properties": {
+    "candidate_id": {
+      "title": "Candidate Id",
+      "type": "string"
+    },
+    "decision": {
+      "$ref": "#/$defs/ReviewDecision"
+    },
+    "notes": {
+      "default": "",
+      "title": "Notes",
+      "type": "string"
+    },
+    "reviewed_at": {
+      "title": "Reviewed At",
+      "type": "string"
+    },
+    "reviewer": {
+      "default": "human",
+      "title": "Reviewer",
+      "type": "string"
+    }
+  },
+  "required": [
+    "candidate_id",
+    "decision",
+    "reviewed_at"
+  ],
+  "title": "ReviewRecord",
+  "type": "object"
+}

@@ -1,0 +1,76 @@
+{
+  "$defs": {
+    "EvidenceCandidate": {
+      "properties": {
+        "avoidance_quotes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Avoidance Quotes",
+          "type": "array"
+        },
+        "cause_quotes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Cause Quotes",
+          "type": "array"
+        },
+        "confidence": {
+          "default": "low",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "failure_label": {
+          "title": "Failure Label",
+          "type": "string"
+        },
+        "section_refs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Section Refs",
+          "type": "array"
+        },
+        "symptom_quotes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Symptom Quotes",
+          "type": "array"
+        },
+        "validation_quotes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Validation Quotes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "failure_label"
+      ],
+      "title": "EvidenceCandidate",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "candidates": {
+      "items": {
+        "$ref": "#/$defs/EvidenceCandidate"
+      },
+      "title": "Candidates",
+      "type": "array"
+    }
+  },
+  "required": [
+    "candidates"
+  ],
+  "title": "EvidenceCandidates",
+  "type": "object"
+}

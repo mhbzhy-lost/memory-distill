@@ -1,0 +1,268 @@
+{
+  "$defs": {
+    "EvidenceRef": {
+      "properties": {
+        "captured_at": {
+          "title": "Captured At",
+          "type": "string"
+        },
+        "final_url": {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "title": "Final Url",
+          "type": "string"
+        },
+        "quote_hash": {
+          "title": "Quote Hash",
+          "type": "string"
+        },
+        "section_anchor": {
+          "title": "Section Anchor",
+          "type": "string"
+        },
+        "short_excerpt": {
+          "maxLength": 600,
+          "minLength": 1,
+          "title": "Short Excerpt",
+          "type": "string"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "source_type": {
+          "title": "Source Type",
+          "type": "string"
+        },
+        "span_id": {
+          "title": "Span Id",
+          "type": "string"
+        },
+        "url": {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "url",
+        "final_url",
+        "source_type",
+        "captured_at",
+        "section_anchor",
+        "span_id",
+        "short_excerpt",
+        "quote_hash"
+      ],
+      "title": "EvidenceRef",
+      "type": "object"
+    },
+    "Maintenance": {
+      "properties": {
+        "stale_detected_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stale Detected At"
+        },
+        "stale_reason": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Stale Reason",
+          "type": "array"
+        },
+        "state": {
+          "$ref": "#/$defs/RecipeStatus",
+          "default": "proposed"
+        }
+      },
+      "title": "Maintenance",
+      "type": "object"
+    },
+    "RecipeStatus": {
+      "enum": [
+        "proposed",
+        "accepted",
+        "rejected",
+        "stale",
+        "deprecated"
+      ],
+      "title": "RecipeStatus",
+      "type": "string"
+    },
+    "ReviewDecision": {
+      "enum": [
+        "accept",
+        "reject",
+        "narrow_scope",
+        "merge_existing",
+        "needs_more_evidence",
+        "mark_stale",
+        "deprecate",
+        "keep_separate",
+        "reject_duplicate"
+      ],
+      "title": "ReviewDecision",
+      "type": "string"
+    },
+    "ReviewRecord": {
+      "properties": {
+        "candidate_id": {
+          "title": "Candidate Id",
+          "type": "string"
+        },
+        "decision": {
+          "$ref": "#/$defs/ReviewDecision"
+        },
+        "notes": {
+          "default": "",
+          "title": "Notes",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewer": {
+          "default": "human",
+          "title": "Reviewer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "candidate_id",
+        "decision",
+        "reviewed_at"
+      ],
+      "title": "ReviewRecord",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "do_not": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Do Not",
+      "type": "array"
+    },
+    "evidence_needed": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Needed",
+      "type": "array"
+    },
+    "evidence_refs": {
+      "items": {
+        "$ref": "#/$defs/EvidenceRef"
+      },
+      "title": "Evidence Refs",
+      "type": "array"
+    },
+    "failure_class": {
+      "title": "Failure Class",
+      "type": "string"
+    },
+    "fingerprints": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Fingerprints",
+      "type": "array"
+    },
+    "first_checks": {
+      "items": {
+        "type": "string"
+      },
+      "title": "First Checks",
+      "type": "array"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "kind": {
+      "const": "debug-recipe",
+      "default": "debug-recipe",
+      "title": "Kind",
+      "type": "string"
+    },
+    "maintenance": {
+      "$ref": "#/$defs/Maintenance"
+    },
+    "minimal_fix_scope": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Minimal Fix Scope",
+      "type": "array"
+    },
+    "regression_guard": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Regression Guard",
+      "type": "array"
+    },
+    "review": {
+      "items": {
+        "$ref": "#/$defs/ReviewRecord"
+      },
+      "title": "Review",
+      "type": "array"
+    },
+    "stack": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Stack",
+      "type": "array"
+    },
+    "status": {
+      "$ref": "#/$defs/RecipeStatus"
+    },
+    "symptoms": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Symptoms",
+      "type": "array"
+    },
+    "validation_ladder": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Validation Ladder",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "status",
+    "stack",
+    "failure_class",
+    "symptoms",
+    "fingerprints",
+    "first_checks",
+    "do_not",
+    "evidence_needed",
+    "minimal_fix_scope",
+    "validation_ladder",
+    "regression_guard",
+    "evidence_refs"
+  ],
+  "title": "Recipe",
+  "type": "object"
+}

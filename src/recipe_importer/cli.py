@@ -1,8 +1,14 @@
+from pathlib import Path
+from typing import Annotated
+
 import typer
 
 from recipe_importer import __version__
+from recipe_importer.schema import export_schemas
 
 app = typer.Typer(no_args_is_help=True)
+schema_app = typer.Typer(no_args_is_help=True)
+app.add_typer(schema_app, name="schema")
 
 
 @app.callback()
@@ -14,3 +20,12 @@ def main() -> None:
 def version() -> None:
     """Print the recipe importer version."""
     typer.echo(f"recipe-importer {__version__}")
+
+
+@schema_app.command("export")
+def schema_export(
+    output_dir: Annotated[Path, typer.Argument()] = Path("schemas"),
+) -> None:
+    """Export JSON Schemas for external adapters and review tooling."""
+    for path in export_schemas(output_dir):
+        typer.echo(str(path))
