@@ -7,7 +7,7 @@ from recipe_importer.llm import deterministic_candidates
 from recipe_importer.models import RecipeStatus
 from recipe_importer.normalize import normalize_recipe
 from recipe_importer.paths import KbPaths
-from recipe_importer.render import check_render_equivalence, render_recipe_file
+from recipe_importer.render import check_render_equivalence, render_recipe_file, render_recipe_text
 from recipe_importer.storage import write_json, write_text
 
 
@@ -69,6 +69,17 @@ def test_render_recipe_file_round_trip(extracted_react_snapshot, kb_root):
     text = target.read_text(encoding="utf-8")
     assert "## First Checks" in text
     assert "Do not disable SSR as the first fix" in text
+
+
+def test_render_recipe_text_has_no_trailing_blank_line(extracted_react_snapshot):
+    recipe = normalize_recipe(
+        deterministic_candidates(extracted_react_snapshot).candidates[0],
+        extracted_react_snapshot,
+        stack=["react", "nextjs"],
+    )
+
+    assert render_recipe_text(recipe).endswith("\n")
+    assert not render_recipe_text(recipe).endswith("\n\n")
 
 
 def test_check_render_equivalence_detects_body_drift(extracted_react_snapshot, kb_root):

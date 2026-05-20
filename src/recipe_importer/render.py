@@ -30,7 +30,7 @@ def render_body(recipe: Recipe) -> str:
             "## Minimal Fix Scope\n" + bullets(recipe.minimal_fix_scope),
             "## Validation Ladder\n" + bullets(recipe.validation_ladder),
             "## Regression Guard\n" + bullets(recipe.regression_guard),
-            "## Reviewer Notes\n",
+            "## Reviewer Notes",
         ]
     ) + "\n"
 
