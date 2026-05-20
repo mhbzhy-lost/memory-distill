@@ -1,0 +1,44 @@
+{
+  "recipes": [
+    {
+      "do_not": [
+        "Do not disable SSR as the first fix",
+        "Do not rewrite the component tree before locating the mismatched markup"
+      ],
+      "failure_class": "render/hydration",
+      "fingerprints": [
+        "Hydration failed",
+        "server rendered HTML didn't match the client",
+        "server rendered HTML did not match the client"
+      ],
+      "first_checks": [
+        "Check server/client branches such as typeof window in render output",
+        "Check Date.now(), Math.random(), and locale formatting in render output",
+        "Check invalid HTML nesting in the affected component"
+      ],
+      "id": "react-hydration-mismatch",
+      "path": "recipe-kb/accepted/react-hydration-mismatch.md",
+      "source_ids": [
+        "react-error-418"
+      ],
+      "source_urls": [
+        "https://react.dev/errors/418"
+      ],
+      "stack": [
+        "react",
+        "nextjs"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "render/hydration: Hydration failed because the server rendered HTML didn't match the client",
+      "symptoms": [
+        "Hydration failed because the server rendered HTML didn't match the client"
+      ],
+      "validation_ladder": [
+        "Reproduce the page in development",
+        "Check browser console for the hydration warning",
+        "Run the related smoke test if one exists"
+      ]
+    }
+  ]
+}

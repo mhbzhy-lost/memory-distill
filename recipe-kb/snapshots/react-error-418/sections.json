@@ -1,0 +1,98 @@
+[
+  {
+    "captured_at": "2026-05-20T00:00:00Z",
+    "final_url": "https://react.dev/errors/418",
+    "quote_hash": "sha256:a7b3c9e34a8081fb36e39f44e34fd2cf68c8285ccba68d4c6031041f183d84dc",
+    "section_anchor": "root",
+    "short_excerpt": "Hydration failed because the server rendered HTML didn't match the client",
+    "source_id": "react-error-418",
+    "source_type": "official_error_doc",
+    "span_id": "react-error-418-1",
+    "text": "Hydration failed because the server rendered HTML didn't match the client",
+    "url": "https://react.dev/errors/418"
+  },
+  {
+    "captured_at": "2026-05-20T00:00:00Z",
+    "final_url": "https://react.dev/errors/418",
+    "quote_hash": "sha256:376aa461e1fbe55320056b70dcc433aeb1b33b32916c3c89c430c9de2343431d",
+    "section_anchor": "root",
+    "short_excerpt": "This can happen if a SSR-ed Client Component used a server/client branch.",
+    "source_id": "react-error-418",
+    "source_type": "official_error_doc",
+    "span_id": "react-error-418-2",
+    "text": "This can happen if a SSR-ed Client Component used a server/client branch.",
+    "url": "https://react.dev/errors/418"
+  },
+  {
+    "captured_at": "2026-05-20T00:00:00Z",
+    "final_url": "https://react.dev/errors/418",
+    "quote_hash": "sha256:2d9a5ad8269a0845902cd7a2ea0fae8436846cc4d792d64620018948b16d9ac6",
+    "section_anchor": "root",
+    "short_excerpt": "A server/client branch such as typeof window !== 'undefined'.",
+    "source_id": "react-error-418",
+    "source_type": "official_error_doc",
+    "span_id": "react-error-418-3",
+    "text": "A server/client branch such as typeof window !== 'undefined'.",
+    "url": "https://react.dev/errors/418"
+  },
+  {
+    "captured_at": "2026-05-20T00:00:00Z",
+    "final_url": "https://react.dev/errors/418",
+    "quote_hash": "sha256:80b353a51f90d0c7b41b9b2416bf54adaf087c6a8b5a74855eb7b4114d4eeefb",
+    "section_anchor": "root",
+    "short_excerpt": "Variable input such as Date.now() or Math.random().",
+    "source_id": "react-error-418",
+    "source_type": "official_error_doc",
+    "span_id": "react-error-418-4",
+    "text": "Variable input such as Date.now() or Math.random().",
+    "url": "https://react.dev/errors/418"
+  },
+  {
+    "captured_at": "2026-05-20T00:00:00Z",
+    "final_url": "https://react.dev/errors/418",
+    "quote_hash": "sha256:9beda72d88a24ab0c2a054fb4ea7cec7c8b44a7e78bff38fd409852581954fc6",
+    "section_anchor": "root",
+    "short_excerpt": "Date formatting in a user's locale which doesn't match the server.",
+    "source_id": "react-error-418",
+    "source_type": "official_error_doc",
+    "span_id": "react-error-418-5",
+    "text": "Date formatting in a user's locale which doesn't match the server.",
+    "url": "https://react.dev/errors/418"
+  },
+  {
+    "captured_at": "2026-05-20T00:00:00Z",
+    "final_url": "https://react.dev/errors/418",
+    "quote_hash": "sha256:5e7a94532f26795cdda3024c1281cbfeec5d8eefe11e0ad92297831fca5f0c04",
+    "section_anchor": "root",
+    "short_excerpt": "Invalid HTML tag nesting.",
+    "source_id": "react-error-418",
+    "source_type": "official_error_doc",
+    "span_id": "react-error-418-6",
+    "text": "Invalid HTML tag nesting.",
+    "url": "https://react.dev/errors/418"
+  },
+  {
+    "captured_at": "2026-05-20T00:00:00Z",
+    "final_url": "https://react.dev/errors/418",
+    "quote_hash": "sha256:a039dd154df91827fc0b064638270ea3d395765c33958fef76a5ee5cabb51150",
+    "section_anchor": "root",
+    "short_excerpt": "How to fix",
+    "source_id": "react-error-418",
+    "source_type": "official_error_doc",
+    "span_id": "react-error-418-7",
+    "text": "How to fix",
+    "url": "https://react.dev/errors/418"
+  },
+  {
+    "captured_at": "2026-05-20T00:00:00Z",
+    "final_url": "https://react.dev/errors/418",
+    "quote_hash": "sha256:12c26e17391703119f882b90169228060ca8f6119e46d3ff1537a8833fa86abd",
+    "section_anchor": "root",
+    "short_excerpt": "Use an effect for client-only differences or pass a stable snapshot.",
+    "source_id": "react-error-418",
+    "source_type": "official_error_doc",
+    "span_id": "react-error-418-8",
+    "text": "Use an effect for client-only differences or pass a stable snapshot.",
+    "url": "https://react.dev/errors/418"
+  }
+]
