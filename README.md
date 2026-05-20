@@ -20,3 +20,15 @@ uv run recipe-importer search "Hydration failed"
 
 Default tests use local fixtures. Network access happens only during explicit
 `fetch` or source refresh operations.
+
+## Agent Skill Package
+
+Build a self-contained Codex skill for agent use:
+
+```bash
+uv run python scripts/build_agent_skill.py --force
+dist/skills/debug-recipe-importer/scripts/recipe-importer search "Hydration failed"
+```
+
+The generated skill bundles the importer CLI, schemas, prompts, accepted recipes,
+and local source-evidence snapshots. It does not package raw HTML snapshots.
