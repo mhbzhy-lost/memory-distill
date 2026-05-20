@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from typer.testing import CliRunner
@@ -148,3 +149,99 @@ def test_cli_check_fails_when_not_equivalent(monkeypatch, tmp_path):
         result = runner.invoke(app, ["check", "recipe-kb/proposed/broken.md"])
 
     assert result.exit_code != 0
+
+
+def test_cli_review_start_next_accept_uses_persisted_cursor(tmp_path):
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        proposed = Path("recipe-kb/proposed")
+        proposed.mkdir(parents=True)
+        (proposed / "a.md").write_text("---\nid: a\n---\n", encoding="utf-8")
+        (proposed / "b.md").write_text("---\nid: b\n---\n", encoding="utf-8")
+
+        start = runner.invoke(app, ["review"])
+        move = runner.invoke(app, ["review", "next"])
+        current = runner.invoke(app, ["review"])
+        decision = runner.invoke(app, ["review", "accept", "--notes", "looks good"])
+        decisions = json.loads(Path("recipe-kb/review/decisions.json").read_text(encoding="utf-8"))
+
+    assert start.exit_code == 0
+    assert "a.md" in start.stdout
+    assert move.exit_code == 0
+    assert "b.md" in move.stdout
+    assert current.exit_code == 0
+    assert "b.md" in current.stdout
+    assert decision.exit_code == 0
+    assert "accepted" in decision.stdout
+    assert decisions[0]["candidate_id"] == "b"
+
+
+def test_cli_publish_index_search_and_get(monkeypatch, tmp_path):
+    def fake_publish_recipe(recipe, paths):
+        assert recipe == Path("recipe-kb/proposed/react-hydration-mismatch.md")
+        return paths.accepted_dir / recipe.name
+
+    def fake_rebuild_index(paths):
+        return paths.index_path
+
+    def fake_search_recipes(paths, query, *, fresh_only=False):
+        assert query == "Hydration failed"
+        assert fresh_only is True
+        return [
+            {
+                "id": "react-hydration-mismatch",
+                "summary": "render/hydration: Hydration failed",
+                "stale": False,
+                "first_checks": ["Check browser-only branches"],
+                "do_not": ["Do not disable SSR"],
+                "validation_ladder": ["Reproduce the affected route"],
+            }
+        ]
+
+    class FakeRecipe:
+        def model_dump_json(self, indent):
+            assert indent == 2
+            return '{\n  "id": "react-hydration-mismatch"\n}'
+
+    def fake_get_recipe(paths, recipe_id):
+        assert recipe_id == "react-hydration-mismatch"
+        return FakeRecipe()
+
+    monkeypatch.setattr(recipe_importer.cli, "publish_recipe", fake_publish_recipe, raising=False)
+    monkeypatch.setattr(recipe_importer.cli, "rebuild_index", fake_rebuild_index, raising=False)
+    monkeypatch.setattr(recipe_importer.cli, "search_recipes", fake_search_recipes, raising=False)
+    monkeypatch.setattr(recipe_importer.cli, "get_recipe", fake_get_recipe, raising=False)
+
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        publish = runner.invoke(app, ["publish", "recipe-kb/proposed/react-hydration-mismatch.md"])
+        rebuild = runner.invoke(app, ["index", "rebuild"])
+        search = runner.invoke(app, ["search", "Hydration failed", "--fresh-only"])
+        get = runner.invoke(app, ["get", "react-hydration-mismatch"])
+
+    assert publish.exit_code == 0
+    assert "recipe-kb/accepted/react-hydration-mismatch.md" in publish.stdout
+    assert rebuild.exit_code == 0
+    assert "recipe-kb/index.json" in rebuild.stdout
+    assert search.exit_code == 0
+    assert "react-hydration-mismatch" in search.stdout
+    assert "summary: render/hydration: Hydration failed" in search.stdout
+    assert "check: Check browser-only branches" in search.stdout
+    assert "do-not: Do not disable SSR" in search.stdout
+    assert "validate: Reproduce the affected route" in search.stdout
+    assert get.exit_code == 0
+    assert '"id": "react-hydration-mismatch"' in get.stdout
+
+
+def test_cli_publish_reports_render_equivalence_error(monkeypatch, tmp_path):
+    def fake_publish_recipe(recipe, paths):
+        raise ValueError(f"{recipe} is not render-equivalent")
+
+    monkeypatch.setattr(recipe_importer.cli, "publish_recipe", fake_publish_recipe, raising=False)
+
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        result = runner.invoke(app, ["publish", "recipe-kb/proposed/broken.md"])
+
+    assert result.exit_code != 0
+    assert "not render-equivalent" in result.stderr
