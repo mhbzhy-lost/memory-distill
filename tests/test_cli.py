@@ -73,3 +73,78 @@ def test_cli_extract_prints_section_count(monkeypatch, tmp_path):
 
     assert result.exit_code == 0
     assert "react-error-418: 8 sections" in result.stdout
+
+
+def test_cli_import_source_produces_proposed_file(monkeypatch, tmp_path):
+    class FakeCandidate:
+        failure_label = "hydration mismatch"
+        symptom_quotes = ["Hydration failed"]
+        section_refs = ["react-error-418-1"]
+        confidence = "high"
+
+    class FakeCandidates:
+        candidates = [FakeCandidate()]
+
+    class FakeRecipe:
+        id = "react-hydration-mismatch"
+
+    def fake_deterministic_candidates(snapshot_dir):
+        assert snapshot_dir == Path("recipe-kb/snapshots/react-error-418")
+        return FakeCandidates()
+
+    def fake_normalize_recipe(candidate, snapshot_dir, *, stack):
+        assert stack == ["react", "nextjs"]
+        return FakeRecipe()
+
+    written = []
+
+    def fake_render_recipe_file(recipe, target):
+        written.append(target)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text("---\nid: react-hydration-mismatch\n---\n\n# Body\n", encoding="utf-8")
+
+    monkeypatch.setattr(recipe_importer.cli, "deterministic_candidates", fake_deterministic_candidates)
+    monkeypatch.setattr(recipe_importer.cli, "normalize_recipe", fake_normalize_recipe)
+    monkeypatch.setattr(recipe_importer.cli, "render_recipe_file", fake_render_recipe_file)
+
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        (tmp_path / "recipe-kb" / "proposed").mkdir(parents=True)
+        result = runner.invoke(app, ["import-source", "recipe-kb/snapshots/react-error-418"])
+
+    assert result.exit_code == 0
+    assert written
+    assert written[0].name == "react-hydration-mismatch.md"
+
+
+def test_cli_check_passes_when_equivalent(monkeypatch, tmp_path):
+    def fake_check_render_equivalence(recipe):
+        assert recipe == Path("recipe-kb/proposed/test.md")
+        return True
+
+    monkeypatch.setattr(recipe_importer.cli, "check_render_equivalence", fake_check_render_equivalence)
+
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        (tmp_path / "recipe-kb" / "proposed").mkdir(parents=True)
+        (tmp_path / "recipe-kb" / "proposed" / "test.md").write_text(
+            "---\nid: test\n---\n\n# Body\n", encoding="utf-8"
+        )
+        result = runner.invoke(app, ["check", "recipe-kb/proposed/test.md"])
+
+    assert result.exit_code == 0
+    assert ": ok" in result.stdout
+
+
+def test_cli_check_fails_when_not_equivalent(monkeypatch, tmp_path):
+    def fake_check_render_equivalence(recipe):
+        return False
+
+    monkeypatch.setattr(recipe_importer.cli, "check_render_equivalence", fake_check_render_equivalence)
+
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        (tmp_path / "recipe-kb" / "proposed").mkdir(parents=True)
+        result = runner.invoke(app, ["check", "recipe-kb/proposed/broken.md"])
+
+    assert result.exit_code != 0

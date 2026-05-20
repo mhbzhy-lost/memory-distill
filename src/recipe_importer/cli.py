@@ -6,8 +6,11 @@ import typer
 from recipe_importer import __version__
 from recipe_importer.extract import extract_snapshot
 from recipe_importer.fetch import fetch_sources
+from recipe_importer.llm import deterministic_candidates
 from recipe_importer.manifest import check_manifest, refresh_manifest
+from recipe_importer.normalize import normalize_recipe
 from recipe_importer.paths import KbPaths
+from recipe_importer.render import check_render_equivalence, render_recipe_file
 from recipe_importer.schema import export_schemas
 
 app = typer.Typer(no_args_is_help=True)
@@ -69,3 +72,28 @@ def extract(
     """Extract readable sections from one local snapshot directory."""
     result = extract_snapshot(snapshot_dir)
     typer.echo(f"{result.source_id}: {result.section_count} sections")
+
+
+@app.command(name="import-source")
+def import_source(
+    snapshot_dir: Annotated[Path, typer.Argument()],
+    stack: Annotated[list[str], typer.Option()] = ["react", "nextjs"],
+) -> None:
+    """Create proposed recipes from one extracted snapshot."""
+    paths = KbPaths(Path.cwd()).ensure()
+    candidates = deterministic_candidates(snapshot_dir)
+    for candidate in candidates.candidates:
+        recipe = normalize_recipe(candidate, snapshot_dir, stack=stack)
+        target = paths.proposed_dir / f"{recipe.id}.md"
+        render_recipe_file(recipe, target)
+        typer.echo(str(target))
+
+
+@app.command()
+def check(
+    recipe: Annotated[Path, typer.Argument()],
+) -> None:
+    """Check that generated Markdown matches canonical YAML frontmatter."""
+    if not check_render_equivalence(recipe):
+        raise typer.BadParameter(f"{recipe} is not render-equivalent")
+    typer.echo(f"{recipe}: ok")
