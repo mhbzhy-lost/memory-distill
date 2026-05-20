@@ -1,0 +1,8 @@
+prompts:
+  debug_recipe_evidence:
+    rev: 1
+    path: prompts/debug_recipe_evidence.md
+    files: null
+    hash: sha256:7aacd35b5d41628379640cd36955ec522b250e823dac7896a9c4663fff710214
+schemas: {}
+extractors: {}

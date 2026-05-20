@@ -26,3 +26,32 @@ def test_cli_fetch_prints_written_snapshots(monkeypatch, tmp_path):
 
     assert result.exit_code == 0
     assert "react-error-418" in result.stdout
+
+
+def test_cli_manifest_refresh_prints_prompt_revision(monkeypatch, tmp_path):
+    class FakeItem:
+        rev = 3
+
+    class FakeManifest:
+        prompts = {"debug_recipe_evidence": FakeItem()}
+
+    def fake_refresh_manifest(root):
+        assert root == Path.cwd()
+        return FakeManifest()
+
+    monkeypatch.setattr(recipe_importer.cli, "refresh_manifest", fake_refresh_manifest, raising=False)
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        result = runner.invoke(app, ["manifest", "refresh"])
+
+    assert result.exit_code == 0
+    assert "debug_recipe_evidence rev 3" in result.stdout
+
+
+def test_cli_manifest_check_exits_nonzero_when_hashes_drift(monkeypatch, tmp_path):
+    monkeypatch.setattr(recipe_importer.cli, "check_manifest", lambda root: False, raising=False)
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        result = runner.invoke(app, ["manifest", "check"])
+
+    assert result.exit_code == 1
