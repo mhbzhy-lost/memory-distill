@@ -55,3 +55,21 @@ def test_cli_manifest_check_exits_nonzero_when_hashes_drift(monkeypatch, tmp_pat
         result = runner.invoke(app, ["manifest", "check"])
 
     assert result.exit_code == 1
+
+
+def test_cli_extract_prints_section_count(monkeypatch, tmp_path):
+    class FakeExtractionResult:
+        source_id = "react-error-418"
+        section_count = 8
+
+    def fake_extract_snapshot(snapshot_dir):
+        assert snapshot_dir == Path("recipe-kb/snapshots/react-error-418")
+        return FakeExtractionResult()
+
+    monkeypatch.setattr(recipe_importer.cli, "extract_snapshot", fake_extract_snapshot, raising=False)
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        result = runner.invoke(app, ["extract", "recipe-kb/snapshots/react-error-418"])
+
+    assert result.exit_code == 0
+    assert "react-error-418: 8 sections" in result.stdout

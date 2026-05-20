@@ -4,6 +4,7 @@ from typing import Annotated
 import typer
 
 from recipe_importer import __version__
+from recipe_importer.extract import extract_snapshot
 from recipe_importer.fetch import fetch_sources
 from recipe_importer.manifest import check_manifest, refresh_manifest
 from recipe_importer.paths import KbPaths
@@ -59,3 +60,12 @@ def manifest_check() -> None:
     if not check_manifest(Path.cwd()):
         raise typer.Exit(code=1)
     typer.echo("manifest ok")
+
+
+@app.command()
+def extract(
+    snapshot_dir: Annotated[Path, typer.Argument()],
+) -> None:
+    """Extract readable sections from one local snapshot directory."""
+    result = extract_snapshot(snapshot_dir)
+    typer.echo(f"{result.source_id}: {result.section_count} sections")

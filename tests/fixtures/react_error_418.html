@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+  <body>
+    <main>
+      <h1>Hydration failed because the server rendered HTML didn't match the client</h1>
+      <p>This can happen if a SSR-ed Client Component used a server/client branch.</p>
+      <ul>
+        <li>A server/client branch such as typeof window !== 'undefined'.</li>
+        <li>Variable input such as Date.now() or Math.random().</li>
+        <li>Date formatting in a user's locale which doesn't match the server.</li>
+        <li>Invalid HTML tag nesting.</li>
+      </ul>
+      <h2>How to fix</h2>
+      <p>Use an effect for client-only differences or pass a stable snapshot.</p>
+    </main>
+  </body>
+</html>
