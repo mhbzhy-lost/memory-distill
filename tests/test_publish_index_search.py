@@ -15,9 +15,12 @@ from recipe_importer.search import get_recipe, search_recipes
 from recipe_importer.storage import write_json, write_text
 
 
+FIXTURES_DIR = Path(__file__).parent / "fixtures"
+
+
 def proposed_recipe(paths):
     snapshot_dir = paths.snapshots_dir / "react-error-418"
-    html = Path("tests/fixtures/react_error_418.html").read_text(encoding="utf-8")
+    html = (FIXTURES_DIR / "react_error_418.html").read_text(encoding="utf-8")
     write_text(snapshot_dir / "raw.html", html)
     write_json(
         snapshot_dir / "response.json",
@@ -76,6 +79,16 @@ def test_publish_rejects_non_equivalent_generated_body(kb_root):
 
     with pytest.raises(ValueError, match="render-equivalent"):
         publish_recipe(proposed, paths)
+
+
+def test_publish_rejects_source_outside_proposed_dir(kb_root):
+    paths = KbPaths(kb_root).ensure()
+    outside = paths.recipe_kb_dir / "imports" / "react-hydration-mismatch.md"
+    proposed = proposed_recipe(paths)
+    write_text(outside, proposed.read_text(encoding="utf-8"))
+
+    with pytest.raises(ValueError, match="proposed"):
+        publish_recipe(outside, paths)
 
 
 def test_search_excludes_stale_when_fresh_only(kb_root):

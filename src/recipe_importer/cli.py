@@ -199,6 +199,8 @@ def publish(
     paths = KbPaths(Path.cwd()).ensure()
     try:
         published = publish_recipe(recipe, paths)
+    except FileNotFoundError:
+        _exit_error(f"recipe file not found: {recipe}")
     except ValueError as exc:
         typer.echo(str(exc), err=True)
         raise typer.Exit(code=1) from exc
@@ -227,6 +229,8 @@ def search(
         records = search_recipes(paths, query, fresh_only=fresh_only)
     except FileNotFoundError:
         _exit_error("recipe index not found; run `recipe-importer index rebuild`")
+    except (KeyError, ValueError):
+        _exit_error("recipe index is invalid; run `recipe-importer index rebuild`")
     for record in records:
         warning = " [stale]" if record["stale"] else ""
         typer.echo(f"{record['id']}{warning}")
@@ -249,6 +253,8 @@ def recipe_get(
         recipe = get_recipe(paths, recipe_id)
     except FileNotFoundError:
         _exit_error("recipe index not found; run `recipe-importer index rebuild`")
+    except ValueError:
+        _exit_error("recipe index is invalid; run `recipe-importer index rebuild`")
     except KeyError:
         _exit_error(f"recipe not found: {recipe_id}")
     typer.echo(recipe.model_dump_json(indent=2))

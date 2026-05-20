@@ -1,5 +1,8 @@
 from pathlib import Path
 
+import yaml
+from pydantic import ValidationError
+
 from recipe_importer.models import RecipeStatus
 from recipe_importer.paths import KbPaths
 from recipe_importer.render import parse_recipe_file
@@ -32,7 +35,7 @@ def rebuild_index(paths: KbPaths) -> Path:
         for path in sorted(directory.glob("*.md")):
             try:
                 recipe = parse_recipe_file(path)
-            except Exception as exc:
+            except (OSError, ValueError, yaml.YAMLError, ValidationError) as exc:
                 raise IndexBuildError(f"failed to index {path}: {exc}") from exc
             records.append(
                 {

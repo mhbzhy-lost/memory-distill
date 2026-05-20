@@ -257,6 +257,16 @@ def test_cli_publish_reports_render_equivalence_error(monkeypatch, tmp_path):
     assert "not render-equivalent" in result.stderr
 
 
+def test_cli_publish_reports_missing_file(tmp_path):
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        result = runner.invoke(app, ["publish", "recipe-kb/proposed/missing.md"])
+
+    assert result.exit_code == 1
+    assert isinstance(result.exception, SystemExit)
+    assert "recipe file not found" in result.stderr
+
+
 def test_cli_search_reports_missing_index(tmp_path):
     runner = CliRunner()
     with runner.isolated_filesystem(temp_dir=tmp_path):
@@ -265,6 +275,20 @@ def test_cli_search_reports_missing_index(tmp_path):
     assert result.exit_code == 1
     assert isinstance(result.exception, SystemExit)
     assert "run `recipe-importer index rebuild`" in result.stderr
+
+
+def test_cli_search_reports_invalid_index(tmp_path):
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        recipe_kb = Path("recipe-kb")
+        recipe_kb.mkdir()
+        (recipe_kb / "index.json").write_text('{"not_recipes": []}\n', encoding="utf-8")
+
+        result = runner.invoke(app, ["search", "Hydration failed"])
+
+    assert result.exit_code == 1
+    assert isinstance(result.exception, SystemExit)
+    assert "recipe index is invalid" in result.stderr
 
 
 def test_cli_get_reports_unknown_recipe(tmp_path):
