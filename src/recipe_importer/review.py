@@ -36,13 +36,30 @@ def _save_session(paths: KbPaths, session: ReviewSession) -> ReviewSession:
     return session
 
 
+def _reconcile_session(paths: KbPaths, session: ReviewSession) -> ReviewSession:
+    current_candidates = [path.name for path in _candidate_files(paths)]
+    if not current_candidates:
+        return _save_session(paths, ReviewSession(cursor=0, candidates=[]))
+
+    selected = session.candidates[session.cursor] if session.candidates and session.cursor < len(session.candidates) else ""
+    cursor = (
+        current_candidates.index(selected)
+        if selected in current_candidates
+        else min(session.cursor, len(current_candidates) - 1)
+    )
+    reconciled = ReviewSession(cursor=cursor, candidates=current_candidates)
+    if reconciled != session:
+        return _save_session(paths, reconciled)
+    return session
+
+
 def start_review(paths: KbPaths) -> ReviewSession:
     candidates = [path.name for path in _candidate_files(paths)]
     return _save_session(paths, ReviewSession(cursor=0, candidates=candidates))
 
 
 def current_candidate(paths: KbPaths, session: ReviewSession | None = None) -> Path:
-    session = session or load_review_session(paths)
+    session = _reconcile_session(paths, session or load_review_session(paths))
     if not session.candidates:
         raise ValueError("review queue is empty")
     return paths.proposed_dir / session.candidates[session.cursor]

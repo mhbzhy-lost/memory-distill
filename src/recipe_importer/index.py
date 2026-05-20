@@ -6,6 +6,10 @@ from recipe_importer.render import parse_recipe_file
 from recipe_importer.storage import write_json
 
 
+class IndexBuildError(ValueError):
+    pass
+
+
 def _summary(recipe_id: str, failure_class: str, symptoms: list[str]) -> str:
     if symptoms:
         return f"{failure_class}: {symptoms[0]}"
@@ -26,7 +30,10 @@ def rebuild_index(paths: KbPaths) -> Path:
     records = []
     for directory in [paths.accepted_dir, paths.stale_dir]:
         for path in sorted(directory.glob("*.md")):
-            recipe = parse_recipe_file(path)
+            try:
+                recipe = parse_recipe_file(path)
+            except Exception as exc:
+                raise IndexBuildError(f"failed to index {path}: {exc}") from exc
             records.append(
                 {
                     "id": recipe.id,

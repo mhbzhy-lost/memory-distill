@@ -97,3 +97,19 @@ def test_session_is_persisted_to_json(kb_root):
 
     assert data["cursor"] == 0
     assert data["candidates"] == ["a.md", "b.md"]
+
+
+def test_current_candidate_reconciles_deleted_file(kb_root):
+    paths = KbPaths(kb_root).ensure()
+    write_text(paths.proposed_dir / "a.md", "---\nid: a\n---\n")
+    write_text(paths.proposed_dir / "b.md", "---\nid: b\n---\n")
+
+    session = next_candidate(paths, start_review(paths))
+    assert current_candidate(paths, session).name == "b.md"
+
+    (paths.proposed_dir / "b.md").unlink()
+
+    assert current_candidate(paths).name == "a.md"
+    data = read_json(paths.review_dir / "session.json")
+    assert data["cursor"] == 0
+    assert data["candidates"] == ["a.md"]

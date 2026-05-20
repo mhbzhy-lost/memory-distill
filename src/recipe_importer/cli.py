@@ -1,12 +1,13 @@
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, NoReturn
 
 import typer
 
 from recipe_importer import __version__
 from recipe_importer.extract import extract_snapshot
 from recipe_importer.fetch import fetch_sources
-from recipe_importer.index import rebuild_index
+
+from recipe_importer.index import IndexBuildError, rebuild_index
 from recipe_importer.llm import deterministic_candidates
 from recipe_importer.manifest import check_manifest, refresh_manifest
 from recipe_importer.models import ReviewDecision
@@ -40,6 +41,11 @@ app.add_typer(index_app, name="index")
 @app.callback()
 def main() -> None:
     pass
+
+
+def _exit_error(message: str) -> NoReturn:
+    typer.echo(message, err=True)
+    raise typer.Exit(code=1)
 
 
 @app.command(name="version")
@@ -124,7 +130,11 @@ def _review_session(paths: KbPaths) -> ReviewSession:
 
 
 def _echo_current_review_candidate(paths: KbPaths, session: ReviewSession) -> None:
-    typer.echo(str(current_candidate(paths, session)))
+    try:
+        candidate = current_candidate(paths, session)
+    except ValueError as exc:
+        _exit_error(str(exc))
+    typer.echo(str(candidate))
 
 
 @review_app.callback(invoke_without_command=True)
@@ -199,7 +209,11 @@ def publish(
 def index_rebuild() -> None:
     """Rebuild the deterministic recipe search index."""
     paths = KbPaths(Path.cwd()).ensure()
-    typer.echo(str(rebuild_index(paths)))
+    try:
+        index_path = rebuild_index(paths)
+    except IndexBuildError as exc:
+        _exit_error(str(exc))
+    typer.echo(str(index_path))
 
 
 @app.command()
@@ -209,7 +223,11 @@ def search(
 ) -> None:
     """Search accepted and stale recipes."""
     paths = KbPaths(Path.cwd()).ensure()
-    for record in search_recipes(paths, query, fresh_only=fresh_only):
+    try:
+        records = search_recipes(paths, query, fresh_only=fresh_only)
+    except FileNotFoundError:
+        _exit_error("recipe index not found; run `recipe-importer index rebuild`")
+    for record in records:
         warning = " [stale]" if record["stale"] else ""
         typer.echo(f"{record['id']}{warning}")
         typer.echo(f"  summary: {record['summary']}")
@@ -227,4 +245,10 @@ def recipe_get(
 ) -> None:
     """Print one recipe as canonical JSON."""
     paths = KbPaths(Path.cwd()).ensure()
-    typer.echo(get_recipe(paths, recipe_id).model_dump_json(indent=2))
+    try:
+        recipe = get_recipe(paths, recipe_id)
+    except FileNotFoundError:
+        _exit_error("recipe index not found; run `recipe-importer index rebuild`")
+    except KeyError:
+        _exit_error(f"recipe not found: {recipe_id}")
+    typer.echo(recipe.model_dump_json(indent=2))

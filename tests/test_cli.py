@@ -176,6 +176,16 @@ def test_cli_review_start_next_accept_uses_persisted_cursor(tmp_path):
     assert decisions[0]["candidate_id"] == "b"
 
 
+def test_cli_review_empty_queue_reports_clean_error(tmp_path):
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        result = runner.invoke(app, ["review"])
+
+    assert result.exit_code == 1
+    assert isinstance(result.exception, SystemExit)
+    assert "review queue is empty" in result.stderr
+
+
 def test_cli_publish_index_search_and_get(monkeypatch, tmp_path):
     def fake_publish_recipe(recipe, paths):
         assert recipe == Path("recipe-kb/proposed/react-hydration-mismatch.md")
@@ -245,3 +255,41 @@ def test_cli_publish_reports_render_equivalence_error(monkeypatch, tmp_path):
 
     assert result.exit_code != 0
     assert "not render-equivalent" in result.stderr
+
+
+def test_cli_search_reports_missing_index(tmp_path):
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        result = runner.invoke(app, ["search", "Hydration failed"])
+
+    assert result.exit_code == 1
+    assert isinstance(result.exception, SystemExit)
+    assert "run `recipe-importer index rebuild`" in result.stderr
+
+
+def test_cli_get_reports_unknown_recipe(tmp_path):
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        recipe_kb = Path("recipe-kb")
+        recipe_kb.mkdir()
+        (recipe_kb / "index.json").write_text('{"recipes": []}\n', encoding="utf-8")
+
+        result = runner.invoke(app, ["get", "missing-recipe"])
+
+    assert result.exit_code == 1
+    assert isinstance(result.exception, SystemExit)
+    assert "recipe not found: missing-recipe" in result.stderr
+
+
+def test_cli_index_rebuild_reports_malformed_recipe(tmp_path):
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        accepted = Path("recipe-kb/accepted")
+        accepted.mkdir(parents=True)
+        (accepted / "broken.md").write_text("not a recipe\n", encoding="utf-8")
+
+        result = runner.invoke(app, ["index", "rebuild"])
+
+    assert result.exit_code == 1
+    assert isinstance(result.exception, SystemExit)
+    assert "broken.md" in result.stderr
