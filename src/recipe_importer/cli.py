@@ -14,6 +14,7 @@ from recipe_importer.models import ReviewDecision
 from recipe_importer.normalize import normalize_recipe
 from recipe_importer.paths import KbPaths
 from recipe_importer.publish import publish_recipe
+from recipe_importer.refresh import refresh_stale_status
 from recipe_importer.render import check_render_equivalence, render_recipe_file
 from recipe_importer.review import (
     ReviewSession,
@@ -86,6 +87,14 @@ def manifest_check() -> None:
     if not check_manifest(Path.cwd()):
         raise typer.Exit(code=1)
     typer.echo("manifest ok")
+
+
+@app.command()
+def refresh() -> None:
+    """Mark accepted recipes stale when local refreshed evidence no longer matches."""
+    paths = KbPaths(Path.cwd()).ensure()
+    for path in refresh_stale_status(paths):
+        typer.echo(f"stale: {path}")
 
 
 @app.command()

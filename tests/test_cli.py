@@ -58,6 +58,21 @@ def test_cli_manifest_check_exits_nonzero_when_hashes_drift(monkeypatch, tmp_pat
     assert result.exit_code == 1
 
 
+def test_cli_refresh_prints_stale_paths(monkeypatch, tmp_path):
+    def fake_refresh_stale_status(paths):
+        return [paths.stale_dir / "react-hydration-mismatch.md"]
+
+    monkeypatch.setattr(recipe_importer.cli, "refresh_stale_status", fake_refresh_stale_status, raising=False)
+
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        result = runner.invoke(app, ["refresh"])
+
+    assert result.exit_code == 0
+    assert "stale: " in result.stdout
+    assert "react-hydration-mismatch.md" in result.stdout
+
+
 def test_cli_extract_prints_section_count(monkeypatch, tmp_path):
     class FakeExtractionResult:
         source_id = "react-error-418"
