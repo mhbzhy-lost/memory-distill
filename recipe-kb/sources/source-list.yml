@@ -9,3 +9,96 @@ sources:
       - hydration mismatch
       - server rendered HTML did not match the client
     refresh_policy: monthly
+  - source_id: react-invalid-hook-call
+    url: https://react.dev/warnings/invalid-hook-call-warning
+    source_type: official_error_doc
+    stacks:
+      - react
+    expected_failure_hints:
+      - invalid hook call
+      - Hooks can only be called inside the body of a function component
+      - mismatching versions of React and React DOM
+      - more than one copy of React
+    refresh_policy: monthly
+  - source_id: react-use-effect-troubleshooting
+    url: https://react.dev/reference/react/useEffect
+    source_type: official_doc
+    stacks:
+      - react
+    expected_failure_hints:
+      - Effect keeps re-running in an infinite cycle
+      - Effect runs twice when the component mounts
+      - missing cleanup function
+      - dependency changes on every render
+    refresh_policy: monthly
+  - source_id: react-preserving-resetting-state
+    url: https://react.dev/learn/preserving-and-resetting-state
+    source_type: official_doc
+    stacks:
+      - react
+    expected_failure_hints:
+      - state is reset unexpectedly
+      - component state disappears
+      - key forces subtree reset
+      - nested component definitions reset state
+    refresh_policy: monthly
+  - source_id: next-dynamic-server-error
+    url: https://nextjs.org/docs/messages/dynamic-server-error
+    source_type: official_error_doc
+    stacks:
+      - react
+      - nextjs
+    expected_failure_hints:
+      - DynamicServerError
+      - Dynamic server usage
+      - cookies or headers not bound to the same call stack
+      - static generation dynamic function
+    refresh_policy: monthly
+  - source_id: next-invalid-dynamic-suspense
+    url: https://nextjs.org/docs/messages/invalid-dynamic-suspense
+    source_type: official_error_doc
+    stacks:
+      - react
+      - nextjs
+    expected_failure_hints:
+      - invalid usage of suspense option
+      - suspense true with ssr false
+      - suspense true with loading
+      - next dynamic React lazy
+    refresh_policy: monthly
+  - source_id: vite-troubleshooting
+    url: https://vite.dev/guide/troubleshooting.html
+    source_type: official_doc
+    stacks:
+      - react
+      - vite
+    expected_failure_hints:
+      - This package is ESM only
+      - ERR_REQUIRE_ESM
+      - tried to load by require
+      - vite config ESM
+    refresh_policy: monthly
+  - source_id: tanstack-query-important-defaults
+    url: https://tanstack.com/query/latest/docs/framework/react/guides/important-defaults
+    source_type: official_doc
+    stacks:
+      - react
+      - tanstack-query
+    expected_failure_hints:
+      - query data is stale by default
+      - refetch on window focus
+      - refetch on mount
+      - retry failed queries three times
+    refresh_policy: monthly
+  - source_id: tanstack-query-invalidation
+    url: https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation
+    source_type: official_doc
+    stacks:
+      - react
+      - tanstack-query
+    expected_failure_hints:
+      - mutation succeeds but list still shows stale data
+      - invalidateQueries
+      - mark queries as stale
+      - query key partial matching
+    refresh_policy: monthly
