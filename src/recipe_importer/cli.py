@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from typing import Annotated, NoReturn
 
@@ -27,6 +28,7 @@ from recipe_importer.review import (
 )
 from recipe_importer.schema import export_schemas
 from recipe_importer.search import get_recipe, search_recipes
+from recipe_importer.storage import read_json
 
 app = typer.Typer(no_args_is_help=True)
 schema_app = typer.Typer(no_args_is_help=True)
@@ -37,6 +39,9 @@ app.add_typer(schema_app, name="schema")
 app.add_typer(manifest_app, name="manifest")
 app.add_typer(review_app, name="review")
 app.add_typer(index_app, name="index")
+logger = logging.getLogger(__name__)
+
+DEFAULT_STACK = ["react", "nextjs"]
 
 
 @app.callback()
@@ -47,6 +52,22 @@ def main() -> None:
 def _exit_error(message: str) -> NoReturn:
     typer.echo(message, err=True)
     raise typer.Exit(code=1)
+
+
+def _snapshot_stacks(snapshot_dir: Path) -> list[str]:
+    try:
+        metadata = read_json(snapshot_dir / "response.json")
+    except (OSError, ValueError) as exc:
+        logger.warning("snapshot %s has unreadable response.json: %s", snapshot_dir, exc)
+        return list(DEFAULT_STACK)
+    if not isinstance(metadata, dict):
+        logger.warning("snapshot %s response.json is not an object", snapshot_dir)
+        return list(DEFAULT_STACK)
+    stacks = metadata.get("stacks", [])
+    if isinstance(stacks, list) and all(isinstance(item, str) for item in stacks) and stacks:
+        return stacks
+    logger.warning("snapshot %s has missing or malformed stacks", snapshot_dir)
+    return list(DEFAULT_STACK)
 
 
 @app.command(name="version")
@@ -109,7 +130,10 @@ def extract(
 @app.command(name="import-source")
 def import_source(
     snapshot_dir: Annotated[Path, typer.Argument()],
-    stack: Annotated[list[str], typer.Option()] = ["react", "nextjs"],
+    stack: Annotated[
+        list[str] | None,
+        typer.Option(help="Stack list. Defaults to snapshot metadata, then react/nextjs."),
+    ] = None,
 ) -> None:
     """Create proposed recipes from one extracted snapshot."""
     paths = KbPaths(Path.cwd()).ensure()
@@ -119,8 +143,9 @@ def import_source(
             "没有生成候选 recipe：请查看该 snapshot 的 review.md/qa.json；"
             "若 QA gate 失败，需要进入 agentic fallback 补充 extraction_profile 或 extractor。"
         )
+    recipe_stack = stack if stack else _snapshot_stacks(snapshot_dir)
     for candidate in candidates.candidates:
-        recipe = normalize_recipe(candidate, snapshot_dir, stack=stack)
+        recipe = normalize_recipe(candidate, snapshot_dir, stack=recipe_stack)
         target = paths.proposed_dir / f"{recipe.id}.md"
         render_recipe_file(recipe, target)
         typer.echo(str(target))

@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from recipe_importer.models import EvidenceCandidate, EvidenceRef, Recipe, RecipeStatus
+from recipe_importer.recipe_templates import TEMPLATES_BY_LABEL
 from recipe_importer.storage import read_json
 
 
@@ -27,41 +28,21 @@ def _evidence_refs(snapshot_dir: Path, span_ids: list[str]) -> list[EvidenceRef]
 
 
 def normalize_recipe(candidate: EvidenceCandidate, snapshot_dir: Path, *, stack: list[str]) -> Recipe:
+    template = TEMPLATES_BY_LABEL.get(candidate.failure_label)
+    if template is None:
+        raise ValueError(f"unknown failure_label: {candidate.failure_label}")
     return Recipe(
-        id="react-hydration-mismatch",
+        id=template.recipe_id,
         status=RecipeStatus.PROPOSED,
         stack=stack,
-        failure_class="render/hydration",
-        symptoms=candidate.symptom_quotes or ["Hydration failed"],
-        fingerprints=[
-            "Hydration failed",
-            "server rendered HTML didn't match the client",
-            "server rendered HTML did not match the client",
-        ],
-        first_checks=[
-            "Check server/client branches such as typeof window in render output",
-            "Check Date.now(), Math.random(), and locale formatting in render output",
-            "Check invalid HTML nesting in the affected component",
-        ],
-        do_not=[
-            "Do not disable SSR as the first fix",
-            "Do not rewrite the component tree before locating the mismatched markup",
-        ],
-        evidence_needed=[
-            "Identify the component producing different server and client markup",
-            "Capture the browser console hydration warning",
-        ],
-        minimal_fix_scope=[
-            "The component producing mismatched markup",
-            "The server-to-client data snapshot used by that component",
-        ],
-        validation_ladder=[
-            "Reproduce the page in development",
-            "Check browser console for the hydration warning",
-            "Run the related smoke test if one exists",
-        ],
-        regression_guard=[
-            "Add or update a smoke test for the affected page or component",
-        ],
+        failure_class=template.failure_class,
+        symptoms=template.symptoms,
+        fingerprints=template.fingerprints,
+        first_checks=template.first_checks,
+        do_not=template.do_not,
+        evidence_needed=template.evidence_needed,
+        minimal_fix_scope=template.minimal_fix_scope,
+        validation_ladder=template.validation_ladder,
+        regression_guard=template.regression_guard,
         evidence_refs=_evidence_refs(snapshot_dir, candidate.section_refs),
     )

@@ -28,6 +28,8 @@ source: docs/bugs/bug-react-error-next-data-message-missing.md
   `qa.json`、`review.md`、`readable.md` 是可提交的 snapshot 产物。
 - 人审入口是中文 `review.md`。源证据摘录、代码标识、命令和外部专有名词保持原文。
 - extractor 必须先走确定性抽取；`qa.json` 失败时才进入 agentic fallback。
+- recipe 生成规则集中在 `src/recipe_importer/recipe_templates.py`。新增确定性 recipe 时，
+  不要让 `llm.py` 与 `normalize.py` 各自维护一份语义；两者都应读取同一模板。
 - React / Next 等站点可能把关键正文放在 `pre/code` 或 `#__NEXT_DATA__` 里，
   不要只依赖普通 `p/li/h*` 可见文本。
 - `publish` 是状态迁移：成功后 accepted 成为唯一正式产物，同名 stale 和源 proposed
@@ -42,6 +44,8 @@ source: docs/bugs/bug-react-error-next-data-message-missing.md
   - `qa.json` 状态；
   - 中文 `review.md`；
   - `import-source` 空候选诊断。
+- 修改 recipe 模板时，同步覆盖候选生成、normalize 后的 recipe id/stack/evidence refs、
+  render-equivalence、publish/index/search 端到端路径。
 - `extraction_profile.content_selectors` 来自配置或 fallback 产物，不能假设 selector
   永远合法；无效 selector 应回退默认正文抽取，而不是让 snapshot 崩溃。
 - 修改 publish/review 队列时，确认 `accepted/`、`stale/`、`proposed/` 三个状态目录

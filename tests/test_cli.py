@@ -133,6 +133,141 @@ def test_cli_import_source_produces_proposed_file(monkeypatch, tmp_path):
     assert written[0].name == "react-hydration-mismatch.md"
 
 
+def test_cli_import_source_uses_snapshot_stacks_by_default(monkeypatch, tmp_path):
+    class FakeCandidate:
+        failure_label = "vite esm-only config require"
+        symptom_quotes = ["This package is ESM only"]
+        section_refs = ["vite-troubleshooting-1"]
+        confidence = "high"
+
+    class FakeCandidates:
+        candidates = [FakeCandidate()]
+
+    class FakeRecipe:
+        id = "vite-esm-only-config-require"
+
+    monkeypatch.setattr(
+        recipe_importer.cli,
+        "deterministic_candidates",
+        lambda snapshot_dir: FakeCandidates(),
+    )
+
+    stacks = []
+
+    def fake_normalize_recipe(candidate, snapshot_dir, *, stack):
+        stacks.append(stack)
+        return FakeRecipe()
+
+    monkeypatch.setattr(recipe_importer.cli, "normalize_recipe", fake_normalize_recipe)
+    monkeypatch.setattr(
+        recipe_importer.cli,
+        "render_recipe_file",
+        lambda recipe, target: target.parent.mkdir(parents=True, exist_ok=True)
+        or target.write_text("---\nid: vite-esm-only-config-require\n---\n", encoding="utf-8"),
+    )
+
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        snapshot = Path("recipe-kb/snapshots/vite-troubleshooting")
+        snapshot.mkdir(parents=True)
+        (snapshot / "response.json").write_text(
+            json.dumps({"stacks": ["react", "vite"]}),
+            encoding="utf-8",
+        )
+        result = runner.invoke(app, ["import-source", str(snapshot)])
+
+    assert result.exit_code == 0
+    assert stacks == [["react", "vite"]]
+
+
+def test_cli_import_source_falls_back_when_snapshot_stacks_are_malformed(monkeypatch, tmp_path):
+    class FakeCandidate:
+        failure_label = "hydration mismatch"
+        symptom_quotes = ["Hydration failed"]
+        section_refs = ["react-error-418-1"]
+        confidence = "high"
+
+    class FakeCandidates:
+        candidates = [FakeCandidate()]
+
+    class FakeRecipe:
+        id = "react-hydration-mismatch"
+
+    monkeypatch.setattr(
+        recipe_importer.cli,
+        "deterministic_candidates",
+        lambda snapshot_dir: FakeCandidates(),
+    )
+
+    stacks = []
+
+    def fake_normalize_recipe(candidate, snapshot_dir, *, stack):
+        stacks.append(stack)
+        return FakeRecipe()
+
+    monkeypatch.setattr(recipe_importer.cli, "normalize_recipe", fake_normalize_recipe)
+    monkeypatch.setattr(
+        recipe_importer.cli,
+        "render_recipe_file",
+        lambda recipe, target: target.parent.mkdir(parents=True, exist_ok=True)
+        or target.write_text("---\nid: react-hydration-mismatch\n---\n", encoding="utf-8"),
+    )
+
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        snapshot = Path("recipe-kb/snapshots/react-error-418")
+        snapshot.mkdir(parents=True)
+        (snapshot / "response.json").write_text("{not-json", encoding="utf-8")
+        result = runner.invoke(app, ["import-source", str(snapshot)])
+
+    assert result.exit_code == 0
+    assert stacks == [["react", "nextjs"]]
+
+
+def test_cli_import_source_falls_back_when_response_metadata_is_not_object(monkeypatch, tmp_path):
+    class FakeCandidate:
+        failure_label = "hydration mismatch"
+        symptom_quotes = ["Hydration failed"]
+        section_refs = ["react-error-418-1"]
+        confidence = "high"
+
+    class FakeCandidates:
+        candidates = [FakeCandidate()]
+
+    class FakeRecipe:
+        id = "react-hydration-mismatch"
+
+    monkeypatch.setattr(
+        recipe_importer.cli,
+        "deterministic_candidates",
+        lambda snapshot_dir: FakeCandidates(),
+    )
+
+    stacks = []
+
+    def fake_normalize_recipe(candidate, snapshot_dir, *, stack):
+        stacks.append(stack)
+        return FakeRecipe()
+
+    monkeypatch.setattr(recipe_importer.cli, "normalize_recipe", fake_normalize_recipe)
+    monkeypatch.setattr(
+        recipe_importer.cli,
+        "render_recipe_file",
+        lambda recipe, target: target.parent.mkdir(parents=True, exist_ok=True)
+        or target.write_text("---\nid: react-hydration-mismatch\n---\n", encoding="utf-8"),
+    )
+
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        snapshot = Path("recipe-kb/snapshots/react-error-418")
+        snapshot.mkdir(parents=True)
+        (snapshot / "response.json").write_text("[]", encoding="utf-8")
+        result = runner.invoke(app, ["import-source", str(snapshot)])
+
+    assert result.exit_code == 0
+    assert stacks == [["react", "nextjs"]]
+
+
 def test_cli_import_source_reports_empty_candidates(monkeypatch, tmp_path):
     class FakeCandidates:
         candidates = []

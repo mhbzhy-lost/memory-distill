@@ -2,6 +2,128 @@
   "recipes": [
     {
       "do_not": [
+        "Do not catch and swallow DynamicServerError manually",
+        "Do not move cookies or headers into delayed callbacks to satisfy static generation"
+      ],
+      "failure_class": "nextjs/dynamic-rendering",
+      "fingerprints": [
+        "DynamicServerError",
+        "Dynamic Server Usage",
+        "cookies or headers not bound to the same call stack",
+        "static generation dynamic function"
+      ],
+      "first_checks": [
+        "Check whether cookies, headers, or another dynamic function is called outside its async context",
+        "Check setTimeout, setInterval, or un-awaited promise boundaries around dynamic functions",
+        "Check whether the route should be dynamic instead of statically generated"
+      ],
+      "id": "next-dynamic-server-usage",
+      "path": "recipe-kb/accepted/next-dynamic-server-usage.md",
+      "source_ids": [
+        "next-dynamic-server-error"
+      ],
+      "source_urls": [
+        "https://nextjs.org/docs/messages/dynamic-server-error"
+      ],
+      "stack": [
+        "react",
+        "nextjs"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "nextjs/dynamic-rendering: DynamicServerError or Dynamic Server Usage is thrown during static generation",
+      "symptoms": [
+        "DynamicServerError or Dynamic Server Usage is thrown during static generation"
+      ],
+      "validation_ladder": [
+        "Build or render the affected route locally",
+        "Confirm the dynamic function is called in the same async context",
+        "Run the route smoke or build test"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not combine suspense: true with ssr: false",
+        "Do not provide loading when suspense: true uses the Suspense fallback"
+      ],
+      "failure_class": "nextjs/dynamic-import",
+      "fingerprints": [
+        "invalid usage of suspense option",
+        "suspense true with ssr false",
+        "suspense true with loading",
+        "next dynamic React lazy"
+      ],
+      "first_checks": [
+        "Check next/dynamic options for suspense: true with ssr: false",
+        "Check next/dynamic options for suspense: true with loading",
+        "Check whether React 18 or newer is required for the Suspense path"
+      ],
+      "id": "next-invalid-dynamic-suspense",
+      "path": "recipe-kb/accepted/next-invalid-dynamic-suspense.md",
+      "source_ids": [
+        "next-invalid-dynamic-suspense"
+      ],
+      "source_urls": [
+        "https://nextjs.org/docs/messages/invalid-dynamic-suspense"
+      ],
+      "stack": [
+        "react",
+        "nextjs"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "nextjs/dynamic-import: Invalid usage of suspense option of next/dynamic",
+      "symptoms": [
+        "Invalid usage of suspense option of next/dynamic"
+      ],
+      "validation_ladder": [
+        "Render the affected route in development",
+        "Confirm the invalid next/dynamic warning is gone",
+        "Run the route or component smoke test"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not remove dependencies from the array to hide the loop",
+        "Do not disable Strict Mode before proving cleanup mirrors setup"
+      ],
+      "failure_class": "react/effect-lifecycle",
+      "fingerprints": [
+        "Effect keeps re-running in an infinite cycle",
+        "Effect runs twice when the component mounts",
+        "dependency is different on every re-render",
+        "missing cleanup function"
+      ],
+      "first_checks": [
+        "Check whether the Effect updates state that changes one of its dependencies",
+        "Check object and function dependencies that are recreated on every render",
+        "Check whether Strict Mode is exposing missing cleanup logic"
+      ],
+      "id": "react-effect-dependency-rerun-loop",
+      "path": "recipe-kb/accepted/react-effect-dependency-rerun-loop.md",
+      "source_ids": [
+        "react-use-effect-troubleshooting"
+      ],
+      "source_urls": [
+        "https://react.dev/reference/react/useEffect"
+      ],
+      "stack": [
+        "react"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "react/effect-lifecycle: Effect keeps re-running in an infinite cycle or runs twice on mount",
+      "symptoms": [
+        "Effect keeps re-running in an infinite cycle or runs twice on mount"
+      ],
+      "validation_ladder": [
+        "Log or inspect dependency identity across two renders",
+        "Run the component in development Strict Mode",
+        "Run the focused component or hook test"
+      ]
+    },
+    {
+      "do_not": [
         "Do not disable SSR as the first fix",
         "Do not rewrite the component tree before locating the mismatched markup"
       ],
@@ -38,6 +160,209 @@
         "Reproduce the page in development",
         "Check browser console for the hydration warning",
         "Run the related smoke test if one exists"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not call Hooks inside loops, conditions, nested functions, or event handlers",
+        "Do not silence the warning before locating the invalid call site or duplicate React copy"
+      ],
+      "failure_class": "react/hooks",
+      "fingerprints": [
+        "Invalid hook call",
+        "Hooks can only be called inside the body of a function component",
+        "mismatching versions of React and React DOM",
+        "more than one copy of React"
+      ],
+      "first_checks": [
+        "Check whether every Hook is called at the top level of a function component or custom Hook",
+        "Check that react and react-dom resolve to matching versions",
+        "Check whether the app bundles more than one copy of React"
+      ],
+      "id": "react-invalid-hook-call",
+      "path": "recipe-kb/accepted/react-invalid-hook-call.md",
+      "source_ids": [
+        "react-invalid-hook-call"
+      ],
+      "source_urls": [
+        "https://react.dev/warnings/invalid-hook-call-warning"
+      ],
+      "stack": [
+        "react"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "react/hooks: Invalid hook call: Hooks can only be called inside the body of a function component",
+      "symptoms": [
+        "Invalid hook call: Hooks can only be called inside the body of a function component"
+      ],
+      "validation_ladder": [
+        "Run the affected component path in development and confirm the warning is gone",
+        "Run dependency inspection for react and react-dom",
+        "Run the related component or smoke test"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not move state upward before confirming whether identity or key is the cause",
+        "Do not define component functions inside render when state must be preserved"
+      ],
+      "failure_class": "react/state-preservation",
+      "fingerprints": [
+        "state is reset unexpectedly",
+        "state is isolated between components",
+        "key forces subtree reset",
+        "nested component definitions reset state"
+      ],
+      "first_checks": [
+        "Check whether the component is rendered at a different position in the tree",
+        "Check whether a key change is intentionally or accidentally forcing a reset",
+        "Check whether a component function is nested inside another component"
+      ],
+      "id": "react-state-reset-by-position-or-key",
+      "path": "recipe-kb/accepted/react-state-reset-by-position-or-key.md",
+      "source_ids": [
+        "react-preserving-resetting-state"
+      ],
+      "source_urls": [
+        "https://react.dev/learn/preserving-and-resetting-state"
+      ],
+      "stack": [
+        "react"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "react/state-preservation: Component state is reset unexpectedly or preserved when it should reset",
+      "symptoms": [
+        "Component state is reset unexpectedly or preserved when it should reset"
+      ],
+      "validation_ladder": [
+        "Reproduce the state reset with a minimal interaction",
+        "Verify the component keeps or resets state according to the chosen identity",
+        "Run the focused component test for the affected branch"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not disable all refetching globally before identifying the surprising default",
+        "Do not treat repeated failed requests as duplicate component mounts until retry is checked"
+      ],
+      "failure_class": "tanstack-query/cache-defaults",
+      "fingerprints": [
+        "query data is stale by default",
+        "refetch on window focus",
+        "refetch on mount",
+        "retry failed queries three times"
+      ],
+      "first_checks": [
+        "Check staleTime before assuming cached data should stay fresh",
+        "Check refetchOnMount, refetchOnWindowFocus, and refetchOnReconnect",
+        "Check retry and retryDelay when failures appear multiple times"
+      ],
+      "id": "tanstack-query-aggressive-defaults",
+      "path": "recipe-kb/accepted/tanstack-query-aggressive-defaults.md",
+      "source_ids": [
+        "tanstack-query-important-defaults"
+      ],
+      "source_urls": [
+        "https://tanstack.com/query/latest/docs/framework/react/guides/important-defaults"
+      ],
+      "stack": [
+        "react",
+        "tanstack-query"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "tanstack-query/cache-defaults: Queries refetch or retry unexpectedly because TanStack Query defaults are active",
+      "symptoms": [
+        "Queries refetch or retry unexpectedly because TanStack Query defaults are active"
+      ],
+      "validation_ladder": [
+        "Reproduce the refetch/retry trigger with query devtools or logs",
+        "Adjust the smallest relevant query option",
+        "Run the component/query integration test"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not manually patch every cached list before checking invalidation coverage",
+        "Do not invalidate a broad key without confirming the affected query key shape"
+      ],
+      "failure_class": "tanstack-query/cache-invalidation",
+      "fingerprints": [
+        "invalidateQueries",
+        "mark queries as stale",
+        "query key partial matching",
+        "refetched in the background"
+      ],
+      "first_checks": [
+        "Check whether the mutation invalidates every affected query key",
+        "Check partial query key matching versus exact query keys",
+        "Check whether active queries are refetched after invalidation"
+      ],
+      "id": "tanstack-query-missing-invalidation",
+      "path": "recipe-kb/accepted/tanstack-query-missing-invalidation.md",
+      "source_ids": [
+        "tanstack-query-invalidation"
+      ],
+      "source_urls": [
+        "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation"
+      ],
+      "stack": [
+        "react",
+        "tanstack-query"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "tanstack-query/cache-invalidation: A mutation succeeds but related query data remains stale in the UI",
+      "symptoms": [
+        "A mutation succeeds but related query data remains stale in the UI"
+      ],
+      "validation_ladder": [
+        "Run the mutation and inspect invalidated query keys",
+        "Confirm the stale UI refetches or receives updated cache data",
+        "Run the mutation/query integration test"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not pin an old dependency version before confirming the config module format",
+        "Do not rely on experimental require support as the primary fix"
+      ],
+      "failure_class": "vite/config-module-format",
+      "fingerprints": [
+        "This package is ESM only",
+        "ERR_REQUIRE_ESM",
+        "tried to load by require",
+        "vite config ESM"
+      ],
+      "first_checks": [
+        "Check whether vite.config.* or a plugin config is loaded as CommonJS",
+        "Check whether the failing dependency is ESM-only",
+        "Check whether the config file extension should be .mjs or .mts"
+      ],
+      "id": "vite-esm-only-config-require",
+      "path": "recipe-kb/accepted/vite-esm-only-config-require.md",
+      "source_ids": [
+        "vite-troubleshooting"
+      ],
+      "source_urls": [
+        "https://vite.dev/guide/troubleshooting.html"
+      ],
+      "stack": [
+        "react",
+        "vite"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "vite/config-module-format: Vite fails because an ESM-only package was loaded by require",
+      "symptoms": [
+        "Vite fails because an ESM-only package was loaded by require"
+      ],
+      "validation_ladder": [
+        "Run the Vite command that originally failed",
+        "Confirm the config loads under ESM",
+        "Run the project build or dev-server smoke"
       ]
     }
   ]
