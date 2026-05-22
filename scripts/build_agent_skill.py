@@ -77,6 +77,12 @@ def skill_markdown() -> str:
         ## Maintenance
 
         Generated Markdown recipe bodies are views of YAML frontmatter. Do not hand-edit semantic body sections. Update YAML or importer code, then run `check` and `index rebuild`.
+
+        When maintaining the importer itself, document each newly discovered bug in `docs/bugs/` before fixing it. After the bug record exists, proceed with TDD and verification without waiting for another human approval.
+
+        ## 人审文本语言
+
+        人审的人类可读文本必须使用中文编写。适用范围包括 review summary、review checklist、面向审阅者的 CLI 提示，以及任何需要人类批准的说明文本。源证据摘录、代码标识、命令、schema 字段名和外部专有名词保持原文，避免翻译导致证据偏移。
         """
     )
 

@@ -1,0 +1,21 @@
+{
+  "captured_at": "2026-05-21T09:50:51.121768Z",
+  "content_hash": "sha256:90d899d3f6654b25ddc77423174e90106969487048f14f1bd613c76b03bb187f",
+  "content_type": "text/html; charset=UTF-8",
+  "expected_failure_hints": [
+    "This package is ESM only",
+    "ERR_REQUIRE_ESM",
+    "tried to load by require",
+    "vite config ESM"
+  ],
+  "final_url": "https://vite.dev/guide/troubleshooting.html",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "vite-troubleshooting",
+  "source_type": "official_doc",
+  "stacks": [
+    "react",
+    "vite"
+  ],
+  "url": "https://vite.dev/guide/troubleshooting.html"
+}

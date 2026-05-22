@@ -3,3 +3,5 @@ __pycache__/
 .pytest_cache/
 .worktrees/
 dist/
+recipe-kb/review/
+recipe-kb/snapshots/**/raw.html

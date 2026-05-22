@@ -10,6 +10,7 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PACKAGER = REPO_ROOT / "scripts" / "build_agent_skill.py"
+RECIPE_ID = "react-hydration-mismatch.md"
 
 
 def load_packager_module():
@@ -31,6 +32,12 @@ def run_packager(*args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
+def current_recipe_state_path() -> str:
+    matches = sorted((REPO_ROOT / "recipe-kb").glob(f"*/{RECIPE_ID}"))
+    assert matches
+    return matches[0].relative_to(REPO_ROOT).as_posix()
+
+
 def test_build_agent_skill_packages_cli_code_and_static_assets(tmp_path):
     output_dir = tmp_path / "debug-recipe-importer"
 
@@ -38,6 +45,9 @@ def test_build_agent_skill_packages_cli_code_and_static_assets(tmp_path):
 
     assert result.returncode == 0, result.stderr
     assert (output_dir / "SKILL.md").is_file()
+    skill_text = (output_dir / "SKILL.md").read_text(encoding="utf-8")
+    assert "人审的人类可读文本必须使用中文编写" in skill_text
+    assert "document each newly discovered bug in `docs/bugs/` before fixing it" in skill_text
     assert (output_dir / "agents" / "openai.yaml").is_file()
     wrapper = output_dir / "scripts" / "recipe-importer"
     assert wrapper.is_file()
@@ -52,7 +62,7 @@ def test_build_agent_skill_packages_cli_code_and_static_assets(tmp_path):
         "bin/recipe-importer",
         "schemas/debug-recipe.schema.json",
         "prompts/debug_recipe_evidence.md",
-        "recipe-kb/accepted/react-hydration-mismatch.md",
+        current_recipe_state_path(),
         "recipe-kb/index.json",
         "recipe-kb/snapshots/react-error-418/sections.json",
     ]:

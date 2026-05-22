@@ -25,4 +25,7 @@ def publish_recipe(proposed_path: Path, paths: KbPaths) -> Path:
     recipe.maintenance.state = RecipeStatus.ACCEPTED
     target = paths.accepted_dir / proposed_path.name
     render_recipe_file(recipe, target)
+    stale_sibling = paths.stale_dir / proposed_path.name
+    stale_sibling.unlink(missing_ok=True)
+    proposed_path.unlink(missing_ok=True)
     return target

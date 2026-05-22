@@ -19,6 +19,10 @@ def test_load_source_list(kb_root):
                     "stacks": ["react", "nextjs"],
                     "expected_failure_hints": ["hydration mismatch"],
                     "refresh_policy": "monthly",
+                    "extraction_profile": {
+                        "content_selectors": ["main article"],
+                        "structured_text_paths": ["__NEXT_DATA__.props.pageProps.errorMessage"],
+                    },
                 }
             ]
         },
@@ -28,6 +32,7 @@ def test_load_source_list(kb_root):
 
     assert source_list.sources[0].source_id == "react-error-418"
     assert source_list.sources[0].stacks == ["react", "nextjs"]
+    assert source_list.sources[0].extraction_profile.content_selectors == ["main article"]
 
 
 def test_fetch_sources_writes_metadata_and_readable_seed(kb_root):
@@ -51,6 +56,11 @@ def test_fetch_sources_writes_metadata_and_readable_seed(kb_root):
                     "stacks": ["react"],
                     "expected_failure_hints": ["hydration mismatch"],
                     "refresh_policy": "monthly",
+                    "extraction_profile": {
+                        "content_selectors": ["main"],
+                        "structured_text_paths": ["__NEXT_DATA__.props.pageProps.errorMessage"],
+                        "max_sections": 20,
+                    },
                 }
             ]
         },
@@ -67,4 +77,9 @@ def test_fetch_sources_writes_metadata_and_readable_seed(kb_root):
     assert metadata["source_id"] == "react-error-418"
     assert metadata["retrieved_status"] == 200
     assert metadata["captured_at"] == "2026-05-20T00:00:00Z"
+    assert metadata["stacks"] == ["react"]
+    assert metadata["expected_failure_hints"] == ["hydration mismatch"]
+    assert metadata["refresh_policy"] == "monthly"
+    assert metadata["extraction_profile"]["content_selectors"] == ["main"]
+    assert metadata["extraction_profile"]["max_sections"] == 20
     assert "Hydration failed" in html

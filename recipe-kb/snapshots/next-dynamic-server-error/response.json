@@ -1,0 +1,21 @@
+{
+  "captured_at": "2026-05-21T09:50:51.121768Z",
+  "content_hash": "sha256:20288aaf8f09de917e37f63bc865178bb57b617c84c7f1b2bf918dc858342c07",
+  "content_type": "text/html; charset=utf-8",
+  "expected_failure_hints": [
+    "DynamicServerError",
+    "Dynamic server usage",
+    "cookies or headers not bound to the same call stack",
+    "static generation dynamic function"
+  ],
+  "final_url": "https://nextjs.org/docs/messages/dynamic-server-error",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "next-dynamic-server-error",
+  "source_type": "official_error_doc",
+  "stacks": [
+    "react",
+    "nextjs"
+  ],
+  "url": "https://nextjs.org/docs/messages/dynamic-server-error"
+}

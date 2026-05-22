@@ -11,8 +11,9 @@ from recipe_importer.normalize import normalize_recipe
 from recipe_importer.paths import KbPaths
 from recipe_importer.publish import publish_recipe
 from recipe_importer.render import parse_recipe_file, render_recipe_file
+from recipe_importer.review import current_candidate, start_review
 from recipe_importer.search import get_recipe, search_recipes
-from recipe_importer.storage import write_json, write_text
+from recipe_importer.storage import read_json, write_json, write_text
 
 
 FIXTURES_DIR = Path(__file__).parent / "fixtures"
@@ -109,6 +110,63 @@ def test_search_excludes_stale_when_fresh_only(kb_root):
     assert len(all_results) == 1
     assert all_results[0]["stale"] is True
     assert len(fresh_results) == 0
+
+
+def test_publish_replaces_same_named_stale_recipe(kb_root):
+    paths = KbPaths(kb_root).ensure()
+    proposed = proposed_recipe(paths)
+
+    stale_recipe = parse_recipe_file(proposed)
+    stale_recipe.status = RecipeStatus.STALE
+    stale_recipe.maintenance.state = RecipeStatus.STALE
+    render_recipe_file(stale_recipe, paths.stale_dir / proposed.name)
+
+    accepted = publish_recipe(proposed, paths)
+    rebuild_index(paths)
+    records = read_json(paths.index_path)["recipes"]
+    matching = [record for record in records if record["id"] == "react-hydration-mismatch"]
+
+    assert accepted == paths.accepted_dir / "react-hydration-mismatch.md"
+    assert not (paths.stale_dir / proposed.name).exists()
+    assert len(matching) == 1
+    assert matching[0]["status"] == "accepted"
+
+
+def test_publish_tolerates_stale_sibling_removed_during_publish(kb_root, monkeypatch):
+    paths = KbPaths(kb_root).ensure()
+    proposed = proposed_recipe(paths)
+    stale_path = paths.stale_dir / proposed.name
+
+    stale_recipe = parse_recipe_file(proposed)
+    stale_recipe.status = RecipeStatus.STALE
+    stale_recipe.maintenance.state = RecipeStatus.STALE
+    render_recipe_file(stale_recipe, stale_path)
+
+    original_unlink = Path.unlink
+
+    def unlink_with_stale_race(path, *args, **kwargs):
+        if path == stale_path and not kwargs.get("missing_ok", False):
+            original_unlink(path)
+            raise FileNotFoundError(path)
+        return original_unlink(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "unlink", unlink_with_stale_race)
+
+    accepted = publish_recipe(proposed, paths)
+
+    assert accepted.exists()
+    assert not stale_path.exists()
+
+
+def test_publish_consumes_proposed_candidate(kb_root):
+    paths = KbPaths(kb_root).ensure()
+    proposed = proposed_recipe(paths)
+
+    publish_recipe(proposed, paths)
+
+    assert not proposed.exists()
+    with pytest.raises(ValueError, match="review queue is empty"):
+        current_candidate(paths, start_review(paths))
 
 
 def _dummy_evidence_ref(source_id: str = "react-error-418") -> EvidenceRef:

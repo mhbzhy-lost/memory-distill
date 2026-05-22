@@ -36,6 +36,15 @@ class EvidenceRef(BaseModel):
     quote_hash: str
 
 
+class ExtractionProfile(BaseModel):
+    content_selectors: list[str] = Field(default_factory=list)
+    structured_text_paths: list[str] = Field(default_factory=list)
+    min_sections: int = 1
+    max_sections: int = 500
+    require_expected_hints: bool = True
+    agentic_fallback: bool = True
+
+
 class Source(BaseModel):
     source_id: str
     url: HttpUrl
@@ -43,6 +52,7 @@ class Source(BaseModel):
     stacks: list[str]
     expected_failure_hints: list[str] = Field(default_factory=list)
     refresh_policy: str = "manual"
+    extraction_profile: ExtractionProfile = Field(default_factory=ExtractionProfile)
 
     @field_validator("source_id")
     @classmethod

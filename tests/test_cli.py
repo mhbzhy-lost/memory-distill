@@ -133,6 +133,26 @@ def test_cli_import_source_produces_proposed_file(monkeypatch, tmp_path):
     assert written[0].name == "react-hydration-mismatch.md"
 
 
+def test_cli_import_source_reports_empty_candidates(monkeypatch, tmp_path):
+    class FakeCandidates:
+        candidates = []
+
+    monkeypatch.setattr(
+        recipe_importer.cli,
+        "deterministic_candidates",
+        lambda snapshot_dir: FakeCandidates(),
+    )
+
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        (tmp_path / "recipe-kb" / "proposed").mkdir(parents=True)
+        result = runner.invoke(app, ["import-source", "recipe-kb/snapshots/react-error-418"])
+
+    assert result.exit_code == 1
+    assert "没有生成候选 recipe" in result.stderr
+    assert "agentic fallback" in result.stderr
+
+
 def test_cli_check_passes_when_equivalent(monkeypatch, tmp_path):
     def fake_check_render_equivalence(recipe):
         assert recipe == Path("recipe-kb/proposed/test.md")

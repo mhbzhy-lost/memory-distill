@@ -1,0 +1,20 @@
+{
+  "captured_at": "2026-05-21T09:50:51.121768Z",
+  "content_hash": "sha256:792a72c2435c730be340b1d22ce4c492555de366b153ab00c23201ad15937243",
+  "content_type": "text/html; charset=utf-8",
+  "expected_failure_hints": [
+    "Effect keeps re-running in an infinite cycle",
+    "Effect runs twice when the component mounts",
+    "missing cleanup function",
+    "dependency changes on every render"
+  ],
+  "final_url": "https://react.dev/reference/react/useEffect",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "react-use-effect-troubleshooting",
+  "source_type": "official_doc",
+  "stacks": [
+    "react"
+  ],
+  "url": "https://react.dev/reference/react/useEffect"
+}

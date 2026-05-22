@@ -36,21 +36,18 @@ evidence_refs:
   url: https://react.dev/errors/418
   final_url: https://react.dev/errors/418
   source_type: official_error_doc
-  captured_at: '2026-05-20T00:00:00Z'
+  captured_at: '2026-05-21T09:50:51.121768Z'
   section_anchor: root
-  span_id: react-error-418-1
-  short_excerpt: Hydration failed because the server rendered HTML didn't match the
-    client
-  quote_hash: sha256:a7b3c9e34a8081fb36e39f44e34fd2cf68c8285ccba68d4c6031041f183d84dc
-- source_id: react-error-418
-  url: https://react.dev/errors/418
-  final_url: https://react.dev/errors/418
-  source_type: official_error_doc
-  captured_at: '2026-05-20T00:00:00Z'
-  section_anchor: root
-  span_id: react-error-418-4
-  short_excerpt: Variable input such as Date.now() or Math.random().
-  quote_hash: sha256:80b353a51f90d0c7b41b9b2416bf54adaf087c6a8b5a74855eb7b4114d4eeefb
+  span_id: react-error-418-5
+  short_excerpt: 'Hydration failed because the server rendered %s didn''t match the
+    client. As a result this tree will be regenerated on the client. This can happen
+    if a SSR-ed Client Component used: - A server/client branch `if (typeof window
+    !== ''undefined'')`. - Variable input such as `Date.now()` or `Math.random()`
+    which changes each time it''s called. - Date formatting in a user''s locale which
+    doesn''t match the server. - External changing data without sending a snapshot
+    of it along with the HTML. - Invalid HTML tag nesting. It can also happen if the
+    client has a browser extension installed which messes with t'
+  quote_hash: sha256:e76e20313a2da174553088217329e4a665891c75252578b0b6b8d8c45f5a147c
 review: []
 maintenance:
   state: accepted

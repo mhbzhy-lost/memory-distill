@@ -114,6 +114,11 @@ def import_source(
     """Create proposed recipes from one extracted snapshot."""
     paths = KbPaths(Path.cwd()).ensure()
     candidates = deterministic_candidates(snapshot_dir)
+    if not candidates.candidates:
+        _exit_error(
+            "没有生成候选 recipe：请查看该 snapshot 的 review.md/qa.json；"
+            "若 QA gate 失败，需要进入 agentic fallback 补充 extraction_profile 或 extractor。"
+        )
     for candidate in candidates.candidates:
         recipe = normalize_recipe(candidate, snapshot_dir, stack=stack)
         target = paths.proposed_dir / f"{recipe.id}.md"
