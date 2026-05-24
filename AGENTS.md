@@ -1,5 +1,10 @@
 # Memory Distill 工程规则
 
+## 仓库维护方式
+
+本仓库为个人维护仓库。默认只在 `main` 分支上开发和提交，不需要为常规改动创建
+独立分支或 PR；只有用户明确要求分支、PR 或隔离评审时才切分支并走 PR 流程。
+
 ## Project Knowledge
 
 开工 coding / 调试 / 计划 / review 前，除宿主 memory 外，也要检查任务是否触及
