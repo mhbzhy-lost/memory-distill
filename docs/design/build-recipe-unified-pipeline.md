@@ -336,24 +336,93 @@ related_debug_recipes:
   - react-invalid-hook-call
 ```
 
-## 实施路径建议
+## 人类角色：Reviewer，非 Author
 
-### Phase 1：Schema + 反转生成（低成本验证）
+核心原则：**pipeline 负责产出完整 candidate，人类只做 yes/no 决策。**
+
+`correct_pattern` / `decision_context` / `trigger` 等字段的信息全部可以从公开
+文档（guide / best practice / tutorial）自动提取。人不需要手写这些内容。
+
+pipeline 产出的 candidate 应该是**已填充完整的草稿**，审阅者只需判断：
+- 内容是否准确
+- 粒度是否合适
+- 是否与已有 recipe 重复
+
+唯一需要人主动创作的场景是：**来自私有实践经验的知识**——这些无法从任何公开文档
+提取，需要一个独立的创建入口。
+
+## 两条输入路径
+
+```
+路径 A（自动）：公开文档 → fetch → extract → 完整 candidate → review (yes/no)
+路径 B（手动）：人/agent 基于私有经验 → propose-build 创建 → 人编辑 → review (yes/no)
+
+两条路汇合在同一个 review gate，产出格式相同，进同一个 accepted 库。
+```
+
+路径 B 通过 `recipe-importer propose-build` 命令实现：生成一个所有字段为空或
+placeholder 的骨架文件，人直接编辑 YAML frontmatter 填入私有经验，然后走正常的
+check → review → publish 流程。
+
+## 实施路径
+
+### Phase 1：Schema + 反转生成（低成本验证）✅ 已完成
 
 1. 定义 build-recipe schema
-2. 从现有 9 条 accepted debug recipes 批量反转生成 build recipe 约束层草稿
-3. 人工审阅 + 补全指导层
-4. 验证 search / index 能正确处理 `kind: build-recipe`
+2. 从现有 9 条 accepted debug recipes 批量反转生成 build recipe **约束层骨架**
+3. 验证 render / publish / index / search 能正确处理 `kind: build-recipe`
 
-**产出**：若干条仅有约束层的 build recipe，验证管道可行性。
+**产出**：管道验证完成。9 条约束层骨架生成为 proposed candidates，但
+`correct_pattern` / `decision_context` 为空——**这些不是终态产物，不推给人审**，
+等 Phase 2 自动补齐后再进入审阅。
 
-### Phase 2：Extract prompt 扩展（统一产出）
+### Phase 2：统一提取 + 自动补齐 + 手动创建入口
 
-1. 扩展 evidence_candidates schema（新增 build 视角字段）
-2. 扩展 extract prompt（同时提取双视角）
-3. 实现 normalize 拆分逻辑
-4. 新增 guide/tutorial 类源到 source-list.yml
-5. 跑通一条 vertical slice：从 Next.js Server Components guide 同时产出 debug + build recipe
+#### 2a. Extract prompt 扩展（从 guide 页面提取正向知识）
+
+1. 扩展 evidence_candidates schema（新增 build 视角字段：`correct_pattern_quotes` /
+   `decision_context_quotes` / `default_quotes` / `trigger_signals`）
+2. 扩展 extract prompt（同时提取 debug + build 双视角）
+3. 实现 normalize 拆分逻辑（一次 extract → 拆为 debug candidate + build candidate）
+4. 新增 guide/tutorial 类源到 source-list.yml（`official_guide` / `official_tutorial`）
+5. source-list.yml 增加 `expected_build_hints` 字段
+
+#### 2b. 回填逻辑（补齐 Phase 1 骨架）
+
+Phase 1 生成的 9 条骨架的 `correct_pattern` / `decision_context` / `trigger` 为空。
+Phase 2 需要一个回填机制：
+
+1. 对已有 build recipe candidate，查找关联的源文档（通过 `evidence_refs.source_id`
+   或 `related_debug_recipes` 关联的 debug recipe 的源）
+2. 从对应 guide 页面 extract 出 build 视角 evidence
+3. 用新 evidence 填充空字段，更新 candidate
+
+实现方式：`recipe-importer enrich-build <proposed-recipe.md>` 命令，或
+`generate-build-recipes --enrich` flag 在生成时自动尝试从已有 snapshot 补齐。
+
+#### 2c. 手动创建入口（私有经验路径）
+
+新增 CLI 命令：
+
+```bash
+recipe-importer propose-build \
+  --id "nextjs-avoid-barrel-imports" \
+  --stack nextjs react
+```
+
+生成骨架 candidate 到 `recipe-kb/proposed/`：
+- 所有字段为 placeholder 或空列表
+- `evidence_refs` 为空（私有经验可能无公开 evidence，标记 `source_type: private_experience`）
+- 人编辑 frontmatter 填入内容
+- 走正常 check → review → publish
+
+#### 2d. Vertical slice
+
+跑通一条完整链路：从 Next.js Server Components guide 页面同时产出：
+- 一条完整的 build recipe（含 correct_pattern + decision_context + trigger）
+- 可能附带的 debug recipe
+
+验证从 fetch → extract → normalize → split → review → publish 全链路。
 
 ### Phase 3：触发机制（agent 消费端）
 
@@ -363,11 +432,11 @@ related_debug_recipes:
 
 ### Vertical Slice 建议
 
-第一条 build recipe 建议选：**Next.js Server Component / Client Component 边界**
+第一条完整 build recipe 建议选：**Next.js Server Component / Client Component 边界**
 
 理由：
-- 已有 `react-invalid-hook-call` debug recipe 作为反向输入
-- 官方文档清晰，guide page 质量高
+- 已有 `react-invalid-hook-call` debug recipe 作为反向输入（约束层已就绪）
+- 官方文档清晰，guide page 质量高（正向知识可自动提取）
 - trigger 条件明确（import hooks + absent 'use client'）
 - 是 agent 在 Next.js 项目中最常犯的错误之一
 - 既有约束层（不能做什么）也有指导层（应该怎么做）
@@ -385,3 +454,6 @@ related_debug_recipes:
 5. **build recipe 的验证自动化**：debug recipe 的 validation 是
    "error 消失了"，build recipe 的 validation 是"代码正确"——后者更难
    自动判定，是否需要不同的 validation 模型？
+6. **私有经验 recipe 的 evidence 模型**：无公开文档支撑时，evidence_refs 怎么填？
+   是否需要新的 source_type（如 `private_experience` / `team_convention`）？
+   审阅标准是否与从公开文档提取的 recipe 不同？
