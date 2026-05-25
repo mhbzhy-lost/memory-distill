@@ -6,7 +6,7 @@ from recipe_importer.dedupe import duplicate_hints
 from recipe_importer.extract import extract_snapshot
 from recipe_importer.index import rebuild_index
 from recipe_importer.llm import deterministic_candidates
-from recipe_importer.models import EvidenceRef, Recipe, RecipeStatus
+from recipe_importer.models import BuildRecipe, EvidenceRef, Recipe, RecipeStatus, TriggerSpec
 from recipe_importer.normalize import normalize_recipe
 from recipe_importer.paths import KbPaths
 from recipe_importer.publish import publish_recipe
@@ -249,3 +249,59 @@ def test_duplicate_hints_returns_deterministic_dictionaries():
         assert "stack_overlap" in hint
         assert isinstance(hint["fingerprint_overlap"], list)
         assert isinstance(hint["stack_overlap"], list)
+
+
+def _build_recipe_for_test(paths: KbPaths) -> Path:
+    ref = _dummy_evidence_ref()
+    build = BuildRecipe(
+        id="react-hydration-avoid-nondeterminism",
+        status=RecipeStatus.PROPOSED,
+        stack=["react", "nextjs"],
+        trigger=TriggerSpec(
+            file_pattern="app/**/*.tsx",
+            code_signals=["Date.now()"],
+            description="Server Component 中使用了非确定性表达式",
+        ),
+        correct_pattern=["将时间戳从 server 作为 prop 传入"],
+        constraints=["render 路径中不得使用 Date.now()"],
+        do_not=["不要在 Server Component render 中调用 Date.now()"],
+        validation=["next build 无 hydration warning"],
+        related_debug_recipes=["react-hydration-mismatch"],
+        evidence_refs=[ref],
+    )
+    target = paths.proposed_dir / f"{build.id}.md"
+    render_recipe_file(build, target)
+    return target
+
+
+def test_build_recipe_publish_index_search(kb_root):
+    paths = KbPaths(kb_root).ensure()
+    proposed = _build_recipe_for_test(paths)
+
+    accepted = publish_recipe(proposed, paths)
+    rebuild_index(paths)
+    results = search_recipes(paths, "Date.now")
+    full = get_recipe(paths, "react-hydration-avoid-nondeterminism")
+
+    assert accepted == paths.accepted_dir / "react-hydration-avoid-nondeterminism.md"
+    assert results[0]["id"] == "react-hydration-avoid-nondeterminism"
+    assert results[0]["kind"] == "build-recipe"
+    assert full.kind == "build-recipe"
+    assert full.id == "react-hydration-avoid-nondeterminism"
+
+
+def test_index_contains_both_kinds(kb_root):
+    paths = KbPaths(kb_root).ensure()
+
+    proposed_debug = proposed_recipe(paths)
+    publish_recipe(proposed_debug, paths)
+
+    proposed_build = _build_recipe_for_test(paths)
+    publish_recipe(proposed_build, paths)
+
+    rebuild_index(paths)
+    data = read_json(paths.index_path)
+    kinds = {r["kind"] for r in data["recipes"]}
+
+    assert "debug-recipe" in kinds
+    assert "build-recipe" in kinds

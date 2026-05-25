@@ -7,16 +7,17 @@ import typer
 from recipe_importer import __version__
 from recipe_importer.extract import extract_snapshot
 from recipe_importer.fetch import fetch_sources
+from recipe_importer.generate import generate_build_from_debug
 
 from recipe_importer.index import IndexBuildError, rebuild_index
 from recipe_importer.llm import deterministic_candidates
 from recipe_importer.manifest import check_manifest, refresh_manifest
-from recipe_importer.models import ReviewDecision
+from recipe_importer.models import BuildRecipe, Recipe, ReviewDecision
 from recipe_importer.normalize import normalize_recipe
 from recipe_importer.paths import KbPaths
 from recipe_importer.publish import publish_recipe
 from recipe_importer.refresh import refresh_stale_status
-from recipe_importer.render import check_render_equivalence, render_recipe_file
+from recipe_importer.render import check_render_equivalence, parse_recipe_file, render_recipe_file
 from recipe_importer.review import (
     ReviewSession,
     current_candidate,
@@ -257,6 +258,26 @@ def index_rebuild() -> None:
     typer.echo(str(index_path))
 
 
+@app.command(name="generate-build-recipes")
+def generate_build_recipes_cmd() -> None:
+    """Generate build recipe candidates from accepted debug recipes."""
+    paths = KbPaths(Path.cwd()).ensure()
+    count = 0
+    for path in sorted(paths.accepted_dir.glob("*.md")):
+        recipe = parse_recipe_file(path)
+        if not isinstance(recipe, Recipe):
+            continue
+        build = generate_build_from_debug(recipe)
+        target = paths.proposed_dir / f"{build.id}.md"
+        if target.exists():
+            continue
+        render_recipe_file(build, target)
+        typer.echo(str(target))
+        count += 1
+    if count == 0:
+        typer.echo("no new build recipe candidates generated")
+
+
 @app.command()
 def search(
     query: Annotated[str, typer.Argument()],
@@ -274,12 +295,22 @@ def search(
         warning = " [stale]" if record["stale"] else ""
         typer.echo(f"{record['id']}{warning}")
         typer.echo(f"  summary: {record['summary']}")
-        for check_item in record["first_checks"]:
-            typer.echo(f"  check: {check_item}")
-        for item in record["do_not"]:
-            typer.echo(f"  do-not: {item}")
-        for validation_step in record["validation_ladder"]:
-            typer.echo(f"  validate: {validation_step}")
+        if record.get("kind") == "build-recipe":
+            for item in record.get("constraints", []):
+                typer.echo(f"  constraint: {item}")
+            for item in record.get("correct_pattern", []):
+                typer.echo(f"  pattern: {item}")
+            for item in record.get("do_not", []):
+                typer.echo(f"  do-not: {item}")
+            for item in record.get("validation", []):
+                typer.echo(f"  validate: {item}")
+        else:
+            for check_item in record.get("first_checks", []):
+                typer.echo(f"  check: {check_item}")
+            for item in record.get("do_not", []):
+                typer.echo(f"  do-not: {item}")
+            for validation_step in record.get("validation_ladder", []):
+                typer.echo(f"  validate: {validation_step}")
 
 
 @app.command("get")

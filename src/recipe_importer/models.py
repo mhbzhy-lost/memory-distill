@@ -1,5 +1,5 @@
 from enum import StrEnum
-from typing import Literal
+from typing import Literal, Union
 
 from pydantic import BaseModel, Field, HttpUrl, field_validator
 
@@ -118,3 +118,42 @@ class Recipe(BaseModel):
         if not value:
             raise ValueError("recipe core fields require at least one evidence_ref")
         return value
+
+
+class DecisionOption(BaseModel):
+    condition: str
+    recommendation: str
+
+
+class TriggerSpec(BaseModel):
+    file_pattern: str = ""
+    code_signals: list[str] = Field(default_factory=list)
+    description: str = ""
+
+
+class BuildRecipe(BaseModel):
+    id: str
+    kind: Literal["build-recipe"] = "build-recipe"
+    status: RecipeStatus
+    stack: list[str]
+    trigger: TriggerSpec = Field(default_factory=TriggerSpec)
+    correct_pattern: list[str]
+    decision_context: list[DecisionOption] = Field(default_factory=list)
+    constraints: list[str]
+    do_not: list[str]
+    defaults: list[str] = Field(default_factory=list)
+    validation: list[str]
+    related_debug_recipes: list[str] = Field(default_factory=list)
+    evidence_refs: list[EvidenceRef]
+    review: list[ReviewRecord] = Field(default_factory=list)
+    maintenance: Maintenance = Field(default_factory=Maintenance)
+
+    @field_validator("evidence_refs")
+    @classmethod
+    def build_must_have_evidence_refs(cls, value: list[EvidenceRef]) -> list[EvidenceRef]:
+        if not value:
+            raise ValueError("build recipe requires at least one evidence_ref")
+        return value
+
+
+AnyRecipe = Union[Recipe, BuildRecipe]

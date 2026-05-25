@@ -18,6 +18,7 @@
         "Check whether the route should be dynamic instead of statically generated"
       ],
       "id": "next-dynamic-server-usage",
+      "kind": "debug-recipe",
       "path": "recipe-kb/accepted/next-dynamic-server-usage.md",
       "source_ids": [
         "next-dynamic-server-error"
@@ -59,6 +60,7 @@
         "Check whether React 18 or newer is required for the Suspense path"
       ],
       "id": "next-invalid-dynamic-suspense",
+      "kind": "debug-recipe",
       "path": "recipe-kb/accepted/next-invalid-dynamic-suspense.md",
       "source_ids": [
         "next-invalid-dynamic-suspense"
@@ -100,6 +102,7 @@
         "Check whether Strict Mode is exposing missing cleanup logic"
       ],
       "id": "react-effect-dependency-rerun-loop",
+      "kind": "debug-recipe",
       "path": "recipe-kb/accepted/react-effect-dependency-rerun-loop.md",
       "source_ids": [
         "react-use-effect-troubleshooting"
@@ -139,6 +142,7 @@
         "Check invalid HTML nesting in the affected component"
       ],
       "id": "react-hydration-mismatch",
+      "kind": "debug-recipe",
       "path": "recipe-kb/accepted/react-hydration-mismatch.md",
       "source_ids": [
         "react-error-418"
@@ -180,6 +184,7 @@
         "Check whether the app bundles more than one copy of React"
       ],
       "id": "react-invalid-hook-call",
+      "kind": "debug-recipe",
       "path": "recipe-kb/accepted/react-invalid-hook-call.md",
       "source_ids": [
         "react-invalid-hook-call"
@@ -220,6 +225,7 @@
         "Check whether a component function is nested inside another component"
       ],
       "id": "react-state-reset-by-position-or-key",
+      "kind": "debug-recipe",
       "path": "recipe-kb/accepted/react-state-reset-by-position-or-key.md",
       "source_ids": [
         "react-preserving-resetting-state"
@@ -260,6 +266,7 @@
         "Check retry and retryDelay when failures appear multiple times"
       ],
       "id": "tanstack-query-aggressive-defaults",
+      "kind": "debug-recipe",
       "path": "recipe-kb/accepted/tanstack-query-aggressive-defaults.md",
       "source_ids": [
         "tanstack-query-important-defaults"
@@ -301,6 +308,7 @@
         "Check whether active queries are refetched after invalidation"
       ],
       "id": "tanstack-query-missing-invalidation",
+      "kind": "debug-recipe",
       "path": "recipe-kb/accepted/tanstack-query-missing-invalidation.md",
       "source_ids": [
         "tanstack-query-invalidation"
@@ -342,6 +350,7 @@
         "Check whether the config file extension should be .mjs or .mts"
       ],
       "id": "vite-esm-only-config-require",
+      "kind": "debug-recipe",
       "path": "recipe-kb/accepted/vite-esm-only-config-require.md",
       "source_ids": [
         "vite-troubleshooting"

@@ -1,9 +1,10 @@
 import json
 from pathlib import Path
 
-from recipe_importer.models import EvidenceCandidates, Recipe, ReviewRecord, SourceList
+from recipe_importer.models import BuildRecipe, EvidenceCandidates, Recipe, ReviewRecord, SourceList
 
 SCHEMA_TARGETS = {
+    "build-recipe.schema.json": BuildRecipe,
     "debug-recipe.schema.json": Recipe,
     "source.schema.json": SourceList,
     "review.schema.json": ReviewRecord,

@@ -3,7 +3,7 @@ from pathlib import Path
 import yaml
 from pydantic import ValidationError
 
-from recipe_importer.models import RecipeStatus
+from recipe_importer.models import AnyRecipe, BuildRecipe, Recipe, RecipeStatus
 from recipe_importer.paths import KbPaths
 from recipe_importer.render import parse_recipe_file
 from recipe_importer.storage import write_json
@@ -13,20 +13,56 @@ class IndexBuildError(ValueError):
     pass
 
 
-def _summary(recipe_id: str, failure_class: str, symptoms: list[str]) -> str:
-    if symptoms:
-        return f"{failure_class}: {symptoms[0]}"
-    return f"{failure_class}: {recipe_id}"
-
-
-def _source_ids(recipe) -> list[str]:
+def _source_ids(recipe: AnyRecipe) -> list[str]:
     return sorted({ref.source_id for ref in recipe.evidence_refs})
 
 
-def _source_urls(recipe) -> list[str]:
+def _source_urls(recipe: AnyRecipe) -> list[str]:
     urls = {str(ref.url) for ref in recipe.evidence_refs}
     urls.update(str(ref.final_url) for ref in recipe.evidence_refs)
     return sorted(urls)
+
+
+def _debug_record(recipe: Recipe, path: Path, root: Path) -> dict:
+    summary = f"{recipe.failure_class}: {recipe.symptoms[0]}" if recipe.symptoms else f"{recipe.failure_class}: {recipe.id}"
+    return {
+        "id": recipe.id,
+        "kind": "debug-recipe",
+        "path": str(path.relative_to(root)),
+        "summary": summary,
+        "status": recipe.status.value,
+        "stack": recipe.stack,
+        "source_ids": _source_ids(recipe),
+        "source_urls": _source_urls(recipe),
+        "failure_class": recipe.failure_class,
+        "symptoms": recipe.symptoms,
+        "fingerprints": recipe.fingerprints,
+        "first_checks": recipe.first_checks,
+        "do_not": recipe.do_not,
+        "validation_ladder": recipe.validation_ladder,
+        "stale": recipe.status is RecipeStatus.STALE,
+    }
+
+
+def _build_record(recipe: BuildRecipe, path: Path, root: Path) -> dict:
+    summary = f"[build] {recipe.constraints[0]}" if recipe.constraints else f"[build] {recipe.id}"
+    return {
+        "id": recipe.id,
+        "kind": "build-recipe",
+        "path": str(path.relative_to(root)),
+        "summary": summary,
+        "status": recipe.status.value,
+        "stack": recipe.stack,
+        "source_ids": _source_ids(recipe),
+        "source_urls": _source_urls(recipe),
+        "constraints": recipe.constraints,
+        "correct_pattern": recipe.correct_pattern,
+        "do_not": recipe.do_not,
+        "validation": recipe.validation,
+        "trigger_description": recipe.trigger.description,
+        "related_debug_recipes": recipe.related_debug_recipes,
+        "stale": recipe.status is RecipeStatus.STALE,
+    }
 
 
 def rebuild_index(paths: KbPaths) -> Path:
@@ -37,23 +73,9 @@ def rebuild_index(paths: KbPaths) -> Path:
                 recipe = parse_recipe_file(path)
             except (OSError, ValueError, yaml.YAMLError, ValidationError) as exc:
                 raise IndexBuildError(f"failed to index {path}: {exc}") from exc
-            records.append(
-                {
-                    "id": recipe.id,
-                    "path": str(path.relative_to(paths.root)),
-                    "summary": _summary(recipe.id, recipe.failure_class, recipe.symptoms),
-                    "status": recipe.status.value,
-                    "stack": recipe.stack,
-                    "source_ids": _source_ids(recipe),
-                    "source_urls": _source_urls(recipe),
-                    "failure_class": recipe.failure_class,
-                    "symptoms": recipe.symptoms,
-                    "fingerprints": recipe.fingerprints,
-                    "first_checks": recipe.first_checks,
-                    "do_not": recipe.do_not,
-                    "validation_ladder": recipe.validation_ladder,
-                    "stale": recipe.status is RecipeStatus.STALE,
-                }
-            )
+            if isinstance(recipe, BuildRecipe):
+                records.append(_build_record(recipe, path, paths.root))
+            else:
+                records.append(_debug_record(recipe, path, paths.root))
     write_json(paths.index_path, {"recipes": records})
     return paths.index_path

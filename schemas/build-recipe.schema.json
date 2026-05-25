@@ -1,0 +1,296 @@
+{
+  "$defs": {
+    "DecisionOption": {
+      "properties": {
+        "condition": {
+          "title": "Condition",
+          "type": "string"
+        },
+        "recommendation": {
+          "title": "Recommendation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "condition",
+        "recommendation"
+      ],
+      "title": "DecisionOption",
+      "type": "object"
+    },
+    "EvidenceRef": {
+      "properties": {
+        "captured_at": {
+          "title": "Captured At",
+          "type": "string"
+        },
+        "final_url": {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "title": "Final Url",
+          "type": "string"
+        },
+        "quote_hash": {
+          "title": "Quote Hash",
+          "type": "string"
+        },
+        "section_anchor": {
+          "title": "Section Anchor",
+          "type": "string"
+        },
+        "short_excerpt": {
+          "maxLength": 600,
+          "minLength": 1,
+          "title": "Short Excerpt",
+          "type": "string"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "source_type": {
+          "title": "Source Type",
+          "type": "string"
+        },
+        "span_id": {
+          "title": "Span Id",
+          "type": "string"
+        },
+        "url": {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "url",
+        "final_url",
+        "source_type",
+        "captured_at",
+        "section_anchor",
+        "span_id",
+        "short_excerpt",
+        "quote_hash"
+      ],
+      "title": "EvidenceRef",
+      "type": "object"
+    },
+    "Maintenance": {
+      "properties": {
+        "stale_detected_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Stale Detected At"
+        },
+        "stale_reason": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Stale Reason",
+          "type": "array"
+        },
+        "state": {
+          "$ref": "#/$defs/RecipeStatus",
+          "default": "proposed"
+        }
+      },
+      "title": "Maintenance",
+      "type": "object"
+    },
+    "RecipeStatus": {
+      "enum": [
+        "proposed",
+        "accepted",
+        "rejected",
+        "stale",
+        "deprecated"
+      ],
+      "title": "RecipeStatus",
+      "type": "string"
+    },
+    "ReviewDecision": {
+      "enum": [
+        "accept",
+        "reject",
+        "narrow_scope",
+        "merge_existing",
+        "needs_more_evidence",
+        "mark_stale",
+        "deprecate",
+        "keep_separate",
+        "reject_duplicate"
+      ],
+      "title": "ReviewDecision",
+      "type": "string"
+    },
+    "ReviewRecord": {
+      "properties": {
+        "candidate_id": {
+          "title": "Candidate Id",
+          "type": "string"
+        },
+        "decision": {
+          "$ref": "#/$defs/ReviewDecision"
+        },
+        "notes": {
+          "default": "",
+          "title": "Notes",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewer": {
+          "default": "human",
+          "title": "Reviewer",
+          "type": "string"
+        }
+      },
+      "required": [
+        "candidate_id",
+        "decision",
+        "reviewed_at"
+      ],
+      "title": "ReviewRecord",
+      "type": "object"
+    },
+    "TriggerSpec": {
+      "properties": {
+        "code_signals": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Code Signals",
+          "type": "array"
+        },
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "file_pattern": {
+          "default": "",
+          "title": "File Pattern",
+          "type": "string"
+        }
+      },
+      "title": "TriggerSpec",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "constraints": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Constraints",
+      "type": "array"
+    },
+    "correct_pattern": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Correct Pattern",
+      "type": "array"
+    },
+    "decision_context": {
+      "items": {
+        "$ref": "#/$defs/DecisionOption"
+      },
+      "title": "Decision Context",
+      "type": "array"
+    },
+    "defaults": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Defaults",
+      "type": "array"
+    },
+    "do_not": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Do Not",
+      "type": "array"
+    },
+    "evidence_refs": {
+      "items": {
+        "$ref": "#/$defs/EvidenceRef"
+      },
+      "title": "Evidence Refs",
+      "type": "array"
+    },
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "kind": {
+      "const": "build-recipe",
+      "default": "build-recipe",
+      "title": "Kind",
+      "type": "string"
+    },
+    "maintenance": {
+      "$ref": "#/$defs/Maintenance"
+    },
+    "related_debug_recipes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Related Debug Recipes",
+      "type": "array"
+    },
+    "review": {
+      "items": {
+        "$ref": "#/$defs/ReviewRecord"
+      },
+      "title": "Review",
+      "type": "array"
+    },
+    "stack": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Stack",
+      "type": "array"
+    },
+    "status": {
+      "$ref": "#/$defs/RecipeStatus"
+    },
+    "trigger": {
+      "$ref": "#/$defs/TriggerSpec"
+    },
+    "validation": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Validation",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "status",
+    "stack",
+    "correct_pattern",
+    "constraints",
+    "do_not",
+    "validation",
+    "evidence_refs"
+  ],
+  "title": "BuildRecipe",
+  "type": "object"
+}
