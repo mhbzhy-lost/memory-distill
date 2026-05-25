@@ -5,6 +5,7 @@ from typing import Annotated, NoReturn
 import typer
 
 from recipe_importer import __version__
+from recipe_importer.build_llm import deterministic_build_candidates
 from recipe_importer.extract import extract_snapshot
 from recipe_importer.fetch import fetch_sources
 from recipe_importer.generate import generate_build_from_debug
@@ -12,7 +13,7 @@ from recipe_importer.generate import generate_build_from_debug
 from recipe_importer.index import IndexBuildError, rebuild_index
 from recipe_importer.llm import deterministic_candidates
 from recipe_importer.manifest import check_manifest, refresh_manifest
-from recipe_importer.models import BuildRecipe, Recipe, ReviewDecision
+from recipe_importer.models import BuildRecipe, Recipe, RecipeStatus, ReviewDecision
 from recipe_importer.normalize import normalize_recipe
 from recipe_importer.paths import KbPaths
 from recipe_importer.publish import publish_recipe
@@ -138,18 +139,29 @@ def import_source(
 ) -> None:
     """Create proposed recipes from one extracted snapshot."""
     paths = KbPaths(Path.cwd()).ensure()
-    candidates = deterministic_candidates(snapshot_dir)
-    if not candidates.candidates:
-        _exit_error(
-            "没有生成候选 recipe：请查看该 snapshot 的 review.md/qa.json；"
-            "若 QA gate 失败，需要进入 agentic fallback 补充 extraction_profile 或 extractor。"
-        )
     recipe_stack = stack if stack else _snapshot_stacks(snapshot_dir)
+    produced = 0
+
+    candidates = deterministic_candidates(snapshot_dir)
     for candidate in candidates.candidates:
         recipe = normalize_recipe(candidate, snapshot_dir, stack=recipe_stack)
         target = paths.proposed_dir / f"{recipe.id}.md"
         render_recipe_file(recipe, target)
         typer.echo(str(target))
+        produced += 1
+
+    build_recipes = deterministic_build_candidates(snapshot_dir)
+    for build in build_recipes:
+        target = paths.proposed_dir / f"{build.id}.md"
+        render_recipe_file(build, target)
+        typer.echo(str(target))
+        produced += 1
+
+    if produced == 0:
+        _exit_error(
+            "没有生成候选 recipe：请查看该 snapshot 的 review.md/qa.json；"
+            "若 QA gate 失败，需要进入 agentic fallback 补充 extraction_profile 或 extractor。"
+        )
 
 
 @app.command()
@@ -258,11 +270,51 @@ def index_rebuild() -> None:
     typer.echo(str(index_path))
 
 
+@app.command(name="propose-build")
+def propose_build(
+    id: Annotated[str, typer.Option("--id", help="Build recipe ID (kebab-case)")],
+    stack: Annotated[list[str], typer.Option(help="Stack tags")],
+) -> None:
+    """Create a skeleton build recipe candidate for manual editing."""
+    from recipe_importer.models import EvidenceRef, TriggerSpec
+
+    paths = KbPaths(Path.cwd()).ensure()
+    target = paths.proposed_dir / f"{id}.md"
+    if target.exists():
+        _exit_error(f"already exists: {target}")
+
+    ref = EvidenceRef(
+        source_id="private-experience",
+        url="https://example.com/placeholder",
+        final_url="https://example.com/placeholder",
+        source_type="private_experience",
+        captured_at="PLACEHOLDER",
+        section_anchor="manual",
+        span_id="manual-1",
+        short_excerpt="PLACEHOLDER: 替换为实际经验描述",
+        quote_hash="sha256:placeholder",
+    )
+    build = BuildRecipe(
+        id=id,
+        status=RecipeStatus.PROPOSED,
+        stack=stack,
+        trigger=TriggerSpec(description="PLACEHOLDER: 描述触发条件"),
+        correct_pattern=["PLACEHOLDER: 正确做法"],
+        constraints=["PLACEHOLDER: 约束条件"],
+        do_not=["PLACEHOLDER: 禁止事项"],
+        validation=["PLACEHOLDER: 验证方式"],
+        evidence_refs=[ref],
+    )
+    render_recipe_file(build, target)
+    typer.echo(str(target))
+
+
 @app.command(name="generate-build-recipes")
 def generate_build_recipes_cmd() -> None:
-    """Generate build recipe candidates from accepted debug recipes."""
+    """Generate build recipe candidates from accepted debug recipes and guide snapshots."""
     paths = KbPaths(Path.cwd()).ensure()
     count = 0
+
     for path in sorted(paths.accepted_dir.glob("*.md")):
         recipe = parse_recipe_file(path)
         if not isinstance(recipe, Recipe):
@@ -274,6 +326,20 @@ def generate_build_recipes_cmd() -> None:
         render_recipe_file(build, target)
         typer.echo(str(target))
         count += 1
+
+    if paths.snapshots_dir.exists():
+        for snapshot_dir in sorted(paths.snapshots_dir.iterdir()):
+            if not snapshot_dir.is_dir():
+                continue
+            builds = deterministic_build_candidates(snapshot_dir)
+            for build in builds:
+                target = paths.proposed_dir / f"{build.id}.md"
+                if target.exists():
+                    continue
+                render_recipe_file(build, target)
+                typer.echo(str(target))
+                count += 1
+
     if count == 0:
         typer.echo("no new build recipe candidates generated")
 

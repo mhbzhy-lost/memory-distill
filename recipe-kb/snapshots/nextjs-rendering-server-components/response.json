@@ -1,0 +1,15 @@
+{
+  "source_id": "nextjs-rendering-server-components",
+  "url": "https://nextjs.org/docs/app/building-your-application/rendering/server-components",
+  "final_url": "https://nextjs.org/docs/app/building-your-application/rendering/server-components",
+  "source_type": "official_guide",
+  "stacks": ["react", "nextjs"],
+  "expected_failure_hints": [],
+  "expected_build_hints": ["server component vs client component", "when to use client directive", "data fetching in server components"],
+  "refresh_policy": "monthly",
+  "extraction_profile": {},
+  "captured_at": "2026-05-25T10:00:00Z",
+  "retrieved_status": 200,
+  "content_type": "text/html",
+  "content_hash": "sha256:fixture"
+}

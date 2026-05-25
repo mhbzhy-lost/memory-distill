@@ -51,6 +51,7 @@ class Source(BaseModel):
     source_type: str
     stacks: list[str]
     expected_failure_hints: list[str] = Field(default_factory=list)
+    expected_build_hints: list[str] = Field(default_factory=list)
     refresh_policy: str = "manual"
     extraction_profile: ExtractionProfile = Field(default_factory=ExtractionProfile)
 

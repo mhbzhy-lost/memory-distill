@@ -215,6 +215,7 @@ def matched_hint_sections(hint: str, sections: list[dict[str, str]]) -> list[dic
 def qa_gate(metadata: dict[str, object], sections: list[dict[str, str]]) -> dict[str, Any]:
     current_profile = profile(metadata)
     hints = [str(hint).strip() for hint in metadata.get("expected_failure_hints", []) if str(hint).strip()]
+    build_hints = [str(hint).strip() for hint in metadata.get("expected_build_hints", []) if str(hint).strip()]
     min_sections = int(current_profile.get("min_sections", 1))
     max_sections = int(current_profile.get("max_sections", 500))
     require_expected_hints = bool(current_profile.get("require_expected_hints", True))
@@ -242,6 +243,18 @@ def qa_gate(metadata: dict[str, object], sections: list[dict[str, str]]) -> dict
                 "details": f"命中 {len(matched)}/{len(hints)} 条 expected_failure_hints",
                 "matched_hints": matched,
                 "missing_hints": [hint for hint in hints if hint not in matched],
+            }
+        )
+
+    if build_hints and require_expected_hints:
+        matched_build = [hint for hint in build_hints if matched_hint_sections(hint, sections)]
+        checks.append(
+            {
+                "name": "expected_build_hints_matched",
+                "passed": bool(matched_build),
+                "details": f"命中 {len(matched_build)}/{len(build_hints)} 条 expected_build_hints",
+                "matched_hints": matched_build,
+                "missing_hints": [hint for hint in build_hints if hint not in matched_build],
             }
         )
 

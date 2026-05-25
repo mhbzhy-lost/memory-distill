@@ -102,3 +102,14 @@ sources:
       - mark queries as stale
       - query key partial matching
     refresh_policy: monthly
+  - source_id: nextjs-rendering-server-components
+    url: https://nextjs.org/docs/app/building-your-application/rendering/server-components
+    source_type: official_guide
+    stacks:
+      - react
+      - nextjs
+    expected_build_hints:
+      - server component vs client component
+      - when to use client directive
+      - data fetching in server components
+    refresh_policy: monthly

@@ -42,6 +42,7 @@ def fetch_sources(
                     "source_type": source.source_type,
                     "stacks": source.stacks,
                     "expected_failure_hints": source.expected_failure_hints,
+                    "expected_build_hints": source.expected_build_hints,
                     "refresh_policy": source.refresh_policy,
                     "extraction_profile": source.extraction_profile.model_dump(),
                     "captured_at": captured,
