@@ -1,11 +1,20 @@
 {
-  "captured_at": "2026-05-21T09:50:51.121768Z",
+  "captured_at": "2026-05-26T12:26:11.870151Z",
   "content_hash": "sha256:88e537c12ebb52a9340a31230ab807cf77a439387cf5d83c4580c5f090b56486",
   "content_type": "text/html; charset=utf-8",
+  "expected_build_hints": [],
   "expected_failure_hints": [
     "hydration mismatch",
     "server rendered HTML did not match the client"
   ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
   "final_url": "https://react.dev/errors/418",
   "refresh_policy": "monthly",
   "retrieved_status": 200,

@@ -1,0 +1,34 @@
+{
+  "captured_at": "2026-05-26T12:26:11.870151Z",
+  "content_hash": "sha256:214fa7b51b3391e3b79cc05d34eba05885dee915860d1c8448010350e2cf9718",
+  "content_type": "text/html; charset=utf-8",
+  "expected_build_hints": [],
+  "expected_failure_hints": [
+    "ArithmeticException division by zero",
+    "IndexOutOfBoundsException",
+    "NoSuchElementException",
+    "NumberFormatException",
+    "NullPointerException",
+    "require throws IllegalArgumentException",
+    "check throws IllegalStateException",
+    "NotImplementedError TODO()"
+  ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
+  "final_url": "https://kotlinlang.org/docs/exceptions.html",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "kotlin-exceptions-language-doc",
+  "source_type": "language_doc",
+  "stacks": [
+    "kotlin",
+    "android"
+  ],
+  "url": "https://kotlinlang.org/docs/exceptions.html"
+}

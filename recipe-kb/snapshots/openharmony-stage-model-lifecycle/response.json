@@ -1,0 +1,31 @@
+{
+  "captured_at": "2026-05-26T12:26:11.870151Z",
+  "content_hash": "sha256:d577658dc100ec54d7f19fd2c9d8637202d47b458c8a954f22a6b05651fecf41",
+  "content_type": "text/plain; charset=utf-8",
+  "expected_build_hints": [],
+  "expected_failure_hints": [
+    "AbilityStage onCreate onWindowStageCreate",
+    "UIAbility onCreate onWindowStageCreate onForeground onBackground",
+    "Lifecycle callback sequence error",
+    "Context is null or invalid",
+    "Window stage not ready"
+  ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
+  "final_url": "https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/application-models/uiability-lifecycle.md",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "openharmony-stage-model-lifecycle",
+  "source_type": "official_doc",
+  "stacks": [
+    "harmonyos",
+    "arkts"
+  ],
+  "url": "https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/application-models/uiability-lifecycle.md"
+}

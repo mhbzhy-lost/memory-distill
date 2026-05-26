@@ -1,0 +1,32 @@
+{
+  "captured_at": "2026-05-26T12:26:11.870151Z",
+  "content_hash": "sha256:6b22e35bb77a8c27c5bc5ee567b12bb4e0ac977f2f8dc4247ee3d0b9ca7bad04",
+  "content_type": "text/plain; charset=utf-8",
+  "expected_build_hints": [],
+  "expected_failure_hints": [
+    "Serializer for class ... is not found",
+    "Please ensure that class is marked as '@Serializable'",
+    "MissingFieldException",
+    "JsonDecodingException Unexpected JSON token",
+    "Encountered an unknown key",
+    "Expected string literal but 'null' literal was found"
+  ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
+  "final_url": "https://raw.githubusercontent.com/Kotlin/kotlinx.serialization/master/docs/basic-serialization.md",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "kotlin-serialization-basic-errors",
+  "source_type": "library_doc",
+  "stacks": [
+    "kotlin",
+    "android"
+  ],
+  "url": "https://raw.githubusercontent.com/Kotlin/kotlinx.serialization/master/docs/basic-serialization.md"
+}

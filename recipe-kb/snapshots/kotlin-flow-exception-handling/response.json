@@ -1,0 +1,31 @@
+{
+  "captured_at": "2026-05-26T12:26:11.870151Z",
+  "content_hash": "sha256:e8ab1752ce8b21f72436022ea7c630f5819b0355d26d396dde4e7d0310e02bda",
+  "content_type": "text/plain; charset=utf-8",
+  "expected_build_hints": [],
+  "expected_failure_hints": [
+    "Flow invariant is violated",
+    "Flow was collected in ... but emission happened in ...",
+    "Please refer to 'flow' documentation or use 'flowOn' instead",
+    "Flow exception transparency violation",
+    "catch operator only catches upstream exceptions"
+  ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
+  "final_url": "https://raw.githubusercontent.com/Kotlin/kotlinx.coroutines/master/docs/topics/flow.md",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "kotlin-flow-exception-handling",
+  "source_type": "library_doc",
+  "stacks": [
+    "kotlin",
+    "android"
+  ],
+  "url": "https://raw.githubusercontent.com/Kotlin/kotlinx.coroutines/master/docs/topics/flow.md"
+}

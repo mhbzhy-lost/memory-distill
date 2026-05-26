@@ -1,13 +1,22 @@
 {
-  "captured_at": "2026-05-21T09:50:51.121768Z",
+  "captured_at": "2026-05-26T12:26:11.870151Z",
   "content_hash": "sha256:12107edd334200e7530f71a0536c993167ae99b0fa5ec326ace5b5c1681bac26",
   "content_type": "text/html; charset=utf-8",
+  "expected_build_hints": [],
   "expected_failure_hints": [
     "state is reset unexpectedly",
     "component state disappears",
     "key forces subtree reset",
     "nested component definitions reset state"
   ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
   "final_url": "https://react.dev/learn/preserving-and-resetting-state",
   "refresh_policy": "monthly",
   "retrieved_status": 200,

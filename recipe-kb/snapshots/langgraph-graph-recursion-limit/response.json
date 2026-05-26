@@ -1,0 +1,30 @@
+{
+  "captured_at": "2026-05-26T12:26:11.870151Z",
+  "content_hash": "sha256:02f73014c841ae4bf95330ac250d6947a7846b4ad118fcf66e76a68a18e4d631",
+  "content_type": "text/markdown; charset=utf-8",
+  "expected_build_hints": [],
+  "expected_failure_hints": [
+    "GraphRecursionError",
+    "GRAPH_RECURSION_LIMIT",
+    "reached the maximum number of steps",
+    "StateGraph infinite loop",
+    "recursion_limit"
+  ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
+  "final_url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "langgraph-graph-recursion-limit",
+  "source_type": "official_error_doc",
+  "stacks": [
+    "langchain"
+  ],
+  "url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md"
+}

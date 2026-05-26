@@ -1,0 +1,34 @@
+{
+  "captured_at": "2026-05-26T12:26:11.870151Z",
+  "content_hash": "sha256:7a0f5a82df53b091cfb83042457b8ace9cf9c71a6e83f50ce248232ad6d51c98",
+  "content_type": "text/html",
+  "expected_build_hints": [],
+  "expected_failure_hints": [
+    "Command not found gradle",
+    "JAVA_HOME is set to an invalid directory",
+    "Permission denied wrapper not executable",
+    "A new daemon was started but could not be connected to",
+    "Task executed when it should have been UP-TO-DATE",
+    "dependency resolution conflict",
+    "IntelliJ Gradle sync failure"
+  ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
+  "final_url": "https://docs.gradle.org/current/userguide/troubleshooting.html",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "gradle-build-troubleshooting",
+  "source_type": "build_tool_doc",
+  "stacks": [
+    "android",
+    "kotlin",
+    "gradle"
+  ],
+  "url": "https://docs.gradle.org/current/userguide/troubleshooting.html"
+}

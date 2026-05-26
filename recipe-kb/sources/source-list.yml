@@ -191,3 +191,222 @@ sources:
       - decorator-missing-field
       - model_rebuild
     refresh_policy: monthly
+  - source_id: langgraph-graph-recursion-limit
+    url: https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md
+    source_type: official_error_doc
+    stacks:
+      - langchain
+    expected_failure_hints:
+      - GraphRecursionError
+      - GRAPH_RECURSION_LIMIT
+      - reached the maximum number of steps
+      - StateGraph infinite loop
+      - recursion_limit
+    refresh_policy: monthly
+  - source_id: langgraph-missing-checkpointer
+    url: https://docs.langchain.com/oss/python/langgraph/errors/MISSING_CHECKPOINTER.md
+    source_type: official_error_doc
+    stacks:
+      - langchain
+    expected_failure_hints:
+      - MISSING_CHECKPOINTER
+      - checkpointer is missing
+      - compile() without checkpointer
+      - human-in-the-loop without persistence
+      - InMemorySaver
+    refresh_policy: monthly
+  - source_id: langchain-output-parsing-failure
+    url: https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE.md
+    source_type: official_error_doc
+    stacks:
+      - langchain
+    expected_failure_hints:
+      - OUTPUT_PARSING_FAILURE
+      - OutputParserException
+      - output parser was unable to handle model output
+      - formatting instructions
+      - structured output
+    refresh_policy: monthly
+  - source_id: langgraph-invalid-concurrent-update
+    url: https://docs.langchain.com/oss/python/langgraph/errors/INVALID_CONCURRENT_GRAPH_UPDATE.md
+    source_type: official_error_doc
+    stacks:
+      - langchain
+    expected_failure_hints:
+      - InvalidUpdateError
+      - INVALID_CONCURRENT_GRAPH_UPDATE
+      - concurrent updates to state
+      - fanout parallel nodes same key
+      - reducer Annotated operator.add
+    refresh_policy: monthly
+  - source_id: expo-errors-and-warnings
+    url: https://docs.expo.dev/debugging/errors-and-warnings/
+    source_type: official_doc
+    stacks:
+      - expo
+      - react-native
+    expected_failure_hints:
+      - Redbox
+      - Yellowbox
+      - stack trace
+      - console.warn
+      - console.error
+    refresh_policy: monthly
+  - source_id: react-native-troubleshooting
+    url: https://reactnative.dev/docs/troubleshooting
+    source_type: official_doc
+    stacks:
+      - react-native
+    expected_failure_hints:
+      - port 8081
+      - NPM locking error
+      - ShellCommandUnresponsiveException
+      - ENOSPC inotify
+      - gradlew EACCES
+    refresh_policy: monthly
+  - source_id: react-native-debugging
+    url: https://reactnative.dev/docs/debugging
+    source_type: official_doc
+    stacks:
+      - react-native
+    expected_failure_hints:
+      - Dev Menu
+      - React Native DevTools
+      - LogBox
+      - Performance Monitor
+      - JavaScript debugger
+    refresh_policy: monthly
+  - source_id: kotlin-coroutines-exception-handling
+    url: https://raw.githubusercontent.com/Kotlin/kotlinx.coroutines/master/docs/topics/exception-handling.md
+    source_type: library_doc
+    stacks:
+      - kotlin
+      - android
+    expected_failure_hints:
+      - CoroutineExceptionHandler got uncaught exception
+      - CancellationException ignored by coroutine machinery
+      - exception aggregation suppressed exceptions
+      - SupervisorJob cancellation propagation
+      - supervisorScope vs coroutineScope exception handling
+    refresh_policy: monthly
+  - source_id: kotlin-flow-exception-handling
+    url: https://raw.githubusercontent.com/Kotlin/kotlinx.coroutines/master/docs/topics/flow.md
+    source_type: library_doc
+    stacks:
+      - kotlin
+      - android
+    expected_failure_hints:
+      - Flow invariant is violated
+      - Flow was collected in ... but emission happened in ...
+      - Please refer to 'flow' documentation or use 'flowOn' instead
+      - Flow exception transparency violation
+      - catch operator only catches upstream exceptions
+    refresh_policy: monthly
+  - source_id: kotlin-serialization-basic-errors
+    url: https://raw.githubusercontent.com/Kotlin/kotlinx.serialization/master/docs/basic-serialization.md
+    source_type: library_doc
+    stacks:
+      - kotlin
+      - android
+    expected_failure_hints:
+      - Serializer for class ... is not found
+      - Please ensure that class is marked as '@Serializable'
+      - MissingFieldException
+      - JsonDecodingException Unexpected JSON token
+      - Encountered an unknown key
+      - Expected string literal but 'null' literal was found
+    refresh_policy: monthly
+  - source_id: kotlin-exceptions-language-doc
+    url: https://kotlinlang.org/docs/exceptions.html
+    source_type: language_doc
+    stacks:
+      - kotlin
+      - android
+    expected_failure_hints:
+      - ArithmeticException division by zero
+      - IndexOutOfBoundsException
+      - NoSuchElementException
+      - NumberFormatException
+      - NullPointerException
+      - require throws IllegalArgumentException
+      - check throws IllegalStateException
+      - NotImplementedError TODO()
+    refresh_policy: monthly
+  - source_id: gradle-build-troubleshooting
+    url: https://docs.gradle.org/current/userguide/troubleshooting.html
+    source_type: build_tool_doc
+    stacks:
+      - android
+      - kotlin
+      - gradle
+    expected_failure_hints:
+      - Command not found gradle
+      - JAVA_HOME is set to an invalid directory
+      - Permission denied wrapper not executable
+      - A new daemon was started but could not be connected to
+      - Task executed when it should have been UP-TO-DATE
+      - dependency resolution conflict
+      - IntelliJ Gradle sync failure
+    refresh_policy: monthly
+  - source_id: arkts-migration-guide
+    url: https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/quick-start/typescript-to-arkts-migration-guide.md
+    source_type: official_error_doc
+    stacks:
+      - harmonyos
+      - arkts
+    expected_failure_hints:
+      - arkts-no-any
+      - arkts-no-var
+      - arkts-no-untyped-obj-literals
+      - arkts-no-struct-initialized
+      - arkts-no-delete
+      - arkts-no-in-operator
+      - arkts-no-instanceof
+      - arkts-no-comma-op
+      - arkts-no-bitwise
+      - arkts-no-untyped-destructuring
+    refresh_policy: monthly
+  - source_id: openharmony-stage-model-lifecycle
+    url: https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/application-models/uiability-lifecycle.md
+    source_type: official_doc
+    stacks:
+      - harmonyos
+      - arkts
+    expected_failure_hints:
+      - AbilityStage onCreate onWindowStageCreate
+      - UIAbility onCreate onWindowStageCreate onForeground onBackground
+      - Lifecycle callback sequence error
+      - Context is null or invalid
+      - Window stage not ready
+    refresh_policy: monthly
+  - source_id: openharmony-deveco-troubleshooting
+    url: https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/quick-start/common_problem_of_application.md
+    source_type: official_doc
+    stacks:
+      - harmonyos
+      - arkts
+    expected_failure_hints:
+      - appIdentifier 应用唯一标识
+      - appId 应用唯一标识
+      - bundleManager getBundleInfoForSelf
+      - signatureInfo 签名信息
+      - fingerprint 指纹信息
+    refresh_policy: monthly
+  - source_id: arkts-basic-syntax-rules
+    url: https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/quick-start/introduction-to-arkts.md
+    source_type: language_doc
+    stacks:
+      - harmonyos
+      - arkts
+    expected_failure_hints:
+      - arkts-no-any
+      - arkts-no-untyped-obj-literals
+      - arkts-no-prop-reassignment
+      - arkts-no-delete
+      - arkts-no-proto
+      - arkts-no-attrs-functions
+      - arkts-no-multi-declare
+      - arkts-no-try-catch-with-types
+      - arkts-no-comma-op
+      - arkts-no-function-constructors
+    refresh_policy: monthly

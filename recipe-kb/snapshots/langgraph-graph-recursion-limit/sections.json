@@ -1,0 +1,110 @@
+[
+  {
+    "captured_at": "2026-05-26T09:17:32.948993Z",
+    "final_url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md",
+    "quote_hash": "sha256:d2e251e08b5e97248f8fc4298b647470265be5239fc7836f7f1dcad286ea759f",
+    "section_anchor": "root",
+    "short_excerpt": "GRAPH_RECURSION_LIMIT",
+    "source_id": "langgraph-graph-recursion-limit",
+    "source_type": "official_error_doc",
+    "span_id": "langgraph-graph-recursion-limit-1",
+    "text": "GRAPH_RECURSION_LIMIT",
+    "url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md"
+  },
+  {
+    "captured_at": "2026-05-26T09:17:32.948993Z",
+    "final_url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md",
+    "quote_hash": "sha256:12e753a3c408ac878486a7a2835476a51b3fab9e342dc52be5f138b100778a83",
+    "section_anchor": "root",
+    "short_excerpt": "Your LangGraph [`StateGraph`](https://langchain-ai.github.io/langgraph/reference/graphs/#langgraph.graph.state.StateGraph) reached the maximum number of steps before hitting a stop condition.",
+    "source_id": "langgraph-graph-recursion-limit",
+    "source_type": "official_error_doc",
+    "span_id": "langgraph-graph-recursion-limit-2",
+    "text": "Your LangGraph [`StateGraph`](https://langchain-ai.github.io/langgraph/reference/graphs/#langgraph.graph.state.StateGraph) reached the maximum number of steps before hitting a stop condition.",
+    "url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md"
+  },
+  {
+    "captured_at": "2026-05-26T09:17:32.948993Z",
+    "final_url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md",
+    "quote_hash": "sha256:092c0db0c7706bf016850402fd67d9dcff1be6a7e852e792b0f6e7ac0dced9b0",
+    "section_anchor": "root",
+    "short_excerpt": "This is often due to an infinite loop caused by code like the example below:",
+    "source_id": "langgraph-graph-recursion-limit",
+    "source_type": "official_error_doc",
+    "span_id": "langgraph-graph-recursion-limit-3",
+    "text": "This is often due to an infinite loop caused by code like the example below:",
+    "url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md"
+  },
+  {
+    "captured_at": "2026-05-26T09:17:32.948993Z",
+    "final_url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md",
+    "quote_hash": "sha256:93f9739f4c50c9e3f924cbeac9479a1fb659950b2405c56f0fe1b82834d8310c",
+    "section_anchor": "root",
+    "short_excerpt": "class State(TypedDict): some_key: str builder = StateGraph(State) builder.add_node(\"a\", ...) builder.add_node(\"b\", ...) builder.add_edge(\"a\", \"b\") builder.add_edge(\"b\", \"a\") ... graph = builder.compile()",
+    "source_id": "langgraph-graph-recursion-limit",
+    "source_type": "official_error_doc",
+    "span_id": "langgraph-graph-recursion-limit-4",
+    "text": "class State(TypedDict): some_key: str builder = StateGraph(State) builder.add_node(\"a\", ...) builder.add_node(\"b\", ...) builder.add_edge(\"a\", \"b\") builder.add_edge(\"b\", \"a\") ... graph = builder.compile()",
+    "url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md"
+  },
+  {
+    "captured_at": "2026-05-26T09:17:32.948993Z",
+    "final_url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md",
+    "quote_hash": "sha256:bfcc5e2f37369f3088cb5bfecffcd44c7c2e1bc51e09bc23d3d493ef3acab306",
+    "section_anchor": "root",
+    "short_excerpt": "However, complex graphs may hit the default limit naturally.",
+    "source_id": "langgraph-graph-recursion-limit",
+    "source_type": "official_error_doc",
+    "span_id": "langgraph-graph-recursion-limit-5",
+    "text": "However, complex graphs may hit the default limit naturally.",
+    "url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md"
+  },
+  {
+    "captured_at": "2026-05-26T09:17:32.948993Z",
+    "final_url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md",
+    "quote_hash": "sha256:c3af076f92c5ed8dcb0d0b0d36dd120bc31b68264efea96cf8019ca19f1c13a3",
+    "section_anchor": "root",
+    "short_excerpt": "Troubleshooting",
+    "source_id": "langgraph-graph-recursion-limit",
+    "source_type": "official_error_doc",
+    "span_id": "langgraph-graph-recursion-limit-6",
+    "text": "Troubleshooting",
+    "url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md"
+  },
+  {
+    "captured_at": "2026-05-26T09:17:32.948993Z",
+    "final_url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md",
+    "quote_hash": "sha256:7fec5bbdaac02e606245632f249aa3f1169f31006c500cb8ee2527bb5e6439cb",
+    "section_anchor": "root",
+    "short_excerpt": "If you are not expecting your graph to go through many iterations, you likely have a cycle. Check your logic for infinite loops.",
+    "source_id": "langgraph-graph-recursion-limit",
+    "source_type": "official_error_doc",
+    "span_id": "langgraph-graph-recursion-limit-7",
+    "text": "If you are not expecting your graph to go through many iterations, you likely have a cycle. Check your logic for infinite loops.",
+    "url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md"
+  },
+  {
+    "captured_at": "2026-05-26T09:17:32.948993Z",
+    "final_url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md",
+    "quote_hash": "sha256:df6177b3e317bc22e13de0ebe49c0e8f1cdd0a69f5687963be7bfd1dac605d25",
+    "section_anchor": "root",
+    "short_excerpt": "If you have a complex graph, you can pass in a higher `recursion_limit` value into your `config` object when invoking your graph like this:",
+    "source_id": "langgraph-graph-recursion-limit",
+    "source_type": "official_error_doc",
+    "span_id": "langgraph-graph-recursion-limit-8",
+    "text": "If you have a complex graph, you can pass in a higher `recursion_limit` value into your `config` object when invoking your graph like this:",
+    "url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md"
+  },
+  {
+    "captured_at": "2026-05-26T09:17:32.948993Z",
+    "final_url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md",
+    "quote_hash": "sha256:cf570260ded8a56b42ddd868457bad976989b873a7624b977a28cbc2aa2e7c53",
+    "section_anchor": "root",
+    "short_excerpt": "graph.invoke({...}, {\"recursion_limit\": 100})",
+    "source_id": "langgraph-graph-recursion-limit",
+    "source_type": "official_error_doc",
+    "span_id": "langgraph-graph-recursion-limit-9",
+    "text": "graph.invoke({...}, {\"recursion_limit\": 100})",
+    "url": "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md"
+  }
+]

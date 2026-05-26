@@ -1,0 +1,40 @@
+{
+  "checks": [
+    {
+      "details": "\u62bd\u53d6\u6bb5\u843d\u6570: 0",
+      "name": "sections_non_empty",
+      "passed": false
+    },
+    {
+      "details": "\u671f\u671b\u8303\u56f4: 1-500",
+      "name": "section_count_within_bounds",
+      "passed": false
+    },
+    {
+      "details": "\u547d\u4e2d 0/5 \u6761 expected_failure_hints",
+      "matched_hints": [],
+      "missing_hints": [
+        "CoroutineExceptionHandler got uncaught exception",
+        "CancellationException ignored by coroutine machinery",
+        "exception aggregation suppressed exceptions",
+        "SupervisorJob cancellation propagation",
+        "supervisorScope vs coroutineScope exception handling"
+      ],
+      "name": "expected_hints_matched",
+      "passed": false
+    }
+  ],
+  "fallback": {
+    "enabled": true,
+    "inputs": [
+      "raw.html",
+      "response.json",
+      "sections.json",
+      "review.md"
+    ],
+    "instruction": "\u8bfb\u53d6 raw.html\u3001response.json\u3001sections.json\u3001review.md\uff0c\u4ea7\u51fa\u6700\u5c0f extraction_profile \u6216 extractor patch\uff0c\u5e76\u8865\u56de\u5f52\u6d4b\u8bd5\u3002",
+    "mode": "agentic_loop"
+  },
+  "source_id": "kotlin-coroutines-exception-handling",
+  "status": "needs_agentic_fallback"
+}

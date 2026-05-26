@@ -1,0 +1,36 @@
+{
+  "captured_at": "2026-05-26T12:26:11.870151Z",
+  "content_hash": "sha256:3ceb35802af8f03c66d625c7f4c83189febc996d75cf099820ccc2229167353f",
+  "content_type": "text/plain; charset=utf-8",
+  "expected_build_hints": [],
+  "expected_failure_hints": [
+    "arkts-no-any",
+    "arkts-no-untyped-obj-literals",
+    "arkts-no-prop-reassignment",
+    "arkts-no-delete",
+    "arkts-no-proto",
+    "arkts-no-attrs-functions",
+    "arkts-no-multi-declare",
+    "arkts-no-try-catch-with-types",
+    "arkts-no-comma-op",
+    "arkts-no-function-constructors"
+  ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
+  "final_url": "https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/quick-start/introduction-to-arkts.md",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "arkts-basic-syntax-rules",
+  "source_type": "language_doc",
+  "stacks": [
+    "harmonyos",
+    "arkts"
+  ],
+  "url": "https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/quick-start/introduction-to-arkts.md"
+}

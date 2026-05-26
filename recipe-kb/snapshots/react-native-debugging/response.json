@@ -1,0 +1,30 @@
+{
+  "captured_at": "2026-05-26T12:26:11.870151Z",
+  "content_hash": "sha256:39ed7cb1f1038ca09637786e97ed5894f08c2b655c1358dddf7aba43ab9d64bc",
+  "content_type": "text/html; charset=UTF-8",
+  "expected_build_hints": [],
+  "expected_failure_hints": [
+    "Dev Menu",
+    "React Native DevTools",
+    "LogBox",
+    "Performance Monitor",
+    "JavaScript debugger"
+  ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
+  "final_url": "https://reactnative.dev/docs/debugging",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "react-native-debugging",
+  "source_type": "official_doc",
+  "stacks": [
+    "react-native"
+  ],
+  "url": "https://reactnative.dev/docs/debugging"
+}

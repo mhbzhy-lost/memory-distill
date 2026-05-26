@@ -1,0 +1,31 @@
+{
+  "captured_at": "2026-05-26T12:26:11.870151Z",
+  "content_hash": "sha256:e8f0849ecd7880dd32432c43275ac8c8e9e3c84ac96085be465802597bed82d1",
+  "content_type": "text/html; charset=utf-8",
+  "expected_build_hints": [],
+  "expected_failure_hints": [
+    "Redbox",
+    "Yellowbox",
+    "stack trace",
+    "console.warn",
+    "console.error"
+  ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
+  "final_url": "https://docs.expo.dev/debugging/errors-and-warnings/",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "expo-errors-and-warnings",
+  "source_type": "official_doc",
+  "stacks": [
+    "expo",
+    "react-native"
+  ],
+  "url": "https://docs.expo.dev/debugging/errors-and-warnings/"
+}

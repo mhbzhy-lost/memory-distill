@@ -2,6 +2,439 @@
   "recipes": [
     {
       "do_not": [
+        "Do not replace any with Object if you need specific field access; define a class or interface",
+        "Do not use ESObject as a drop-in replacement for any in .ets files without checking API version restrictions"
+      ],
+      "failure_class": "harmonyos/arkts-syntax",
+      "fingerprints": [
+        "arkts-no-any-unknown",
+        "arkts-no-any",
+        "10605008",
+        "any type not supported",
+        "unknown type not supported",
+        "\u663e\u5f0f\u6307\u5b9a\u5177\u4f53\u7c7b\u578b"
+      ],
+      "first_checks": [
+        "Check whether the variable or parameter is typed as any or unknown",
+        "Check whether the function return type is any or unknown and replace with the actual return type",
+        "Check whether an external library API returns any and the result needs to be typed with a class or interface"
+      ],
+      "id": "arkts-no-any-unknown-type",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/arkts-no-any-unknown-type.md",
+      "source_ids": [
+        "arkts-migration-guide"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/quick-start/typescript-to-arkts-migration-guide.md"
+      ],
+      "stack": [
+        "harmonyos",
+        "arkts"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "harmonyos/arkts-syntax: ArkTS compiler error: arkts-no-any-unknown (10605008) \u2014 any and unknown types are not supported",
+      "symptoms": [
+        "ArkTS compiler error: arkts-no-any-unknown (10605008) \u2014 any and unknown types are not supported"
+      ],
+      "validation_ladder": [
+        "Replace any or unknown with a concrete type and verify no 10605008 error",
+        "Verify the code still compiles and the runtime behavior is unchanged",
+        "Run the module build or type-check step"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not use the comma operator to chain side effects in arbitrary expressions; use separate statements",
+        "Do not confuse the comma expression operator with the comma used in variable declarations or function call arguments"
+      ],
+      "failure_class": "harmonyos/arkts-syntax",
+      "fingerprints": [
+        "arkts-no-comma-outside-loops",
+        "10605071",
+        "comma operator",
+        "\u9017\u53f7\u8fd0\u7b97\u7b26",
+        "\u9017\u53f7\u8fd0\u7b97\u7b26\u4ec5\u9002\u7528\u4e8e for \u5faa\u73af"
+      ],
+      "first_checks": [
+        "Check whether the comma operator is used as an expression (value1, value2) not as a separator in declarations or function arguments",
+        "Check whether the comma is inside a for loop header (allowed) vs. in a general expression (not allowed)",
+        "Check whether the intended semantics is sequential expression evaluation or just a multi-value return"
+      ],
+      "id": "arkts-no-comma-outside-loops",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/arkts-no-comma-outside-loops.md",
+      "source_ids": [
+        "arkts-migration-guide"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/quick-start/typescript-to-arkts-migration-guide.md"
+      ],
+      "stack": [
+        "harmonyos",
+        "arkts"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "harmonyos/arkts-syntax: ArkTS compiler error: arkts-no-comma-outside-loops (10605071) \u2014 comma operator only allowed in for loop header",
+      "symptoms": [
+        "ArkTS compiler error: arkts-no-comma-outside-loops (10605071) \u2014 comma operator only allowed in for loop header"
+      ],
+      "validation_ladder": [
+        "Split the comma expression into separate statements or move to a for loop header; verify no 10605071 error",
+        "Verify the sequential semantics is preserved after the refactor",
+        "Run the build or compile step for the affected module"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not set the property to undefined or null as equivalent to deletion; ArkTS object layout is fixed at compile time",
+        "Do not use Reflect.deleteProperty as an alternative; it is also restricted in ArkTS static mode"
+      ],
+      "failure_class": "harmonyos/arkts-syntax",
+      "fingerprints": [
+        "arkts-no-delete",
+        "10605059",
+        "delete operator",
+        "delete \u8fd0\u7b97\u7b26",
+        "\u4e0d\u652f\u6301 delete"
+      ],
+      "first_checks": [
+        "Check whether the code uses the delete operator on an object property",
+        "Check whether the intent is to remove a property from an object or delete an array element",
+        "Check whether the target is a Map and Map.delete() should be used instead"
+      ],
+      "id": "arkts-no-delete-operator",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/arkts-no-delete-operator.md",
+      "source_ids": [
+        "arkts-migration-guide"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/quick-start/typescript-to-arkts-migration-guide.md"
+      ],
+      "stack": [
+        "harmonyos",
+        "arkts"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "harmonyos/arkts-syntax: ArkTS compiler error: arkts-no-delete (10605059) \u2014 delete operator is not supported",
+      "symptoms": [
+        "ArkTS compiler error: arkts-no-delete (10605059) \u2014 delete operator is not supported"
+      ],
+      "validation_ladder": [
+        "Replace delete with an appropriate alternative (Map.delete(), array splice, or field reset) and verify no 10605059 error",
+        "Verify the runtime behavior matches the original intent",
+        "Run the build or compile step for the affected module"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not convert destructuring to indexed access ([a, b] = [x, y]) without ensuring the array is typed",
+        "Do not use temporary variable assignment inside an expression to mimic destructuring; use separate statements"
+      ],
+      "failure_class": "harmonyos/arkts-syntax",
+      "fingerprints": [
+        "arkts-no-destruct-assignment",
+        "10605069",
+        "destructuring assignment",
+        "\u89e3\u6784\u8d4b\u503c",
+        "\u4e0d\u652f\u6301\u89e3\u6784"
+      ],
+      "first_checks": [
+        "Check whether the code uses array or object destructuring in an assignment (left side is a pattern)",
+        "Check whether destructuring is used for swapping variables or extracting nested fields",
+        "Check whether the destructuring target is a function return value or an external data structure"
+      ],
+      "id": "arkts-no-destruct-assignment",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/arkts-no-destruct-assignment.md",
+      "source_ids": [
+        "arkts-migration-guide"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/quick-start/typescript-to-arkts-migration-guide.md"
+      ],
+      "stack": [
+        "harmonyos",
+        "arkts"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "harmonyos/arkts-syntax: ArkTS compiler error: arkts-no-destruct-assignment (10605069) \u2014 destructuring assignment is not supported",
+      "symptoms": [
+        "ArkTS compiler error: arkts-no-destruct-assignment (10605069) \u2014 destructuring assignment is not supported"
+      ],
+      "validation_ladder": [
+        "Replace destructuring with separate variable assignments and verify no 10605069 error",
+        "Verify the replaced code produces identical values at runtime",
+        "Run the build or compile step for the affected module"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not use Object.keys() as a drop-in replacement without verifying the object type is compatible",
+        "Do not convert for..in to for..of on an untyped array; ensure the array is explicitly typed"
+      ],
+      "failure_class": "harmonyos/arkts-syntax",
+      "fingerprints": [
+        "arkts-no-for-in",
+        "10605080",
+        "for .. in",
+        "for..in",
+        "\u4e0d\u652f\u6301 for..in"
+      ],
+      "first_checks": [
+        "Check whether the code uses a for..in loop to iterate over object keys",
+        "Check whether the intent is to iterate over properties, array indices, or a Map's keys",
+        "Check whether the object is typed and all its keys are known at compile time"
+      ],
+      "id": "arkts-no-for-in-loop",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/arkts-no-for-in-loop.md",
+      "source_ids": [
+        "arkts-migration-guide"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/quick-start/typescript-to-arkts-migration-guide.md"
+      ],
+      "stack": [
+        "harmonyos",
+        "arkts"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "harmonyos/arkts-syntax: ArkTS compiler error: arkts-no-for-in (10605080) \u2014 for..in loop over object properties is not supported",
+      "symptoms": [
+        "ArkTS compiler error: arkts-no-for-in (10605080) \u2014 for..in loop over object properties is not supported"
+      ],
+      "validation_ladder": [
+        "Replace for..in with for..of on typed keys or array iteration and verify no 10605080 error",
+        "Verify the iteration produces identical property access sequence",
+        "Run the build or compile step for the affected module"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not annotate the catch parameter with any type; omit the annotation entirely in ArkTS",
+        "Do not assume the caught value is Error; always use instanceof Error before accessing .message"
+      ],
+      "failure_class": "harmonyos/arkts-syntax",
+      "fingerprints": [
+        "arkts-no-types-in-catch",
+        "10605079",
+        "catch type",
+        "catch \u8bed\u53e5\u4e2d\u6807\u6ce8\u7c7b\u578b",
+        "\u4e0d\u652f\u6301 catch \u7c7b\u578b\u6807\u6ce8"
+      ],
+      "first_checks": [
+        "Check whether a catch clause has a type annotation like catch(e: any) or catch(e: Error)",
+        "Check whether the catch block uses e as a typed value without narrowing",
+        "Check whether instanceof or as cast is used to narrow the caught value inside the block"
+      ],
+      "id": "arkts-no-types-in-catch",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/arkts-no-types-in-catch.md",
+      "source_ids": [
+        "arkts-migration-guide"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/quick-start/typescript-to-arkts-migration-guide.md"
+      ],
+      "stack": [
+        "harmonyos",
+        "arkts"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "harmonyos/arkts-syntax: ArkTS compiler error: arkts-no-types-in-catch (10605079) \u2014 type annotation in catch clause is not supported",
+      "symptoms": [
+        "ArkTS compiler error: arkts-no-types-in-catch (10605079) \u2014 type annotation in catch clause is not supported"
+      ],
+      "validation_ladder": [
+        "Remove the type annotation from catch parameter and add instanceof narrowing inside the block; verify no 10605079 error",
+        "Verify the error handling still works for all expected Error subtypes",
+        "Run the build or compile step for the affected module"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not rely solely on contextual inference; add explicit type annotation when the context is ambiguous",
+        "Do not convert object literals to class instances without checking whether an interface or class is more appropriate"
+      ],
+      "failure_class": "harmonyos/arkts-syntax",
+      "fingerprints": [
+        "arkts-no-untyped-obj-literals",
+        "10605038",
+        "object literal type",
+        "\u9700\u8981\u663e\u5f0f\u6807\u6ce8\u5bf9\u8c61\u5b57\u9762\u91cf\u7684\u7c7b\u578b",
+        "\u7f16\u8bd1\u65f6\u9519\u8bef"
+      ],
+      "first_checks": [
+        "Check whether an object literal is assigned to a variable without a type annotation",
+        "Check whether an object literal is passed as a function argument without an explicit type interface",
+        "Check whether the context type (variable annotation or parameter type) is sufficient to infer the literal type"
+      ],
+      "id": "arkts-no-untyped-obj-literals",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/arkts-no-untyped-obj-literals.md",
+      "source_ids": [
+        "arkts-migration-guide"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/quick-start/typescript-to-arkts-migration-guide.md"
+      ],
+      "stack": [
+        "harmonyos",
+        "arkts"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "harmonyos/arkts-syntax: ArkTS compiler error: arkts-no-untyped-obj-literals (10605038) \u2014 object literals require explicit type annotation",
+      "symptoms": [
+        "ArkTS compiler error: arkts-no-untyped-obj-literals (10605038) \u2014 object literals require explicit type annotation"
+      ],
+      "validation_ladder": [
+        "Add explicit type annotation to the object literal and verify no 10605038 error",
+        "Verify the type annotation covers all fields in the object literal",
+        "Run the build or compile step for the affected module"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not use @ts-ignore to silence the ArkTS compiler for var usage",
+        "Do not convert to const if the variable is reassigned later; use let"
+      ],
+      "failure_class": "harmonyos/arkts-syntax",
+      "fingerprints": [
+        "arkts-no-var",
+        "10605005",
+        "var keyword not supported",
+        "ArkTS \u4e0d\u652f\u6301 var",
+        "let \u58f0\u660e\u53d8\u91cf"
+      ],
+      "first_checks": [
+        "Check whether the variable declaration uses var instead of let or const",
+        "Check whether the variable scope was intentionally block-scoped and convert to let",
+        "Check whether the code is .ets or .ts file (var works in .ts but not .ets)"
+      ],
+      "id": "arkts-no-var-use-let",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/arkts-no-var-use-let.md",
+      "source_ids": [
+        "arkts-migration-guide"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/quick-start/typescript-to-arkts-migration-guide.md"
+      ],
+      "stack": [
+        "harmonyos",
+        "arkts"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "harmonyos/arkts-syntax: ArkTS compiler error: arkts-no-var (10605005) \u2014 var keyword is not supported, use let instead",
+      "symptoms": [
+        "ArkTS compiler error: arkts-no-var (10605005) \u2014 var keyword is not supported, use let instead"
+      ],
+      "validation_ladder": [
+        "Replace var with let and verify the ArkTS compiler no longer reports 10605005",
+        "Verify the variable still behaves correctly in its block scope",
+        "Run the build or compile step for the affected module"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not cache UIAbilityContext in a module-level variable before onCreate completes",
+        "Do not pass context to child components via property assignment before the context is initialized in onCreate"
+      ],
+      "failure_class": "harmonyos/ability-lifecycle",
+      "fingerprints": [
+        "UIAbilityContext",
+        "Context is null",
+        "context not ready",
+        "getContext",
+        "context \u4e3a\u7a7a"
+      ],
+      "first_checks": [
+        "Check whether context is accessed in a member initializer, constructor, or static field before onCreate",
+        "Check whether getContext() is called on a component that has not yet been attached to an AbilityStage",
+        "Check whether the context is passed through a closure that captures a stale null reference"
+      ],
+      "id": "arkts-uiability-context-not-ready",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/arkts-uiability-context-not-ready.md",
+      "source_ids": [
+        "openharmony-stage-model-lifecycle"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/application-models/uiability-lifecycle.md"
+      ],
+      "stack": [
+        "harmonyos",
+        "arkts"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "harmonyos/ability-lifecycle: Accessing UIAbilityContext returns null or throws because context is accessed before onCreate initializes it",
+      "symptoms": [
+        "Accessing UIAbilityContext returns null or throws because context is accessed before onCreate initializes it"
+      ],
+      "validation_ladder": [
+        "Move context access to onCreate or a later callback and verify no null reference",
+        "Verify child components receive context only after it is initialized",
+        "Run the ability lifecycle test covering context availability"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not access WindowStage in onCreate; it is only available in onWindowStageCreate",
+        "Do not perform long-running synchronous work in onWindowStageCreate; use async operations and await windowStage.loadContent"
+      ],
+      "failure_class": "harmonyos/ability-lifecycle",
+      "fingerprints": [
+        "UIAbility lifecycle",
+        "onCreate",
+        "onWindowStageCreate",
+        "onForeground",
+        "onBackground",
+        "onDestroy",
+        "lifecycle callback sequence"
+      ],
+      "first_checks": [
+        "Check whether window operation code is placed in onWindowStageCreate (not onCreate), where WindowStage is not yet available",
+        "Check whether global data initialization is placed in onCreate and per-window UI logic in onWindowStageCreate",
+        "Check whether background-to-foreground transition logic is correctly placed in onForeground, not in onWindowStageCreate"
+      ],
+      "id": "arkts-uiability-lifecycle-callback-error",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/arkts-uiability-lifecycle-callback-error.md",
+      "source_ids": [
+        "openharmony-stage-model-lifecycle"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/application-models/uiability-lifecycle.md"
+      ],
+      "stack": [
+        "harmonyos",
+        "arkts"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "harmonyos/ability-lifecycle: UIAbility lifecycle callback invoked at unexpected time \u2014 onCreate, onWindowStageCreate, onForeground, onBackground, onDestroy sequence is violated",
+      "symptoms": [
+        "UIAbility lifecycle callback invoked at unexpected time \u2014 onCreate, onWindowStageCreate, onForeground, onBackground, onDestroy sequence is violated"
+      ],
+      "validation_ladder": [
+        "Move the operation to the correct lifecycle callback and verify no exception or null context",
+        "Verify the lifecycle log sequence matches: onCreate \u2192 onWindowStageCreate \u2192 onForeground \u2192 onBackground \u2192 onDestroy",
+        "Run the ability integration test covering the lifecycle transition"
+      ]
+    },
+    {
+      "do_not": [
         "Do not ignore Yellowbox warnings; they indicate issues that may become Redbox errors after upgrade",
         "Do not suppress the error via error boundaries before identifying the root cause in the stack trace"
       ],

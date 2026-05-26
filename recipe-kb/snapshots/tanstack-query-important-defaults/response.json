@@ -1,13 +1,22 @@
 {
-  "captured_at": "2026-05-21T09:50:51.121768Z",
-  "content_hash": "sha256:1bbd5b7e2b29bfacbb0739210a05d0c2899bbe182d5ba503a55e697c7faed850",
+  "captured_at": "2026-05-26T12:26:11.870151Z",
+  "content_hash": "sha256:a54392ce900e141b115ee17924376859a71867f839fdedf01434ba9a6901731b",
   "content_type": "text/html; charset=utf-8",
+  "expected_build_hints": [],
   "expected_failure_hints": [
     "query data is stale by default",
     "refetch on window focus",
     "refetch on mount",
     "retry failed queries three times"
   ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
   "final_url": "https://tanstack.com/query/latest/docs/framework/react/guides/important-defaults",
   "refresh_policy": "monthly",
   "retrieved_status": 200,

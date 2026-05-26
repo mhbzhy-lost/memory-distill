@@ -1,15 +1,29 @@
 {
-  "source_id": "nextjs-rendering-server-components",
-  "url": "https://nextjs.org/docs/app/building-your-application/rendering/server-components",
-  "final_url": "https://nextjs.org/docs/app/building-your-application/rendering/server-components",
-  "source_type": "official_guide",
-  "stacks": ["react", "nextjs"],
+  "captured_at": "2026-05-26T12:26:11.870151Z",
+  "content_hash": "sha256:979000e3bcbd6c9d9fda64cafa32c984bd5c51806cf17a9ff919a46fa44de789",
+  "content_type": "text/html; charset=utf-8",
+  "expected_build_hints": [
+    "server component vs client component",
+    "when to use client directive",
+    "data fetching in server components"
+  ],
   "expected_failure_hints": [],
-  "expected_build_hints": ["server component vs client component", "when to use client directive", "data fetching in server components"],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
+  "final_url": "https://nextjs.org/docs/app/getting-started/server-and-client-components",
   "refresh_policy": "monthly",
-  "extraction_profile": {},
-  "captured_at": "2026-05-25T10:00:00Z",
   "retrieved_status": 200,
-  "content_type": "text/html",
-  "content_hash": "sha256:fixture"
+  "source_id": "nextjs-rendering-server-components",
+  "source_type": "official_guide",
+  "stacks": [
+    "react",
+    "nextjs"
+  ],
+  "url": "https://nextjs.org/docs/app/building-your-application/rendering/server-components"
 }

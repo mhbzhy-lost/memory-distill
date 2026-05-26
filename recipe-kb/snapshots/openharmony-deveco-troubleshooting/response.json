@@ -1,0 +1,31 @@
+{
+  "captured_at": "2026-05-26T12:26:11.870151Z",
+  "content_hash": "sha256:896f52990f0bd55431db2f1fac18caf1d754ad1fa67825ae53dd0ba1c1f6851b",
+  "content_type": "text/plain; charset=utf-8",
+  "expected_build_hints": [],
+  "expected_failure_hints": [
+    "appIdentifier \u5e94\u7528\u552f\u4e00\u6807\u8bc6",
+    "appId \u5e94\u7528\u552f\u4e00\u6807\u8bc6",
+    "bundleManager getBundleInfoForSelf",
+    "signatureInfo \u7b7e\u540d\u4fe1\u606f",
+    "fingerprint \u6307\u7eb9\u4fe1\u606f"
+  ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
+  "final_url": "https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/quick-start/common_problem_of_application.md",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "openharmony-deveco-troubleshooting",
+  "source_type": "official_doc",
+  "stacks": [
+    "harmonyos",
+    "arkts"
+  ],
+  "url": "https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/quick-start/common_problem_of_application.md"
+}

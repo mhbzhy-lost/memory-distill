@@ -1,13 +1,22 @@
 {
-  "captured_at": "2026-05-21T09:50:51.121768Z",
-  "content_hash": "sha256:4b0949469f245e0174884a6dc04f81449bd93fce55062cc4941094c3bc587217",
+  "captured_at": "2026-05-26T12:26:11.870151Z",
+  "content_hash": "sha256:13efa053029e387f37e31eb17ca03d733e7900159aae9f24c650dc9c378a5c3c",
   "content_type": "text/html; charset=utf-8",
+  "expected_build_hints": [],
   "expected_failure_hints": [
     "mutation succeeds but list still shows stale data",
     "invalidateQueries",
     "mark queries as stale",
     "query key partial matching"
   ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
   "final_url": "https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation",
   "refresh_policy": "monthly",
   "retrieved_status": 200,

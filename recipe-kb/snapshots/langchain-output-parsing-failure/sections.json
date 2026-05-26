@@ -1,0 +1,86 @@
+[
+  {
+    "captured_at": "2026-05-26T09:17:32.948993Z",
+    "final_url": "https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE.md",
+    "quote_hash": "sha256:712d73a5ad2860ab7779d69a9440bf2cb277489178568ede86c0baab2b85940d",
+    "section_anchor": "root",
+    "short_excerpt": "OUTPUT_PARSING_FAILURE",
+    "source_id": "langchain-output-parsing-failure",
+    "source_type": "official_error_doc",
+    "span_id": "langchain-output-parsing-failure-1",
+    "text": "OUTPUT_PARSING_FAILURE",
+    "url": "https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE.md"
+  },
+  {
+    "captured_at": "2026-05-26T09:17:32.948993Z",
+    "final_url": "https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE.md",
+    "quote_hash": "sha256:0d25b707d66fc360ae1f36d8b4aa325356a2ffe531e56f449a09a239a581f370",
+    "section_anchor": "root",
+    "short_excerpt": "An [output parser](https://reference.langchain.com/python/langchain_core/output_parsers/) was unable to handle model output as expected.",
+    "source_id": "langchain-output-parsing-failure",
+    "source_type": "official_error_doc",
+    "span_id": "langchain-output-parsing-failure-2",
+    "text": "An [output parser](https://reference.langchain.com/python/langchain_core/output_parsers/) was unable to handle model output as expected.",
+    "url": "https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE.md"
+  },
+  {
+    "captured_at": "2026-05-26T09:17:32.948993Z",
+    "final_url": "https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE.md",
+    "quote_hash": "sha256:e6ab519cf3b2e46063ef38d33451979c272e6cab6ba085316029b5de49ce8bf5",
+    "section_anchor": "root",
+    "short_excerpt": "Some prebuilt constructs like legacy LangChain agents and chains may use output parsers internally, so you may see this error even if you're not visibly instantiating and using an output parser.",
+    "source_id": "langchain-output-parsing-failure",
+    "source_type": "official_error_doc",
+    "span_id": "langchain-output-parsing-failure-3",
+    "text": "Some prebuilt constructs like legacy LangChain agents and chains may use output parsers internally, so you may see this error even if you're not visibly instantiating and using an output parser.",
+    "url": "https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE.md"
+  },
+  {
+    "captured_at": "2026-05-26T09:17:32.948993Z",
+    "final_url": "https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE.md",
+    "quote_hash": "sha256:c3af076f92c5ed8dcb0d0b0d36dd120bc31b68264efea96cf8019ca19f1c13a3",
+    "section_anchor": "root",
+    "short_excerpt": "Troubleshooting",
+    "source_id": "langchain-output-parsing-failure",
+    "source_type": "official_error_doc",
+    "span_id": "langchain-output-parsing-failure-4",
+    "text": "Troubleshooting",
+    "url": "https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE.md"
+  },
+  {
+    "captured_at": "2026-05-26T09:17:32.948993Z",
+    "final_url": "https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE.md",
+    "quote_hash": "sha256:f429993a9ac49cb85bc246548d3a679b6adde4638b9af6176ecebefa1fbb0a64",
+    "section_anchor": "root",
+    "short_excerpt": "Consider using tool calling or other structured output techniques if possible without an output parser to reliably output parseable values.",
+    "source_id": "langchain-output-parsing-failure",
+    "source_type": "official_error_doc",
+    "span_id": "langchain-output-parsing-failure-5",
+    "text": "Consider using tool calling or other structured output techniques if possible without an output parser to reliably output parseable values.",
+    "url": "https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE.md"
+  },
+  {
+    "captured_at": "2026-05-26T09:17:32.948993Z",
+    "final_url": "https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE.md",
+    "quote_hash": "sha256:bc4f441e79dd75038d07a72c7ce9250d9fa40203ee1e6a97fcd087b17f7dc62c",
+    "section_anchor": "root",
+    "short_excerpt": "Add more precise formatting instructions to your prompt.",
+    "source_id": "langchain-output-parsing-failure",
+    "source_type": "official_error_doc",
+    "span_id": "langchain-output-parsing-failure-6",
+    "text": "Add more precise formatting instructions to your prompt.",
+    "url": "https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE.md"
+  },
+  {
+    "captured_at": "2026-05-26T09:17:32.948993Z",
+    "final_url": "https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE.md",
+    "quote_hash": "sha256:6e7edc7e0bd2cea5acf5858c425e014d5dc29f9858dd2dec35ed7e8f6794470d",
+    "section_anchor": "root",
+    "short_excerpt": "If you are using a smaller or less capable model, try using a more capable one.",
+    "source_id": "langchain-output-parsing-failure",
+    "source_type": "official_error_doc",
+    "span_id": "langchain-output-parsing-failure-7",
+    "text": "If you are using a smaller or less capable model, try using a more capable one.",
+    "url": "https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE.md"
+  }
+]

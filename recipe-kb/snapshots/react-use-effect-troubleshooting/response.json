@@ -1,13 +1,22 @@
 {
-  "captured_at": "2026-05-21T09:50:51.121768Z",
+  "captured_at": "2026-05-26T12:26:11.870151Z",
   "content_hash": "sha256:792a72c2435c730be340b1d22ce4c492555de366b153ab00c23201ad15937243",
   "content_type": "text/html; charset=utf-8",
+  "expected_build_hints": [],
   "expected_failure_hints": [
     "Effect keeps re-running in an infinite cycle",
     "Effect runs twice when the component mounts",
     "missing cleanup function",
     "dependency changes on every render"
   ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
   "final_url": "https://react.dev/reference/react/useEffect",
   "refresh_policy": "monthly",
   "retrieved_status": 200,

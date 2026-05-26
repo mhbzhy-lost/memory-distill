@@ -1,0 +1,31 @@
+{
+  "captured_at": "2026-05-26T12:26:11.870151Z",
+  "content_hash": "sha256:7939820cde28c22f3ae29fd39f8c38bfb685aa1e7a5ce2bf9aecbf3dcffeee1d",
+  "content_type": "text/plain; charset=utf-8",
+  "expected_build_hints": [],
+  "expected_failure_hints": [
+    "CoroutineExceptionHandler got uncaught exception",
+    "CancellationException ignored by coroutine machinery",
+    "exception aggregation suppressed exceptions",
+    "SupervisorJob cancellation propagation",
+    "supervisorScope vs coroutineScope exception handling"
+  ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
+  "final_url": "https://raw.githubusercontent.com/Kotlin/kotlinx.coroutines/master/docs/topics/exception-handling.md",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "kotlin-coroutines-exception-handling",
+  "source_type": "library_doc",
+  "stacks": [
+    "kotlin",
+    "android"
+  ],
+  "url": "https://raw.githubusercontent.com/Kotlin/kotlinx.coroutines/master/docs/topics/exception-handling.md"
+}
