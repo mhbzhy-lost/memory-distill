@@ -122,7 +122,7 @@ def refresh(
     """Mark accepted recipes stale when local refreshed evidence no longer matches."""
     paths = KbPaths(Path.cwd()).ensure()
     for path in refresh_stale_status(paths, source_list_path=refetch):
-        print("stale: " + str(path))
+        typer.echo(f"stale: {path}")
 
 
 @app.command()
