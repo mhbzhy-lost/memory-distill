@@ -76,6 +76,7 @@ def refresh_stale_status(
     stale_paths: list[Path] = []
     detected_at = datetime.now(UTC).isoformat().replace("+00:00", "Z")
     removed_source_ids: set[str] = set()
+    refetched_final_urls: dict[str, str] = {}
 
     if source_list_path is not None:
         source_list = load_source_list(source_list_path)
@@ -87,6 +88,8 @@ def refresh_stale_status(
                 if result.removed:
                     removed_source_ids.add(source.source_id)
                 else:
+                    if result.final_url is not None:
+                        refetched_final_urls[source.source_id] = result.final_url
                     from recipe_importer.extract import extract_snapshot
                     extract_snapshot(paths.snapshots_dir / source.source_id)
         finally:
@@ -105,6 +108,11 @@ def refresh_stale_status(
         for ref in recipe.evidence_refs:
             if ref.source_id in removed_source_ids:
                 continue
+            if ref.source_id in refetched_final_urls:
+                new_final_url = refetched_final_urls[ref.source_id]
+                if str(ref.final_url) != new_final_url:
+                    if "final_url_changed" not in stale_reasons:
+                        stale_reasons.append("final_url_changed")
             if ref.source_id not in hashes_by_source:
                 hashes_by_source[ref.source_id] = _current_quote_hashes(paths, ref.source_id)
             current_hashes = hashes_by_source[ref.source_id]
