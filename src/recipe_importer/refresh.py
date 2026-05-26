@@ -118,6 +118,9 @@ def refresh_stale_status(
             current_hashes = hashes_by_source[ref.source_id]
             if current_hashes is None:
                 continue
+            if ref.source_id in refetched_final_urls and ref.span_id not in current_hashes:
+                if "section_anchor_gone" not in stale_reasons:
+                    stale_reasons.append("section_anchor_gone")
             if current_hashes.get(ref.span_id) != ref.quote_hash:
                 stale_reasons.append("source_quote_hash_changed")
 

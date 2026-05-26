@@ -268,3 +268,42 @@ def test_refresh_marks_stale_when_final_url_changed(kb_root):
     assert stale_paths == [stale_path]
     recipe = parse_recipe_file(stale_path)
     assert "final_url_changed" in recipe.maintenance.stale_reason
+
+
+def test_refresh_marks_stale_when_section_anchor_gone(kb_root):
+    paths = KbPaths(kb_root).ensure()
+    accepted, snapshot_dir = _published_recipe(paths)
+    recipe = parse_recipe_file(accepted)
+    old_span_id = recipe.evidence_refs[0].span_id
+
+    source_list_path = paths.sources_dir / "source-list.yml"
+    source_list_path.write_text(
+        yaml.safe_dump({
+            "sources": [{
+                "source_id": "react-error-418",
+                "url": "https://react.dev/errors/418",
+                "source_type": "official_error_doc",
+                "stacks": ["react", "nextjs"],
+            }]
+        }),
+        encoding="utf-8",
+    )
+
+    class FakeNewContentClient:
+        def get(self, url, **kwargs):
+            resp = MagicMock(spec=httpx.Response)
+            resp.status_code = 200
+            resp.url = url
+            resp.text = "<html><body><p>The page has been entirely rewritten with completely different content that does not match any of the original sections or hints.</p></body></html>"
+            resp.headers = {"content-type": "text/html"}
+            resp.raise_for_status = MagicMock()
+            return resp
+        def close(self):
+            pass
+
+    stale_paths = refresh_stale_status(paths, source_list_path, FakeNewContentClient())
+
+    stale_path = paths.stale_dir / "react-hydration-mismatch.md"
+    assert stale_paths == [stale_path]
+    recipe = parse_recipe_file(stale_path)
+    assert "section_anchor_gone" in recipe.maintenance.stale_reason
