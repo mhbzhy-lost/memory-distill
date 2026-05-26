@@ -1382,6 +1382,476 @@ RECIPE_TEMPLATES: tuple[RecipeTemplate, ...] = (
             "undismissable",
         ],
     ),
+    RecipeTemplate(
+        source_id="arkts-migration-guide",
+        failure_label="arkts no var use let",
+        recipe_id="arkts-no-var-use-let",
+        failure_class="harmonyos/arkts-syntax",
+        symptoms=[
+            "ArkTS compiler error: arkts-no-var (10605005) — var keyword is not supported, use let instead"
+        ],
+        fingerprints=[
+            "arkts-no-var",
+            "10605005",
+            "var keyword not supported",
+            "ArkTS 不支持 var",
+            "let 声明变量",
+        ],
+        first_checks=[
+            "Check whether the variable declaration uses var instead of let or const",
+            "Check whether the variable scope was intentionally block-scoped and convert to let",
+            "Check whether the code is .ets or .ts file (var works in .ts but not .ets)",
+        ],
+        do_not=[
+            "Do not use @ts-ignore to silence the ArkTS compiler for var usage",
+            "Do not convert to const if the variable is reassigned later; use let",
+        ],
+        evidence_needed=[
+            "Capture the compiler error message showing arkts-no-var with error code 10605005",
+            "Identify the file and line where var is declared",
+        ],
+        minimal_fix_scope=[
+            "The var declaration site",
+            "The surrounding scope if the variable needs block-level scoping",
+        ],
+        validation_ladder=[
+            "Replace var with let and verify the ArkTS compiler no longer reports 10605005",
+            "Verify the variable still behaves correctly in its block scope",
+            "Run the build or compile step for the affected module",
+        ],
+        regression_guard=[
+            "Add a CI lint or type-check step that flags var usage in .ets files"
+        ],
+        match_terms=[
+            "arkts-no-var",
+            "10605005",
+            "使用`let`而非`var`",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="arkts-migration-guide",
+        failure_label="arkts no any unknown type",
+        recipe_id="arkts-no-any-unknown-type",
+        failure_class="harmonyos/arkts-syntax",
+        symptoms=[
+            "ArkTS compiler error: arkts-no-any-unknown (10605008) — any and unknown types are not supported"
+        ],
+        fingerprints=[
+            "arkts-no-any-unknown",
+            "arkts-no-any",
+            "10605008",
+            "any type not supported",
+            "unknown type not supported",
+            "显式指定具体类型",
+        ],
+        first_checks=[
+            "Check whether the variable or parameter is typed as any or unknown",
+            "Check whether the function return type is any or unknown and replace with the actual return type",
+            "Check whether an external library API returns any and the result needs to be typed with a class or interface",
+        ],
+        do_not=[
+            "Do not replace any with Object if you need specific field access; define a class or interface",
+            "Do not use ESObject as a drop-in replacement for any in .ets files without checking API version restrictions",
+        ],
+        evidence_needed=[
+            "Capture the compiler error showing arkts-no-any-unknown with error code 10605008",
+            "Identify the type declaration site where any or unknown is used",
+        ],
+        minimal_fix_scope=[
+            "The variable, parameter, or return type annotation using any/unknown",
+            "The class or interface definition that replaces the unknown type",
+        ],
+        validation_ladder=[
+            "Replace any or unknown with a concrete type and verify no 10605008 error",
+            "Verify the code still compiles and the runtime behavior is unchanged",
+            "Run the module build or type-check step",
+        ],
+        regression_guard=[
+            "Add a type-check step that flags any or unknown in .ets files"
+        ],
+        match_terms=[
+            "arkts-no-any-unknown",
+            "arkts-no-any",
+            "10605008",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="arkts-migration-guide",
+        failure_label="arkts no untyped obj literals",
+        recipe_id="arkts-no-untyped-obj-literals",
+        failure_class="harmonyos/arkts-syntax",
+        symptoms=[
+            "ArkTS compiler error: arkts-no-untyped-obj-literals (10605038) — object literals require explicit type annotation"
+        ],
+        fingerprints=[
+            "arkts-no-untyped-obj-literals",
+            "10605038",
+            "object literal type",
+            "需要显式标注对象字面量的类型",
+            "编译时错误",
+        ],
+        first_checks=[
+            "Check whether an object literal is assigned to a variable without a type annotation",
+            "Check whether an object literal is passed as a function argument without an explicit type interface",
+            "Check whether the context type (variable annotation or parameter type) is sufficient to infer the literal type",
+        ],
+        do_not=[
+            "Do not rely solely on contextual inference; add explicit type annotation when the context is ambiguous",
+            "Do not convert object literals to class instances without checking whether an interface or class is more appropriate",
+        ],
+        evidence_needed=[
+            "Capture the compiler error showing arkts-no-untyped-obj-literals with error code 10605038",
+            "Identify the variable or parameter expecting the object literal",
+        ],
+        minimal_fix_scope=[
+            "The object literal expression and its surrounding type context",
+            "The interface or class definition used to annotate the literal type",
+        ],
+        validation_ladder=[
+            "Add explicit type annotation to the object literal and verify no 10605038 error",
+            "Verify the type annotation covers all fields in the object literal",
+            "Run the build or compile step for the affected module",
+        ],
+        regression_guard=[
+            "Add a type-check step that verifies all object literals have explicit or inferrable types"
+        ],
+        match_terms=[
+            "arkts-no-untyped-obj-literals",
+            "10605038",
+            "需要显式标注对象字面量的类型",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="arkts-migration-guide",
+        failure_label="arkts no delete operator",
+        recipe_id="arkts-no-delete-operator",
+        failure_class="harmonyos/arkts-syntax",
+        symptoms=[
+            "ArkTS compiler error: arkts-no-delete (10605059) — delete operator is not supported"
+        ],
+        fingerprints=[
+            "arkts-no-delete",
+            "10605059",
+            "delete operator",
+            "delete 运算符",
+            "不支持 delete",
+        ],
+        first_checks=[
+            "Check whether the code uses the delete operator on an object property",
+            "Check whether the intent is to remove a property from an object or delete an array element",
+            "Check whether the target is a Map and Map.delete() should be used instead",
+        ],
+        do_not=[
+            "Do not set the property to undefined or null as equivalent to deletion; ArkTS object layout is fixed at compile time",
+            "Do not use Reflect.deleteProperty as an alternative; it is also restricted in ArkTS static mode",
+        ],
+        evidence_needed=[
+            "Capture the compiler error showing arkts-no-delete with error code 10605059",
+            "Identify the property and object that the delete operation targets",
+        ],
+        minimal_fix_scope=[
+            "The delete expression site",
+            "The data structure used to represent the object or collection",
+        ],
+        validation_ladder=[
+            "Replace delete with an appropriate alternative (Map.delete(), array splice, or field reset) and verify no 10605059 error",
+            "Verify the runtime behavior matches the original intent",
+            "Run the build or compile step for the affected module",
+        ],
+        regression_guard=[
+            "Add a type-check or lint step that flags delete operator usage in .ets files"
+        ],
+        match_terms=[
+            "arkts-no-delete",
+            "10605059",
+            "不支持`delete`运算符",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="arkts-migration-guide",
+        failure_label="arkts no destructuring assignment",
+        recipe_id="arkts-no-destruct-assignment",
+        failure_class="harmonyos/arkts-syntax",
+        symptoms=[
+            "ArkTS compiler error: arkts-no-destruct-assignment (10605069) — destructuring assignment is not supported"
+        ],
+        fingerprints=[
+            "arkts-no-destruct-assignment",
+            "10605069",
+            "destructuring assignment",
+            "解构赋值",
+            "不支持解构",
+        ],
+        first_checks=[
+            "Check whether the code uses array or object destructuring in an assignment (left side is a pattern)",
+            "Check whether destructuring is used for swapping variables or extracting nested fields",
+            "Check whether the destructuring target is a function return value or an external data structure",
+        ],
+        do_not=[
+            "Do not convert destructuring to indexed access ([a, b] = [x, y]) without ensuring the array is typed",
+            "Do not use temporary variable assignment inside an expression to mimic destructuring; use separate statements",
+        ],
+        evidence_needed=[
+            "Capture the compiler error showing arkts-no-destruct-assignment with error code 10605069",
+            "Identify the destructuring pattern and the source value",
+        ],
+        minimal_fix_scope=[
+            "The destructuring assignment expression",
+            "The separate assignment statements used as replacement",
+        ],
+        validation_ladder=[
+            "Replace destructuring with separate variable assignments and verify no 10605069 error",
+            "Verify the replaced code produces identical values at runtime",
+            "Run the build or compile step for the affected module",
+        ],
+        regression_guard=[
+            "Add a type-check or lint step that flags destructuring patterns in .ets files"
+        ],
+        match_terms=[
+            "arkts-no-destruct-assignment",
+            "10605069",
+            "不支持解构赋值",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="arkts-migration-guide",
+        failure_label="arkts no for in loop",
+        recipe_id="arkts-no-for-in-loop",
+        failure_class="harmonyos/arkts-syntax",
+        symptoms=[
+            "ArkTS compiler error: arkts-no-for-in (10605080) — for..in loop over object properties is not supported"
+        ],
+        fingerprints=[
+            "arkts-no-for-in",
+            "10605080",
+            "for .. in",
+            "for..in",
+            "不支持 for..in",
+        ],
+        first_checks=[
+            "Check whether the code uses a for..in loop to iterate over object keys",
+            "Check whether the intent is to iterate over properties, array indices, or a Map's keys",
+            "Check whether the object is typed and all its keys are known at compile time",
+        ],
+        do_not=[
+            "Do not use Object.keys() as a drop-in replacement without verifying the object type is compatible",
+            "Do not convert for..in to for..of on an untyped array; ensure the array is explicitly typed",
+        ],
+        evidence_needed=[
+            "Capture the compiler error showing arkts-no-for-in with error code 10605080",
+            "Identify the object being iterated and the properties accessed inside the loop",
+        ],
+        minimal_fix_scope=[
+            "The for..in loop and its body",
+            "The data structure iteration (convert to for..of on Object.keys or array iteration)",
+        ],
+        validation_ladder=[
+            "Replace for..in with for..of on typed keys or array iteration and verify no 10605080 error",
+            "Verify the iteration produces identical property access sequence",
+            "Run the build or compile step for the affected module",
+        ],
+        regression_guard=[
+            "Add a type-check or lint step that flags for..in loops in .ets files"
+        ],
+        match_terms=[
+            "arkts-no-for-in",
+            "10605080",
+            "不支持`for .. in`",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="arkts-migration-guide",
+        failure_label="arkts no types in catch clause",
+        recipe_id="arkts-no-types-in-catch",
+        failure_class="harmonyos/arkts-syntax",
+        symptoms=[
+            "ArkTS compiler error: arkts-no-types-in-catch (10605079) — type annotation in catch clause is not supported"
+        ],
+        fingerprints=[
+            "arkts-no-types-in-catch",
+            "10605079",
+            "catch type",
+            "catch 语句中标注类型",
+            "不支持 catch 类型标注",
+        ],
+        first_checks=[
+            "Check whether a catch clause has a type annotation like catch(e: any) or catch(e: Error)",
+            "Check whether the catch block uses e as a typed value without narrowing",
+            "Check whether instanceof or as cast is used to narrow the caught value inside the block",
+        ],
+        do_not=[
+            "Do not annotate the catch parameter with any type; omit the annotation entirely in ArkTS",
+            "Do not assume the caught value is Error; always use instanceof Error before accessing .message",
+        ],
+        evidence_needed=[
+            "Capture the compiler error showing arkts-no-types-in-catch with error code 10605079",
+            "Identify the catch parameter and how it is used in the block",
+        ],
+        minimal_fix_scope=[
+            "The catch clause parameter and its type annotation",
+            "The catch block that needs instanceof narrowing",
+        ],
+        validation_ladder=[
+            "Remove the type annotation from catch parameter and add instanceof narrowing inside the block; verify no 10605079 error",
+            "Verify the error handling still works for all expected Error subtypes",
+            "Run the build or compile step for the affected module",
+        ],
+        regression_guard=[
+            "Add a type-check step that flags typed catch parameters in .ets files"
+        ],
+        match_terms=[
+            "arkts-no-types-in-catch",
+            "10605079",
+            "不支持在catch语句标注类型",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="arkts-migration-guide",
+        failure_label="arkts no comma outside loops",
+        recipe_id="arkts-no-comma-outside-loops",
+        failure_class="harmonyos/arkts-syntax",
+        symptoms=[
+            "ArkTS compiler error: arkts-no-comma-outside-loops (10605071) — comma operator only allowed in for loop header"
+        ],
+        fingerprints=[
+            "arkts-no-comma-outside-loops",
+            "10605071",
+            "comma operator",
+            "逗号运算符",
+            "逗号运算符仅适用于 for 循环",
+        ],
+        first_checks=[
+            "Check whether the comma operator is used as an expression (value1, value2) not as a separator in declarations or function arguments",
+            "Check whether the comma is inside a for loop header (allowed) vs. in a general expression (not allowed)",
+            "Check whether the intended semantics is sequential expression evaluation or just a multi-value return",
+        ],
+        do_not=[
+            "Do not use the comma operator to chain side effects in arbitrary expressions; use separate statements",
+            "Do not confuse the comma expression operator with the comma used in variable declarations or function call arguments",
+        ],
+        evidence_needed=[
+            "Capture the compiler error showing arkts-no-comma-outside-loops with error code 10605071",
+            "Identify the comma expression site and its intended semantics",
+        ],
+        minimal_fix_scope=[
+            "The comma expression site",
+            "The surrounding statement or block where the sequential logic is split into separate statements",
+        ],
+        validation_ladder=[
+            "Split the comma expression into separate statements or move to a for loop header; verify no 10605071 error",
+            "Verify the sequential semantics is preserved after the refactor",
+            "Run the build or compile step for the affected module",
+        ],
+        regression_guard=[
+            "Add a type-check or lint step that flags comma expression usage outside for loops in .ets files"
+        ],
+        match_terms=[
+            "arkts-no-comma-outside-loops",
+            "10605071",
+            "逗号运算符`,`仅用在`for`循环",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="openharmony-stage-model-lifecycle",
+        failure_label="arkts uiability lifecycle callback sequence error",
+        recipe_id="arkts-uiability-lifecycle-callback-error",
+        failure_class="harmonyos/ability-lifecycle",
+        symptoms=[
+            "UIAbility lifecycle callback invoked at unexpected time — onCreate, onWindowStageCreate, onForeground, onBackground, onDestroy sequence is violated"
+        ],
+        fingerprints=[
+            "UIAbility lifecycle",
+            "UIAbility onCreate",
+            "UIAbility onWindowStageCreate",
+            "UIAbility onForeground",
+            "UIAbility onBackground",
+            "UIAbility onDestroy",
+            "UIAbility lifecycle onCreate",
+            "UIAbility lifecycle onWindowStageCreate",
+            "lifecycle callback sequence",
+        ],
+        first_checks=[
+            "Check whether window operation code is placed in onWindowStageCreate (not onCreate), where WindowStage is not yet available",
+            "Check whether global data initialization is placed in onCreate and per-window UI logic in onWindowStageCreate",
+            "Check whether background-to-foreground transition logic is correctly placed in onForeground, not in onWindowStageCreate",
+        ],
+        do_not=[
+            "Do not access WindowStage in onCreate; it is only available in onWindowStageCreate",
+            "Do not perform long-running synchronous work in onWindowStageCreate; use async operations and await windowStage.loadContent",
+        ],
+        evidence_needed=[
+            "Capture the lifecycle log sequence showing which callback fired and in what order",
+            "Identify the code that depends on WindowStage or context availability",
+        ],
+        minimal_fix_scope=[
+            "The lifecycle callback method where the misordered operation is placed",
+            "The operation that depends on WindowStage or context readiness",
+        ],
+        validation_ladder=[
+            "Move the operation to the correct lifecycle callback and verify no exception or null context",
+            "Verify the lifecycle log sequence matches: onCreate → onWindowStageCreate → onForeground → onBackground → onDestroy",
+            "Run the ability integration test covering the lifecycle transition",
+        ],
+        regression_guard=[
+            "Add an ability lifecycle test asserting callback order and WindowStage availability"
+        ],
+        match_terms=[
+            "UIAbility",
+            "onCreate",
+            "onWindowStageCreate",
+            "onForeground",
+            "onBackground",
+            "lifecycle",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="openharmony-stage-model-lifecycle",
+        failure_label="arkts uiability context null or invalid",
+        recipe_id="arkts-uiability-context-not-ready",
+        failure_class="harmonyos/ability-lifecycle",
+        symptoms=[
+            "Accessing UIAbilityContext returns null or throws because context is accessed before onCreate initializes it"
+        ],
+        fingerprints=[
+            "UIAbilityContext",
+            "Context is null",
+            "context not ready",
+            "getContext",
+            "context 为空",
+        ],
+        first_checks=[
+            "Check whether context is accessed in a member initializer, constructor, or static field before onCreate",
+            "Check whether getContext() is called on a component that has not yet been attached to an AbilityStage",
+            "Check whether the context is passed through a closure that captures a stale null reference",
+        ],
+        do_not=[
+            "Do not cache UIAbilityContext in a module-level variable before onCreate completes",
+            "Do not pass context to child components via property assignment before the context is initialized in onCreate",
+        ],
+        evidence_needed=[
+            "Capture the stack trace showing context is null at the call site",
+            "Identify the lifecycle stage when the null context is accessed",
+        ],
+        minimal_fix_scope=[
+            "The context access site and the lifecycle callback it is in",
+            "The state initialization order in the UIAbility subclass",
+        ],
+        validation_ladder=[
+            "Move context access to onCreate or a later callback and verify no null reference",
+            "Verify child components receive context only after it is initialized",
+            "Run the ability lifecycle test covering context availability",
+        ],
+        regression_guard=[
+            "Add an ability test asserting context is non-null from onCreate onwards"
+        ],
+        match_terms=[
+            "UIAbilityContext",
+            "context",
+            "null",
+            "getContext",
+            "onCreate",
+        ],
+    ),
 )
 
 
