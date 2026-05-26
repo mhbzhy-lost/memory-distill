@@ -113,3 +113,81 @@ sources:
       - when to use client directive
       - data fetching in server components
     refresh_policy: monthly
+  - source_id: fastapi-handling-errors
+    url: https://fastapi.tiangolo.com/tutorial/handling-errors/
+    source_type: official_doc
+    stacks:
+      - fastapi
+    expected_failure_hints:
+      - HTTPException
+      - RequestValidationError
+      - override default exception handlers
+      - custom exception handler
+    refresh_policy: monthly
+  - source_id: fastapi-middleware
+    url: https://fastapi.tiangolo.com/tutorial/middleware/
+    source_type: official_doc
+    stacks:
+      - fastapi
+    expected_failure_hints:
+      - middleware process_time header
+      - call_next
+      - middleware execution order
+    refresh_policy: monthly
+  - source_id: fastapi-custom-response
+    url: https://fastapi.tiangolo.com/advanced/custom-response/
+    source_type: official_doc
+    stacks:
+      - fastapi
+    expected_failure_hints:
+      - HTMLResponse
+      - PlainTextResponse
+      - JSONResponse
+      - StreamingResponse
+      - FileResponse
+    refresh_policy: monthly
+  - source_id: fastapi-events
+    url: https://fastapi.tiangolo.com/advanced/events/
+    source_type: official_doc
+    stacks:
+      - fastapi
+    expected_failure_hints:
+      - lifespan
+      - startup event
+      - shutdown event
+      - asynccontextmanager
+    refresh_policy: monthly
+  - source_id: pydantic-validation-errors
+    url: https://docs.pydantic.dev/latest/errors/validation_errors/
+    source_type: official_error_doc
+    stacks:
+      - pydantic
+    expected_failure_hints:
+      - ValidationError
+      - int_parsing
+      - bool_type
+      - missing
+      - greater_than
+    refresh_policy: monthly
+  - source_id: pydantic-errors
+    url: https://docs.pydantic.dev/latest/errors/errors/
+    source_type: official_error_doc
+    stacks:
+      - pydantic
+    expected_failure_hints:
+      - ValidationError
+      - error_count
+      - custom error messages
+      - ErrorDetails
+    refresh_policy: monthly
+  - source_id: pydantic-usage-errors
+    url: https://docs.pydantic.dev/latest/errors/usage_errors/
+    source_type: official_error_doc
+    stacks:
+      - pydantic
+    expected_failure_hints:
+      - PydanticUserError
+      - class-not-fully-defined
+      - decorator-missing-field
+      - model_rebuild
+    refresh_policy: monthly

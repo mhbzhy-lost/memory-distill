@@ -1,0 +1,29 @@
+{
+  "captured_at": "2026-05-26T08:42:53.083772Z",
+  "content_hash": "sha256:8312c6d28d682fad9962131073cb1d3ff8decc1b4933fd67120764d5665f83ce",
+  "content_type": "text/html; charset=utf-8",
+  "expected_build_hints": [],
+  "expected_failure_hints": [
+    "lifespan",
+    "startup event",
+    "shutdown event",
+    "asynccontextmanager"
+  ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
+  "final_url": "https://fastapi.tiangolo.com/advanced/events/",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "fastapi-events",
+  "source_type": "official_doc",
+  "stacks": [
+    "fastapi"
+  ],
+  "url": "https://fastapi.tiangolo.com/advanced/events/"
+}

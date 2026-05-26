@@ -1,0 +1,30 @@
+{
+  "captured_at": "2026-05-26T08:42:53.083772Z",
+  "content_hash": "sha256:387338daf573c75d2fe263ed12dcb764ab2e1c22ee06ab9bc74aa388bbdad769",
+  "content_type": "text/html; charset=utf-8",
+  "expected_build_hints": [],
+  "expected_failure_hints": [
+    "ValidationError",
+    "int_parsing",
+    "bool_type",
+    "missing",
+    "greater_than"
+  ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
+  "final_url": "https://pydantic.dev/docs/validation/latest/errors/validation_errors/",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "pydantic-validation-errors",
+  "source_type": "official_error_doc",
+  "stacks": [
+    "pydantic"
+  ],
+  "url": "https://docs.pydantic.dev/latest/errors/validation_errors/"
+}

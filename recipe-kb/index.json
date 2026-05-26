@@ -2,6 +2,175 @@
   "recipes": [
     {
       "do_not": [
+        "Do not return an HTTPException as a value; it must be raised with raise",
+        "Do not override RequestValidationError handler without re-raising or returning all validation errors"
+      ],
+      "failure_class": "fastapi/error-handling",
+      "fingerprints": [
+        "HTTPException",
+        "raise HTTPException",
+        "custom exception handler",
+        "exception_handler",
+        "detail"
+      ],
+      "first_checks": [
+        "Check the HTTPException status_code and detail parameter at the raise site",
+        "Check whether a custom exception_handler overrides the default HTTPException or RequestValidationError handler",
+        "Check whether headers are correctly passed via the headers parameter"
+      ],
+      "id": "fastapi-httpexception-custom-handler",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/fastapi-httpexception-custom-handler.md",
+      "source_ids": [
+        "fastapi-handling-errors"
+      ],
+      "source_urls": [
+        "https://fastapi.tiangolo.com/tutorial/handling-errors/"
+      ],
+      "stack": [
+        "fastapi"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "fastapi/error-handling: FastAPI path operation raises HTTPException but client receives unexpected response format",
+      "symptoms": [
+        "FastAPI path operation raises HTTPException but client receives unexpected response format"
+      ],
+      "validation_ladder": [
+        "Reproduce the error endpoint with the failing request in development",
+        "Inspect the HTTP response status and JSON body",
+        "Run the endpoint smoke test or integration test"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not perform long-running blocking operations in on_event or lifespan without awaiting",
+        "Do not share state via globals without considering concurrent workers"
+      ],
+      "failure_class": "fastapi/lifecycle",
+      "fingerprints": [
+        "lifespan",
+        "startup",
+        "shutdown",
+        "on_event",
+        "asynccontextmanager"
+      ],
+      "first_checks": [
+        "Check whether on_event('startup') or on_event('shutdown') is used instead of the recommended lifespan context manager",
+        "Check whether the lifespan async function contains a yield separating setup from teardown code",
+        "Check whether the FastAPI app is constructed with lifespan= passed as a parameter"
+      ],
+      "id": "fastapi-lifespan-vs-on-event",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/fastapi-lifespan-vs-on-event.md",
+      "source_ids": [
+        "fastapi-events"
+      ],
+      "source_urls": [
+        "https://fastapi.tiangolo.com/advanced/events/"
+      ],
+      "stack": [
+        "fastapi"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "fastapi/lifecycle: FastAPI app fails to initialize shared resources because startup/shutdown logic is missing or uses deprecated on_event",
+      "symptoms": [
+        "FastAPI app fails to initialize shared resources because startup/shutdown logic is missing or uses deprecated on_event"
+      ],
+      "validation_ladder": [
+        "Start the app and verify shared resources are initialized before request handling",
+        "Stop the app and verify teardown runs",
+        "Run the app lifecycle or integration test"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not skip calling call_next unless intentionally short-circuiting the request",
+        "Do not access response.headers before await call_next(request) returns"
+      ],
+      "failure_class": "fastapi/middleware",
+      "fingerprints": [
+        "call_next",
+        "middleware",
+        "process_time",
+        "X-Process-Time",
+        "middleware execution order"
+      ],
+      "first_checks": [
+        "Check whether call_next is awaited before or after the code that modifies the response",
+        "Check whether the middleware modifies the request body before passing it to call_next",
+        "Check middleware execution order when multiple middleware decorators are stacked"
+      ],
+      "id": "fastapi-middleware-call-next-order",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/fastapi-middleware-call-next-order.md",
+      "source_ids": [
+        "fastapi-middleware"
+      ],
+      "source_urls": [
+        "https://fastapi.tiangolo.com/tutorial/middleware/"
+      ],
+      "stack": [
+        "fastapi"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "fastapi/middleware: FastAPI middleware fails silently or produces wrong response because call_next ordering is wrong",
+      "symptoms": [
+        "FastAPI middleware fails silently or produces wrong response because call_next ordering is wrong"
+      ],
+      "validation_ladder": [
+        "Reproduce the request that triggers the middleware in development",
+        "Inspect the response headers and body",
+        "Run the middleware integration test"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not return a JSONResponse directly when a response_model is declared unless you want to bypass Pydantic serialization",
+        "Do not use StreamingResponse for data that fits in memory as a plain JSONResponse"
+      ],
+      "failure_class": "fastapi/response-format",
+      "fingerprints": [
+        "HTMLResponse",
+        "PlainTextResponse",
+        "JSONResponse",
+        "StreamingResponse",
+        "FileResponse",
+        "response_class"
+      ],
+      "first_checks": [
+        "Check the response_class parameter on the path operation decorator",
+        "Check whether returning a Response subclass directly bypasses response_model serialization",
+        "Check whether the correct Content-Type is expected by the consuming client"
+      ],
+      "id": "fastapi-wrong-response-class",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/fastapi-wrong-response-class.md",
+      "source_ids": [
+        "fastapi-custom-response"
+      ],
+      "source_urls": [
+        "https://fastapi.tiangolo.com/advanced/custom-response/"
+      ],
+      "stack": [
+        "fastapi"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "fastapi/response-format: FastAPI returns unexpected Content-Type or data format because wrong Response subclass is used",
+      "symptoms": [
+        "FastAPI returns unexpected Content-Type or data format because wrong Response subclass is used"
+      ],
+      "validation_ladder": [
+        "Inspect the response Content-Type header in development",
+        "Verify the response body matches the documented schema",
+        "Run the endpoint test for the affected route"
+      ]
+    },
+    {
+      "do_not": [
         "Do not catch and swallow DynamicServerError manually",
         "Do not move cookies or headers into delayed callbacks to satisfy static generation"
       ],
@@ -82,6 +251,137 @@
         "Render the affected route in development",
         "Confirm the invalid next/dynamic warning is gone",
         "Run the route or component smoke test"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not define a BaseModel subclass with Optional['ForwardRef'] without calling model_rebuild() after the target is defined",
+        "Do not suppress the class-not-fully-defined error; it means the schema is incomplete"
+      ],
+      "failure_class": "pydantic/model-schema",
+      "fingerprints": [
+        "class-not-fully-defined",
+        "PydanticUserError",
+        "model_rebuild",
+        "ForwardRef",
+        "decorator-missing-field"
+      ],
+      "first_checks": [
+        "Check whether the referenced type is defined before the model class is instantiated or validated",
+        "Check whether model_rebuild() is called after the forward-referenced type is defined",
+        "Check whether @field_validator field names match actual model fields"
+      ],
+      "id": "pydantic-class-not-fully-defined",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/pydantic-class-not-fully-defined.md",
+      "source_ids": [
+        "pydantic-usage-errors"
+      ],
+      "source_urls": [
+        "https://docs.pydantic.dev/latest/errors/usage_errors/",
+        "https://pydantic.dev/docs/validation/latest/errors/usage_errors/"
+      ],
+      "stack": [
+        "pydantic"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "pydantic/model-schema: PydanticUserError class-not-fully-defined raised when instantiating a model that references a forward or post-defined type",
+      "symptoms": [
+        "PydanticUserError class-not-fully-defined raised when instantiating a model that references a forward or post-defined type"
+      ],
+      "validation_ladder": [
+        "Instantiate the model after adding model_rebuild() and verify no PydanticUserError",
+        "Verify nested model validation works with forward references",
+        "Run the model unit test for the affected forward-reference path"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not mutate the original ValidationError object when building custom messages",
+        "Do not forget to include the error['loc'] when transforming errors for API responses"
+      ],
+      "failure_class": "pydantic/error-messages",
+      "fingerprints": [
+        "customize error messages",
+        "ErrorDetails",
+        "error_count",
+        "e.errors()",
+        "ctx",
+        "CUSTOM_MESSAGES"
+      ],
+      "first_checks": [
+        "Check whether the default error messages are acceptable before building a custom handler",
+        "Check the error['type'] field for a match against a custom messages dictionary",
+        "Check whether ctx fields are correctly substituted in custom messages"
+      ],
+      "id": "pydantic-custom-error-messages",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/pydantic-custom-error-messages.md",
+      "source_ids": [
+        "pydantic-errors"
+      ],
+      "source_urls": [
+        "https://docs.pydantic.dev/latest/errors/errors/",
+        "https://pydantic.dev/docs/validation/latest/errors/errors/"
+      ],
+      "stack": [
+        "pydantic"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "pydantic/error-messages: Pydantic ValidationError default messages are not suitable for the API response or client display",
+      "symptoms": [
+        "Pydantic ValidationError default messages are not suitable for the API response or client display"
+      ],
+      "validation_ladder": [
+        "Trigger a validation failure and compare default vs custom error output",
+        "Verify all error types present in the input are covered by the custom mapping",
+        "Run the endpoint or model test that exercises the error path"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not catch ValidationError broadly without inspecting the individual error types",
+        "Do not assume coercion will always succeed; check type constraints on Field definitions"
+      ],
+      "failure_class": "pydantic/validation",
+      "fingerprints": [
+        "ValidationError",
+        "int_parsing",
+        "bool_type",
+        "missing",
+        "greater_than",
+        "validation error"
+      ],
+      "first_checks": [
+        "Check the error type field in exc.errors()[0]['type'] against the Pydantic validation error catalog",
+        "Check the loc tuple to find which field path failed validation",
+        "Check whether strict mode is enabled and affects the allowed input types"
+      ],
+      "id": "pydantic-validation-error-type",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/pydantic-validation-error-type.md",
+      "source_ids": [
+        "pydantic-validation-errors"
+      ],
+      "source_urls": [
+        "https://docs.pydantic.dev/latest/errors/validation_errors/",
+        "https://pydantic.dev/docs/validation/latest/errors/validation_errors/"
+      ],
+      "stack": [
+        "pydantic"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "pydantic/validation: Pydantic raises ValidationError with an unexpected error type during model instantiation or validation",
+      "symptoms": [
+        "Pydantic raises ValidationError with an unexpected error type during model instantiation or validation"
+      ],
+      "validation_ladder": [
+        "Instantiate the model with failing data and inspect the ValidationError",
+        "Verify the fix eliminates all errors of the same type",
+        "Run the model unit test covering the affected field"
       ]
     },
     {

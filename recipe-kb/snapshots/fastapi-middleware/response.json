@@ -1,0 +1,28 @@
+{
+  "captured_at": "2026-05-26T08:42:53.083772Z",
+  "content_hash": "sha256:0157b0e80ac649845648e1c642819329d1962280507115217cb551ce1fe15b67",
+  "content_type": "text/html; charset=utf-8",
+  "expected_build_hints": [],
+  "expected_failure_hints": [
+    "middleware process_time header",
+    "call_next",
+    "middleware execution order"
+  ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
+  "final_url": "https://fastapi.tiangolo.com/tutorial/middleware/",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "fastapi-middleware",
+  "source_type": "official_doc",
+  "stacks": [
+    "fastapi"
+  ],
+  "url": "https://fastapi.tiangolo.com/tutorial/middleware/"
+}

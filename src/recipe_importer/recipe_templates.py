@@ -419,6 +419,340 @@ RECIPE_TEMPLATES: tuple[RecipeTemplate, ...] = (
             "refetched in the background",
         ],
     ),
+    RecipeTemplate(
+        source_id="fastapi-handling-errors",
+        failure_label="fastapi httpexception custom handler",
+        recipe_id="fastapi-httpexception-custom-handler",
+        failure_class="fastapi/error-handling",
+        symptoms=["FastAPI path operation raises HTTPException but client receives unexpected response format"],
+        fingerprints=[
+            "HTTPException",
+            "raise HTTPException",
+            "custom exception handler",
+            "exception_handler",
+            "detail",
+        ],
+        first_checks=[
+            "Check the HTTPException status_code and detail parameter at the raise site",
+            "Check whether a custom exception_handler overrides the default HTTPException or RequestValidationError handler",
+            "Check whether headers are correctly passed via the headers parameter",
+        ],
+        do_not=[
+            "Do not return an HTTPException as a value; it must be raised with raise",
+            "Do not override RequestValidationError handler without re-raising or returning all validation errors",
+        ],
+        evidence_needed=[
+            "Capture the HTTP response status and JSON detail returned to the client",
+            "Identify whether a custom exception_handler intercepts or swallows the exception",
+        ],
+        minimal_fix_scope=[
+            "The path operation function that raises the HTTPException",
+            "The app-level exception_handler that transforms the exception to a response",
+        ],
+        validation_ladder=[
+            "Reproduce the error endpoint with the failing request in development",
+            "Inspect the HTTP response status and JSON body",
+            "Run the endpoint smoke test or integration test",
+        ],
+        regression_guard=[
+            "Add an endpoint test that asserts the correct HTTP status and detail body"
+        ],
+        match_terms=[
+            "HTTPException",
+            "raise HTTPException",
+            "exception handler",
+            "RequestValidationError",
+            "override",
+            "custom exception",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="fastapi-middleware",
+        failure_label="fastapi middleware call next",
+        recipe_id="fastapi-middleware-call-next-order",
+        failure_class="fastapi/middleware",
+        symptoms=["FastAPI middleware fails silently or produces wrong response because call_next ordering is wrong"],
+        fingerprints=[
+            "call_next",
+            "middleware",
+            "process_time",
+            "X-Process-Time",
+            "middleware execution order",
+        ],
+        first_checks=[
+            "Check whether call_next is awaited before or after the code that modifies the response",
+            "Check whether the middleware modifies the request body before passing it to call_next",
+            "Check middleware execution order when multiple middleware decorators are stacked",
+        ],
+        do_not=[
+            "Do not skip calling call_next unless intentionally short-circuiting the request",
+            "Do not access response.headers before await call_next(request) returns",
+        ],
+        evidence_needed=[
+            "Capture the response headers to verify the custom header was added",
+            "Check the timing of code before and after call_next",
+        ],
+        minimal_fix_scope=[
+            "The middleware function and its call_next invocation",
+            "The decorator ordering on the FastAPI app instance",
+        ],
+        validation_ladder=[
+            "Reproduce the request that triggers the middleware in development",
+            "Inspect the response headers and body",
+            "Run the middleware integration test",
+        ],
+        regression_guard=[
+            "Add a middleware test that asserts the custom header appears on every response"
+        ],
+        match_terms=[
+            "call_next",
+            "@app.middleware",
+            "X-Process-Time",
+            "add_process_time_header",
+            "Starlette middleware",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="fastapi-custom-response",
+        failure_label="fastapi wrong response class",
+        recipe_id="fastapi-wrong-response-class",
+        failure_class="fastapi/response-format",
+        symptoms=["FastAPI returns unexpected Content-Type or data format because wrong Response subclass is used"],
+        fingerprints=[
+            "HTMLResponse",
+            "PlainTextResponse",
+            "JSONResponse",
+            "StreamingResponse",
+            "FileResponse",
+            "response_class",
+        ],
+        first_checks=[
+            "Check the response_class parameter on the path operation decorator",
+            "Check whether returning a Response subclass directly bypasses response_model serialization",
+            "Check whether the correct Content-Type is expected by the consuming client",
+        ],
+        do_not=[
+            "Do not return a JSONResponse directly when a response_model is declared unless you want to bypass Pydantic serialization",
+            "Do not use StreamingResponse for data that fits in memory as a plain JSONResponse",
+        ],
+        evidence_needed=[
+            "Capture the HTTP response Content-Type header",
+            "Identify whether the response was returned directly or via response_class",
+        ],
+        minimal_fix_scope=[
+            "The path operation decorator response_class parameter",
+            "The return type annotation or direct Response subclass returned",
+        ],
+        validation_ladder=[
+            "Inspect the response Content-Type header in development",
+            "Verify the response body matches the documented schema",
+            "Run the endpoint test for the affected route",
+        ],
+        regression_guard=[
+            "Add an endpoint test that asserts Content-Type and response shape"
+        ],
+        match_terms=[
+            "HTMLResponse",
+            "PlainTextResponse",
+            "JSONResponse",
+            "StreamingResponse",
+            "FileResponse",
+            "response_class",
+            "Response directly",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="fastapi-events",
+        failure_label="fastapi lifespan vs on event",
+        recipe_id="fastapi-lifespan-vs-on-event",
+        failure_class="fastapi/lifecycle",
+        symptoms=["FastAPI app fails to initialize shared resources because startup/shutdown logic is missing or uses deprecated on_event"],
+        fingerprints=[
+            "lifespan",
+            "startup",
+            "shutdown",
+            "on_event",
+            "asynccontextmanager",
+        ],
+        first_checks=[
+            "Check whether on_event('startup') or on_event('shutdown') is used instead of the recommended lifespan context manager",
+            "Check whether the lifespan async function contains a yield separating setup from teardown code",
+            "Check whether the FastAPI app is constructed with lifespan= passed as a parameter",
+        ],
+        do_not=[
+            "Do not perform long-running blocking operations in on_event or lifespan without awaiting",
+            "Do not share state via globals without considering concurrent workers",
+        ],
+        evidence_needed=[
+            "Identify whether the startup code runs before the first request is served",
+            "Capture app startup logs to verify resource initialization",
+        ],
+        minimal_fix_scope=[
+            "The lifespan async context manager function",
+            "The FastAPI app constructor lifespan parameter",
+        ],
+        validation_ladder=[
+            "Start the app and verify shared resources are initialized before request handling",
+            "Stop the app and verify teardown runs",
+            "Run the app lifecycle or integration test",
+        ],
+        regression_guard=[
+            "Add a lifecycle test that asserts setup code runs before and teardown after request handling"
+        ],
+        match_terms=[
+            "lifespan",
+            "on_event",
+            "startup",
+            "shutdown",
+            "asynccontextmanager",
+            "application starts",
+            "before the application",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="pydantic-validation-errors",
+        failure_label="pydantic validation error type",
+        recipe_id="pydantic-validation-error-type",
+        failure_class="pydantic/validation",
+        symptoms=["Pydantic raises ValidationError with an unexpected error type during model instantiation or validation"],
+        fingerprints=[
+            "ValidationError",
+            "int_parsing",
+            "bool_type",
+            "missing",
+            "greater_than",
+            "validation error",
+        ],
+        first_checks=[
+            "Check the error type field in exc.errors()[0]['type'] against the Pydantic validation error catalog",
+            "Check the loc tuple to find which field path failed validation",
+            "Check whether strict mode is enabled and affects the allowed input types",
+        ],
+        do_not=[
+            "Do not catch ValidationError broadly without inspecting the individual error types",
+            "Do not assume coercion will always succeed; check type constraints on Field definitions",
+        ],
+        evidence_needed=[
+            "Capture exc.errors() to see all validation errors, their types, locs, and messages",
+            "Identify the model field annotations and Field constraints that failed",
+        ],
+        minimal_fix_scope=[
+            "The model field definition and type annotation",
+            "The input data structure passed to model_validate or model instantiation",
+        ],
+        validation_ladder=[
+            "Instantiate the model with failing data and inspect the ValidationError",
+            "Verify the fix eliminates all errors of the same type",
+            "Run the model unit test covering the affected field",
+        ],
+        regression_guard=[
+            "Add a model test that asserts correct ValidationError.type for invalid input"
+        ],
+        match_terms=[
+            "ValidationError",
+            "int_parsing",
+            "bool_type",
+            "missing",
+            "greater_than",
+            "error type",
+            "errors()",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="pydantic-errors",
+        failure_label="pydantic custom error messages",
+        recipe_id="pydantic-custom-error-messages",
+        failure_class="pydantic/error-messages",
+        symptoms=["Pydantic ValidationError default messages are not suitable for the API response or client display"],
+        fingerprints=[
+            "customize error messages",
+            "ErrorDetails",
+            "error_count",
+            "e.errors()",
+            "ctx",
+            "CUSTOM_MESSAGES",
+        ],
+        first_checks=[
+            "Check whether the default error messages are acceptable before building a custom handler",
+            "Check the error['type'] field for a match against a custom messages dictionary",
+            "Check whether ctx fields are correctly substituted in custom messages",
+        ],
+        do_not=[
+            "Do not mutate the original ValidationError object when building custom messages",
+            "Do not forget to include the error['loc'] when transforming errors for API responses",
+        ],
+        evidence_needed=[
+            "Capture the default e.errors() output before transforming",
+            "Capture the custom messages dictionary and the transformed output",
+        ],
+        minimal_fix_scope=[
+            "The custom error message mapping dictionary",
+            "The error transformation function that maps ValidationError.errors() to the API response",
+        ],
+        validation_ladder=[
+            "Trigger a validation failure and compare default vs custom error output",
+            "Verify all error types present in the input are covered by the custom mapping",
+            "Run the endpoint or model test that exercises the error path",
+        ],
+        regression_guard=[
+            "Add a test that asserts custom error messages appear for the covered error types"
+        ],
+        match_terms=[
+            "customize error messages",
+            "CUSTOM_MESSAGES",
+            "ErrorDetails",
+            "error['type']",
+            "convert_errors",
+            "loc_to_dot_sep",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="pydantic-usage-errors",
+        failure_label="pydantic class not fully defined",
+        recipe_id="pydantic-class-not-fully-defined",
+        failure_class="pydantic/model-schema",
+        symptoms=["PydanticUserError class-not-fully-defined raised when instantiating a model that references a forward or post-defined type"],
+        fingerprints=[
+            "class-not-fully-defined",
+            "PydanticUserError",
+            "model_rebuild",
+            "ForwardRef",
+            "decorator-missing-field",
+        ],
+        first_checks=[
+            "Check whether the referenced type is defined before the model class is instantiated or validated",
+            "Check whether model_rebuild() is called after the forward-referenced type is defined",
+            "Check whether @field_validator field names match actual model fields",
+        ],
+        do_not=[
+            "Do not define a BaseModel subclass with Optional['ForwardRef'] without calling model_rebuild() after the target is defined",
+            "Do not suppress the class-not-fully-defined error; it means the schema is incomplete",
+        ],
+        evidence_needed=[
+            "Capture the PydanticUserError.message and PydanticUserError.code",
+            "Identify the ForwardRef or type annotation that is missing",
+        ],
+        minimal_fix_scope=[
+            "The model class with the forward-referenced type",
+            "The type definition order or model_rebuild() call site",
+        ],
+        validation_ladder=[
+            "Instantiate the model after adding model_rebuild() and verify no PydanticUserError",
+            "Verify nested model validation works with forward references",
+            "Run the model unit test for the affected forward-reference path",
+        ],
+        regression_guard=[
+            "Add a model test that validates forward-referenced nested models after model_rebuild()"
+        ],
+        match_terms=[
+            "class-not-fully-defined",
+            "PydanticUserError",
+            "model_rebuild",
+            "ForwardRef",
+            "decorator-missing-field",
+            "Optional",
+        ],
+    ),
 )
 
 
