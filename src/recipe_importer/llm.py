@@ -8,21 +8,20 @@ from recipe_importer.storage import read_json
 def deterministic_candidates(snapshot_dir: Path) -> EvidenceCandidates:
     sections = read_json(snapshot_dir / "sections.json")
     source_id = sections[0]["source_id"] if sections else snapshot_dir.name
-    template = TEMPLATES_BY_SOURCE.get(source_id)
-    if template is None:
-        return EvidenceCandidates(candidates=[])
+    templates = TEMPLATES_BY_SOURCE.get(source_id, [])
+    candidates: list[EvidenceCandidate] = []
 
-    lower_terms = [term.lower() for term in template.match_terms]
-    section_refs = [
-        item["span_id"]
-        for item in sections
-        if any(term in item["text"].lower() for term in lower_terms)
-    ]
-    if not section_refs:
-        return EvidenceCandidates(candidates=[])
+    for template in templates:
+        lower_terms = [term.lower() for term in template.match_terms]
+        section_refs = [
+            item["span_id"]
+            for item in sections
+            if any(term in item["text"].lower() for term in lower_terms)
+        ]
+        if not section_refs:
+            continue
 
-    return EvidenceCandidates(
-        candidates=[
+        candidates.append(
             EvidenceCandidate(
                 failure_label=template.failure_label,
                 symptom_quotes=template.symptoms,
@@ -32,5 +31,6 @@ def deterministic_candidates(snapshot_dir: Path) -> EvidenceCandidates:
                 section_refs=section_refs,
                 confidence="high",
             )
-        ]
-    )
+        )
+
+    return EvidenceCandidates(candidates=candidates)
