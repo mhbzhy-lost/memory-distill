@@ -1,12 +1,16 @@
 from pathlib import Path
+from unittest.mock import MagicMock
+
+import httpx
 
 from recipe_importer.extract import extract_snapshot
 from recipe_importer.index import rebuild_index
 from recipe_importer.llm import deterministic_candidates
+from recipe_importer.models import Source
 from recipe_importer.normalize import normalize_recipe
 from recipe_importer.paths import KbPaths
 from recipe_importer.publish import publish_recipe
-from recipe_importer.refresh import refresh_stale_status
+from recipe_importer.refresh import _refetch_single_source, RefetchResult, refresh_stale_status
 from recipe_importer.render import parse_recipe_file, render_recipe_file
 from recipe_importer.storage import read_json, write_json, write_text
 
@@ -104,3 +108,59 @@ def test_refresh_keeps_recipe_accepted_when_quote_hash_matches(kb_root):
 
     assert stale_paths == []
     assert accepted.exists()
+
+
+def test_refetch_single_source_writes_metadata(kb_root):
+    paths = KbPaths(kb_root).ensure()
+
+    fake_response = MagicMock(spec=httpx.Response)
+    fake_response.status_code = 200
+    fake_response.url = "https://react.dev/errors/418"
+    fake_response.text = "<html><body>hydration mismatch</body></html>"
+    fake_response.headers = {"content-type": "text/html"}
+    fake_response.raise_for_status = MagicMock()
+
+    class FakeClient:
+        def get(self, url, **kwargs):
+            return fake_response
+        def close(self):
+            pass
+
+    source = Source(
+        source_id="react-error-418",
+        url="https://react.dev/errors/418",
+        source_type="official_error_doc",
+        stacks=["react"],
+    )
+    result = _refetch_single_source(source, paths, FakeClient())
+
+    assert result.removed is False
+    assert result.source_id == "react-error-418"
+    assert result.final_url == "https://react.dev/errors/418"
+    raw_html = (paths.snapshots_dir / "react-error-418" / "raw.html").read_text(encoding="utf-8")
+    assert "hydration mismatch" in raw_html
+
+
+def test_refetch_single_source_removed_on_404(kb_root):
+    paths = KbPaths(kb_root).ensure()
+
+    class Fake404Client:
+        def get(self, url, **kwargs):
+            resp = MagicMock(spec=httpx.Response)
+            resp.status_code = 404
+            resp.raise_for_status.side_effect = httpx.HTTPStatusError(
+                request=MagicMock(), response=resp, message="Client error"
+            )
+            return resp
+        def close(self):
+            pass
+
+    source = Source(
+        source_id="dead-source",
+        url="https://example.com/dead",
+        source_type="official_error_doc",
+        stacks=["react"],
+    )
+    result = _refetch_single_source(source, paths, Fake404Client())
+    assert result.removed is True
+    assert result.final_url is None

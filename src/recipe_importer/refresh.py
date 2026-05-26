@@ -1,10 +1,66 @@
+import hashlib
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
-from recipe_importer.models import RecipeStatus
+import httpx
+
+from recipe_importer.models import RecipeStatus, Source
 from recipe_importer.paths import KbPaths
 from recipe_importer.render import parse_recipe_file, render_recipe_file
-from recipe_importer.storage import read_json
+from recipe_importer.storage import read_json, write_json, write_text
+
+
+def sha256_text(content: str) -> str:
+    return "sha256:" + hashlib.sha256(content.encode("utf-8")).hexdigest()
+
+
+@dataclass(frozen=True)
+class RefetchResult:
+    source_id: str
+    removed: bool
+    final_url: str | None = None
+
+
+def _refetch_single_source(
+    source: Source,
+    paths: KbPaths,
+    client: httpx.Client,
+) -> RefetchResult:
+    try:
+        response = client.get(str(source.url))
+        response.raise_for_status()
+    except (httpx.HTTPStatusError, httpx.HTTPError):
+        return RefetchResult(source_id=source.source_id, removed=True)
+
+    snapshot_dir = paths.snapshots_dir / source.source_id
+    raw_path = snapshot_dir / "raw.html"
+    metadata_path = snapshot_dir / "response.json"
+    captured = datetime.now(UTC).isoformat().replace("+00:00", "Z")
+    write_text(raw_path, response.text)
+    write_json(
+        metadata_path,
+        {
+            "source_id": source.source_id,
+            "url": str(source.url),
+            "final_url": str(response.url),
+            "source_type": source.source_type,
+            "stacks": source.stacks,
+            "expected_failure_hints": source.expected_failure_hints,
+            "expected_build_hints": source.expected_build_hints,
+            "refresh_policy": source.refresh_policy,
+            "extraction_profile": source.extraction_profile.model_dump(),
+            "captured_at": captured,
+            "retrieved_status": response.status_code,
+            "content_type": response.headers.get("content-type", ""),
+            "content_hash": sha256_text(response.text),
+        },
+    )
+    return RefetchResult(
+        source_id=source.source_id,
+        removed=False,
+        final_url=str(response.url),
+    )
 
 
 def _current_quote_hashes(paths: KbPaths, source_id: str) -> dict[str, str] | None:
