@@ -2,6 +2,7 @@ from pathlib import Path
 from unittest.mock import MagicMock
 
 import httpx
+import yaml
 
 from recipe_importer.extract import extract_snapshot
 from recipe_importer.index import rebuild_index
@@ -188,3 +189,39 @@ def test_refetch_single_source_removed_on_network_error(kb_root):
     result = _refetch_single_source(source, paths, FakeNetworkError())
     assert result.removed is True
     assert result.final_url is None
+
+
+def test_refresh_marks_recipe_stale_when_source_removed(kb_root):
+    paths = KbPaths(kb_root).ensure()
+    accepted, snapshot_dir = _published_recipe(paths)
+
+    source_list_path = paths.sources_dir / "source-list.yml"
+    source_list_path.write_text(
+        yaml.safe_dump({
+            "sources": [{
+                "source_id": "react-error-418",
+                "url": "https://react.dev/errors/418",
+                "source_type": "official_error_doc",
+                "stacks": ["react", "nextjs"],
+            }]
+        }),
+        encoding="utf-8",
+    )
+
+    class Fake404Client:
+        def get(self, url, **kwargs):
+            resp = MagicMock(spec=httpx.Response)
+            resp.status_code = 404
+            resp.raise_for_status.side_effect = httpx.HTTPStatusError(
+                request=MagicMock(), response=resp, message="404"
+            )
+            return resp
+        def close(self):
+            pass
+
+    stale_paths = refresh_stale_status(paths, source_list_path, Fake404Client())
+
+    stale_path = paths.stale_dir / "react-hydration-mismatch.md"
+    assert stale_paths == [stale_path]
+    recipe = parse_recipe_file(stale_path)
+    assert "source_removed" in recipe.maintenance.stale_reason

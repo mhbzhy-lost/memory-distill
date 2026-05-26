@@ -66,14 +66,45 @@ def _current_quote_hashes(paths: KbPaths, source_id: str) -> dict[str, str] | No
     return {item["span_id"]: item["quote_hash"] for item in read_json(sections_path)}
 
 
-def refresh_stale_status(paths: KbPaths) -> list[Path]:
+def refresh_stale_status(
+    paths: KbPaths,
+    source_list_path: Path | None = None,
+    client: httpx.Client | None = None,
+) -> list[Path]:
+    from recipe_importer.sources import load_source_list
+
     stale_paths: list[Path] = []
     detected_at = datetime.now(UTC).isoformat().replace("+00:00", "Z")
+    removed_source_ids: set[str] = set()
+
+    if source_list_path is not None:
+        source_list = load_source_list(source_list_path)
+        owns_client = client is None
+        http = client or httpx.Client(follow_redirects=True, timeout=30.0)
+        try:
+            for source in source_list.sources:
+                result = _refetch_single_source(source, paths, http)
+                if result.removed:
+                    removed_source_ids.add(source.source_id)
+                else:
+                    from recipe_importer.extract import extract_snapshot
+                    extract_snapshot(paths.snapshots_dir / source.source_id)
+        finally:
+            if owns_client:
+                http.close()
+
     for recipe_path in sorted(paths.accepted_dir.glob("*.md")):
         recipe = parse_recipe_file(recipe_path)
         stale_reasons: list[str] = []
+
+        recipe_source_ids = {ref.source_id for ref in recipe.evidence_refs}
+        if recipe_source_ids & removed_source_ids:
+            stale_reasons.append("source_removed")
+
         hashes_by_source: dict[str, dict[str, str] | None] = {}
         for ref in recipe.evidence_refs:
+            if ref.source_id in removed_source_ids:
+                continue
             if ref.source_id not in hashes_by_source:
                 hashes_by_source[ref.source_id] = _current_quote_hashes(paths, ref.source_id)
             current_hashes = hashes_by_source[ref.source_id]
