@@ -1,4 +1,6 @@
+from collections import defaultdict
 from pathlib import Path
+from typing import Optional
 
 import yaml
 from pydantic import ValidationError
@@ -6,7 +8,7 @@ from pydantic import ValidationError
 from recipe_importer.models import AnyRecipe, BuildRecipe, Recipe, RecipeStatus
 from recipe_importer.paths import KbPaths
 from recipe_importer.render import parse_recipe_file
-from recipe_importer.storage import write_json
+from recipe_importer.storage import read_json, write_json
 
 
 class IndexBuildError(ValueError):
@@ -79,3 +81,36 @@ def rebuild_index(paths: KbPaths) -> Path:
                 records.append(_debug_record(recipe, path, paths.root))
     write_json(paths.index_path, {"recipes": records})
     return paths.index_path
+
+
+def _read_index(paths: KbPaths) -> dict:
+    data = read_json(paths.index_path)
+    if not isinstance(data, dict):
+        raise ValueError("recipe index is not an object")
+    return data
+
+
+def list_stacks(paths: KbPaths, stack_filter: Optional[str] = None) -> dict[str, list[dict]]:
+    """Group recipes by stack, optionally filtering by stack name."""
+    index = _read_index(paths)
+    stacked = defaultdict(list)
+
+    for recipe in index.get("recipes", []):
+        for stack in recipe.get("stack", []):
+            stacked[stack].append({
+                "id": recipe["id"],
+                "status": recipe["status"],
+                "stale": recipe["status"] == "stale",
+            })
+
+    for stack in stacked:
+        stacked[stack].sort(key=lambda r: r["id"])
+
+    if stack_filter:
+        stack_filter_lower = stack_filter.lower()
+        stacked = {
+            k: v for k, v in stacked.items()
+            if k.lower() == stack_filter_lower
+        }
+
+    return dict(stacked)

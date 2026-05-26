@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Annotated, NoReturn
+from typing import Annotated, NoReturn, Optional
 
 import typer
 
@@ -10,7 +10,7 @@ from recipe_importer.extract import extract_snapshot
 from recipe_importer.fetch import fetch_sources
 from recipe_importer.generate import generate_build_from_debug
 
-from recipe_importer.index import IndexBuildError, rebuild_index
+from recipe_importer.index import IndexBuildError, list_stacks, rebuild_index
 from recipe_importer.llm import deterministic_candidates
 from recipe_importer.manifest import check_manifest, refresh_manifest
 from recipe_importer.models import BuildRecipe, Recipe, RecipeStatus, ReviewDecision
@@ -382,6 +382,43 @@ def search(
                 typer.echo(f"  do-not: {item}")
             for validation_step in record.get("validation_ladder", []):
                 typer.echo(f"  validate: {validation_step}")
+
+
+@app.command(name="list")
+def recipe_list(
+    stack: Annotated[
+        Optional[str],
+        typer.Option("--stack", "-s", help="Filter by stack name"),
+    ] = None,
+) -> None:
+    """List recipes grouped by stack."""
+    paths = KbPaths(Path.cwd()).ensure()
+    try:
+        stacked = list_stacks(paths, stack_filter=stack)
+    except FileNotFoundError:
+        _exit_error("recipe index not found; run `recipe-importer index rebuild`")
+    except ValueError:
+        _exit_error("recipe index is invalid; run `recipe-importer index rebuild`")
+
+    if not stacked:
+        if stack:
+            typer.echo(f"No recipes found for stack: {stack}")
+        else:
+            typer.echo("No recipes found. Run 'recipe-importer index rebuild' first.")
+        return
+
+    for stack_name in sorted(stacked.keys()):
+        recipes = stacked[stack_name]
+        accepted = sum(1 for r in recipes if r["status"] == "accepted")
+        stale = sum(1 for r in recipes if r["stale"])
+
+        typer.echo(f"\nStack: {stack_name} ({len(recipes)} recipes, {accepted} accepted, {stale} stale)")
+        typer.echo("-" * 60)
+        for recipe in recipes:
+            status_indicator = "✓" if recipe["status"] == "accepted" and not recipe["stale"] else "⚠"
+            typer.echo(f"  {status_indicator} {recipe['id']}")
+
+    typer.echo()
 
 
 @app.command("get")

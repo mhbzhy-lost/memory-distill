@@ -510,3 +510,84 @@ def test_cli_index_rebuild_reports_malformed_recipe(tmp_path):
     assert result.exit_code == 1
     assert isinstance(result.exception, SystemExit)
     assert "broken.md" in result.stderr
+
+
+def test_cli_list_shows_stacks(monkeypatch, tmp_path):
+    def fake_list_stacks(paths, stack_filter=None):
+        assert stack_filter is None
+        return {
+            "react": [
+                {"id": "react-hydration-mismatch", "status": "accepted", "stale": False},
+                {"id": "react-use-effect-loop", "status": "stale", "stale": True},
+            ],
+            "nextjs": [
+                {"id": "nextjs-image-optimization", "status": "accepted", "stale": False},
+            ],
+        }
+
+    monkeypatch.setattr(recipe_importer.cli, "list_stacks", fake_list_stacks)
+
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        result = runner.invoke(app, ["list"])
+
+    assert result.exit_code == 0
+    assert "Stack: nextjs" in result.stdout
+    assert "Stack: react" in result.stdout
+    assert "react-hydration-mismatch" in result.stdout
+    assert "react-use-effect-loop" in result.stdout
+    assert "nextjs-image-optimization" in result.stdout
+    assert "2 recipes" in result.stdout
+    assert "1 accepted" in result.stdout
+
+
+def test_cli_list_filters_by_stack(monkeypatch, tmp_path):
+    def fake_list_stacks(paths, stack_filter=None):
+        assert stack_filter == "react"
+        return {
+            "react": [
+                {"id": "react-hydration-mismatch", "status": "accepted", "stale": False},
+            ],
+        }
+
+    monkeypatch.setattr(recipe_importer.cli, "list_stacks", fake_list_stacks)
+
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        result = runner.invoke(app, ["list", "--stack", "react"])
+
+    assert result.exit_code == 0
+    assert "react-hydration-mismatch" in result.stdout
+    assert "nextjs" not in result.stdout
+
+
+def test_cli_list_reports_empty_when_no_stacks(monkeypatch, tmp_path):
+    monkeypatch.setattr(recipe_importer.cli, "list_stacks", lambda paths, stack_filter=None: {})
+
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        result = runner.invoke(app, ["list"])
+
+    assert result.exit_code == 0
+    assert "No recipes found" in result.stdout
+
+
+def test_cli_list_reports_empty_when_stack_not_found(monkeypatch, tmp_path):
+    monkeypatch.setattr(recipe_importer.cli, "list_stacks", lambda paths, stack_filter=None: {})
+
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        result = runner.invoke(app, ["list", "--stack", "nonexistent"])
+
+    assert result.exit_code == 0
+    assert "No recipes found for stack: nonexistent" in result.stdout
+
+
+def test_cli_list_reports_missing_index(tmp_path):
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        result = runner.invoke(app, ["list"])
+
+    assert result.exit_code == 1
+    assert isinstance(result.exception, SystemExit)
+    assert "run `recipe-importer index rebuild`" in result.stderr
