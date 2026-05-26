@@ -753,8 +753,640 @@ RECIPE_TEMPLATES: tuple[RecipeTemplate, ...] = (
             "Optional",
         ],
     ),
+    RecipeTemplate(
+        source_id="langgraph-graph-recursion-limit",
+        failure_label="langgraph graph recursion limit",
+        recipe_id="langgraph-graph-recursion-limit",
+        failure_class="langgraph/graph-execution",
+        symptoms=[
+            "LangGraph StateGraph raises GraphRecursionError because it reached the maximum number of steps before hitting a stop condition"
+        ],
+        fingerprints=[
+            "GRAPH_RECURSION_LIMIT",
+            "GraphRecursionError",
+            "reached the maximum number of steps",
+            "recursion_limit",
+            "infinite loop",
+        ],
+        first_checks=[
+            "Check whether the graph has an unintended cycle (infinite loop) by reviewing edges between nodes",
+            "Check whether the default recursion_limit is too low for complex graphs that legitimately need many iterations",
+            "Check whether the graph has a proper stop condition or terminal node",
+        ],
+        do_not=[
+            "Do not blindly increase recursion_limit without first verifying there is no infinite loop",
+            "Do not remove cycles by adding arbitrary stop nodes without understanding the intended graph behavior",
+        ],
+        evidence_needed=[
+            "Capture the graph invocation config and the recursion_limit value",
+            "Identify which nodes form the cycle or exceed the step limit",
+        ],
+        minimal_fix_scope=[
+            "The graph edge definitions and conditional routing logic",
+            "The config recursion_limit parameter passed to graph.invoke()",
+        ],
+        validation_ladder=[
+            "Reproduce the GraphRecursionError in development with the failing graph invocation",
+            "Inspect graph edges to confirm whether the cycle is intentional or a bug",
+            "Run the graph unit test covering the affected execution path",
+        ],
+        regression_guard=[
+            "Add a graph test that asserts the graph terminates within expected steps or raises GraphRecursionError when expected"
+        ],
+        match_terms=[
+            "GRAPH_RECURSION_LIMIT",
+            "recursion_limit",
+            "maximum number of steps",
+            "infinite loop",
+            "StateGraph",
+            "cycle",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="langgraph-missing-checkpointer",
+        failure_label="langgraph missing checkpointer",
+        recipe_id="langgraph-missing-checkpointer",
+        failure_class="langgraph/persistence",
+        symptoms=[
+            "LangGraph StateGraph raises an error because no checkpointer is configured for persistence-required features"
+        ],
+        fingerprints=[
+            "MISSING_CHECKPOINTER",
+            "checkpointer",
+            "compile() without checkpointer",
+            "InMemorySaver",
+            "human-in-the-loop",
+        ],
+        first_checks=[
+            "Check whether compile() was called with checkpointer= parameter",
+            "Check whether human-in-the-loop, memory, or time-travel features require persistence",
+            "Check whether @entrypoint decorator received a checkpointer argument",
+        ],
+        do_not=[
+            "Do not use InMemorySaver in production; use PostgresSaver or another persistent checkpointer",
+            "Do not skip checkpointer configuration if your graph uses interrupts, resume, or thread_id",
+        ],
+        evidence_needed=[
+            "Identify whether the graph uses features that require persistence (human-in-the-loop, memory, time-travel)",
+            "Capture the compile() call site to verify checkpointer parameter",
+        ],
+        minimal_fix_scope=[
+            "The StateGraph.compile() call or @entrypoint decorator",
+            "The checkpointer initialization (InMemorySaver, PostgresSaver, etc.)",
+        ],
+        validation_ladder=[
+            "Instantiate the graph with a checkpointer and verify compile() succeeds",
+            "Invoke the graph with a thread_id and confirm state is persisted",
+            "Run the graph test covering the persistence-requiring feature",
+        ],
+        regression_guard=[
+            "Add a graph test that asserts checkpointer is configured and state persists across invocations"
+        ],
+        match_terms=[
+            "MISSING_CHECKPOINTER",
+            "checkpointer",
+            "InMemorySaver",
+            "compile",
+            "persistence",
+            "human-in-the-loop",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="langchain-output-parsing-failure",
+        failure_label="langchain output parsing failure",
+        recipe_id="langchain-output-parsing-failure",
+        failure_class="langchain/output-parsing",
+        symptoms=[
+            "LangChain output parser raises OutputParserException because it was unable to handle model output"
+        ],
+        fingerprints=[
+            "OUTPUT_PARSING_FAILURE",
+            "OutputParserException",
+            "output parser was unable to handle",
+            "formatting instructions",
+            "structured output",
+        ],
+        first_checks=[
+            "Check whether the model output matches the expected format defined in the output parser",
+            "Check whether formatting instructions in the prompt are specific enough for the model",
+            "Check whether a more capable model would follow the formatting instructions reliably",
+        ],
+        do_not=[
+            "Do not catch OutputParserException and return a default value without first improving the prompt",
+            "Do not rely on output parsers when tool calling or structured_output techniques are available",
+        ],
+        evidence_needed=[
+            "Capture the raw model output that failed to parse",
+            "Capture the output parser's expected format or schema",
+        ],
+        minimal_fix_scope=[
+            "The prompt formatting instructions",
+            "The output parser class and its parsing logic",
+        ],
+        validation_ladder=[
+            "Reproduce the parsing failure with the failing model output",
+            "Improve the prompt formatting and verify the model produces parseable output",
+            "Run the chain test covering the output parsing step",
+        ],
+        regression_guard=[
+            "Add a chain test that asserts the output parser succeeds with representative model output"
+        ],
+        match_terms=[
+            "OUTPUT_PARSING_FAILURE",
+            "OutputParserException",
+            "output parser",
+            "formatting instructions",
+            "structured output",
+            "tool calling",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="langgraph-invalid-concurrent-update",
+        failure_label="langgraph invalid concurrent update",
+        recipe_id="langgraph-invalid-concurrent-update",
+        failure_class="langgraph/state-management",
+        symptoms=[
+            "LangGraph StateGraph raises InvalidUpdateError because multiple parallel nodes updated the same state key without a reducer"
+        ],
+        fingerprints=[
+            "INVALID_CONCURRENT_GRAPH_UPDATE",
+            "InvalidUpdateError",
+            "concurrent updates",
+            "reducer",
+            "Annotated",
+            "operator.add",
+        ],
+        first_checks=[
+            "Check whether the state key being updated by multiple parallel nodes has a reducer function",
+            "Check whether the state schema uses Annotated[list, operator.add] or similar reducer for list/accumulator keys",
+            "Check whether the graph uses fanout or parallel execution that could trigger concurrent writes",
+        ],
+        do_not=[
+            "Do not remove parallelism from the graph just to avoid concurrent update errors",
+            "Do not use a reducer that silently overwrites values unless that is the intended behavior",
+        ],
+        evidence_needed=[
+            "Identify which state keys are updated by multiple parallel nodes",
+            "Capture the state schema definition and the reducer functions used",
+        ],
+        minimal_fix_scope=[
+            "The state schema TypedDict or Pydantic model definition",
+            "The reducer function annotations on state keys (e.g., Annotated[list, operator.add])",
+        ],
+        validation_ladder=[
+            "Reproduce the InvalidUpdateError with a graph invocation that triggers parallel writes",
+            "Add the appropriate reducer and verify the graph executes without error",
+            "Run the graph test covering the parallel node execution path",
+        ],
+        regression_guard=[
+            "Add a graph test that asserts parallel node execution succeeds and state is correctly merged"
+        ],
+        match_terms=[
+            "INVALID_CONCURRENT_GRAPH_UPDATE",
+            "InvalidUpdateError",
+            "concurrent updates",
+            "reducer",
+            "Annotated",
+            "operator.add",
+            "fanout",
+            "parallel",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="react-native-troubleshooting",
+        failure_label="react native metro port 8081 already in use",
+        recipe_id="react-native-metro-port-8081",
+        failure_class="react-native/metro-bundler",
+        symptoms=[
+            "Metro bundler fails to start because another process is already listening on port 8081"
+        ],
+        fingerprints=[
+            "port 8081",
+            "Port already in use",
+            "Metro bundler",
+            "lsof -i :8081",
+        ],
+        first_checks=[
+            "Check whether another process is occupying port 8081 using sudo lsof -i :8081",
+            "Check whether a stale Metro process is still running from a previous session",
+            "Check whether you can start Metro on a different port to bypass the conflict",
+        ],
+        do_not=[
+            "Do not reboot the machine as the first fix; terminating the occupying process is faster and safer",
+            "Do not change the default port permanently without documenting the change for the team",
+        ],
+        evidence_needed=[
+            "Capture the output of lsof -i :8081 showing the PID of the occupying process",
+            "Confirm Metro actually fails on port binding, not another error",
+        ],
+        minimal_fix_scope=[
+            "The Metro bundler process startup invocation",
+            "The port configuration in the project's metro.config.js or start command",
+        ],
+        validation_ladder=[
+            "Kill the occupying process and verify Metro starts on port 8081",
+            "Verify the app connects to the Metro bundler and hot reloads",
+            "Run the dev server smoke test",
+        ],
+        regression_guard=[
+            "Add a CI pre-check script that reports stale Metro processes before builds"
+        ],
+        match_terms=[
+            "port 8081",
+            "Port already in use",
+            "Metro bundler",
+            "lsof",
+            "npm start",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="react-native-troubleshooting",
+        failure_label="react native shell command unresponsive exception",
+        recipe_id="react-native-shell-command-unresponsive",
+        failure_class="react-native/android-build",
+        symptoms=[
+            "Android build fails with ShellCommandUnresponsiveException during task execution"
+        ],
+        fingerprints=[
+            "ShellCommandUnresponsiveException",
+            "Execution failed for task",
+            ":app:installDebug",
+            "DeviceException",
+        ],
+        first_checks=[
+            "Check whether the ADB server is running and responsive with adb devices",
+            "Check whether the ADB server needs to be restarted with adb kill-server && adb start-server",
+            "Check the USB cable or emulator connection if running on a physical device",
+        ],
+        do_not=[
+            "Do not reinstall the Android SDK before restarting the ADB server",
+            "Do not increase Gradle timeout as a workaround without diagnosing the ADB unresponsiveness",
+        ],
+        evidence_needed=[
+            "Capture the adb devices output to verify device connectivity",
+            "Capture the full Gradle stack trace showing which task failed",
+        ],
+        minimal_fix_scope=[
+            "The ADB server process",
+            "The Gradle build execution environment",
+        ],
+        validation_ladder=[
+            "Restart the ADB server and run adb devices to verify connectivity",
+            "Re-attempt the Android build and verify it completes successfully",
+            "Run the Android build smoke test",
+        ],
+        regression_guard=[
+            "Add a pre-build script that restarts ADB if no devices are detected"
+        ],
+        match_terms=[
+            "ShellCommandUnresponsiveException",
+            "Execution failed for task",
+            ":app:installDebug",
+            "DeviceException",
+            "adb kill-server",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="expo-errors-and-warnings",
+        failure_label="expo redbox stack trace diagnosis",
+        recipe_id="expo-redbox-stack-trace",
+        failure_class="expo/debugging",
+        symptoms=[
+            "A fatal error displays a Redbox with a stack trace that is unclear or the error location points to the wrong file"
+        ],
+        fingerprints=[
+            "Redbox",
+            "Yellowbox",
+            "stack trace",
+            "LogBox",
+            "fatal error",
+        ],
+        first_checks=[
+            "Check the stack trace for the file name and line number where the error occurred",
+            "Check whether console.warn or console.error is the source of a Yellowbox warning versus an uncaught error",
+            "Check whether a development build is showing the error or Expo Go is showing it, as stack traces differ",
+        ],
+        do_not=[
+            "Do not ignore Yellowbox warnings; they indicate issues that may become Redbox errors after upgrade",
+            "Do not suppress the error via error boundaries before identifying the root cause in the stack trace",
+        ],
+        evidence_needed=[
+            "Capture the full stack trace from the Redbox or terminal output",
+            "Identify the project file and line number mentioned in the trace",
+        ],
+        minimal_fix_scope=[
+            "The file and line identified in the stack trace",
+            "The component or function producing the fatal error",
+        ],
+        validation_ladder=[
+            "Re-read the stack trace and navigate to the source location",
+            "Fix the issue and verify the Redbox no longer appears on reload",
+            "Run the component test or app smoke test",
+        ],
+        regression_guard=[
+            "Add a component test for the error path that produced the Redbox"
+        ],
+        match_terms=[
+            "Redbox",
+            "Yellowbox",
+            "stack trace",
+            "fatal error",
+            "HomeScreen.js",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="kotlin-exceptions-language-doc",
+        failure_label="kotlin null pointer java interop",
+        recipe_id="kotlin-null-pointer-java-interop",
+        failure_class="kotlin/null-safety",
+        symptoms=[
+            "Kotlin code receives NullPointerException when calling Java platform types without null checks"
+        ],
+        fingerprints=[
+            "NullPointerException",
+            "platform type",
+            "Java interop",
+            "!! operator",
+            "null safety",
+        ],
+        first_checks=[
+            "Check whether the value originates from a Java platform type (no nullability annotation)",
+            "Check whether a non-null assertion operator !! is applied to a platform type value",
+            "Check whether an explicit nullable type annotation (? suffix) is missing on the receiving side",
+        ],
+        do_not=[
+            "Do not suppress NullPointerException with try-catch before adding null checks",
+            "Do not assume Java platform types are non-null; always treat them as potentially nullable",
+        ],
+        evidence_needed=[
+            "Identify the Java method or field that returns the platform type value",
+            "Capture the stack trace showing NullPointerException at the Kotlin call site",
+        ],
+        minimal_fix_scope=[
+            "The Kotlin receiver that consumes the Java platform type",
+            "The null-safety annotation or safe call on the affected value",
+        ],
+        validation_ladder=[
+            "Reproduce the NullPointerException with the failing input or call path",
+            "Add a safe call (?.) or explicit null check and verify no exception",
+            "Run the Kotlin/Java interop test for the affected call boundary",
+        ],
+        regression_guard=[
+            "Add a test that exercises the Java interop boundary with null and non-null inputs"
+        ],
+        match_terms=[
+            "NullPointerException",
+            "platform type",
+            "Java",
+            "!!",
+            "nullable",
+            "interop",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="kotlin-exceptions-language-doc",
+        failure_label="kotlin require check precondition",
+        recipe_id="kotlin-require-check-precondition",
+        failure_class="kotlin/preconditions",
+        symptoms=[
+            "Kotlin require() throws IllegalArgumentException or check() throws IllegalStateException unexpectedly"
+        ],
+        fingerprints=[
+            "require() throws",
+            "IllegalArgumentException",
+            "check() precondition",
+            "IllegalStateException",
+            "precondition",
+        ],
+        first_checks=[
+            "Check whether require() is used for argument validation (IllegalArgumentException)",
+            "Check whether check() is used for state validation (IllegalStateException)",
+            "Check whether the lazyMessage lambda captures stale state when the condition evaluates late",
+        ],
+        do_not=[
+            "Do not use require() for state checks; use check() instead",
+            "Do not use check() for input validation; use require() instead",
+        ],
+        evidence_needed=[
+            "Capture the exception message from require() or check() to identify the precondition",
+            "Identify the call site where the precondition fails",
+        ],
+        minimal_fix_scope=[
+            "The require() or check() call site and its condition expression",
+            "The caller that passes the violating argument or reaches the invalid state",
+        ],
+        validation_ladder=[
+            "Reproduce the IllegalArgumentException or IllegalStateException with the failing input",
+            "Fix the caller input or state transition and verify no exception",
+            "Run the unit test covering the precondition path",
+        ],
+        regression_guard=[
+            "Add a test that asserts IllegalArgumentException from require() and IllegalStateException from check()"
+        ],
+        match_terms=[
+            "require",
+            "check",
+            "IllegalArgumentException",
+            "IllegalStateException",
+            "precondition",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="gradle-build-troubleshooting",
+        failure_label="gradle java home invalid",
+        recipe_id="gradle-java-home-invalid",
+        failure_class="gradle/environment",
+        symptoms=[
+            "Gradle build fails with ERROR: JAVA_HOME is set to an invalid directory"
+        ],
+        fingerprints=[
+            "JAVA_HOME is set to an invalid directory",
+            "ERROR: JAVA_HOME",
+            "please set JAVA_HOME",
+            "Java Development Kit",
+        ],
+        first_checks=[
+            "Check echo $JAVA_HOME to verify the directory exists",
+            "Check whether JAVA_HOME points to the JDK root (not bin/ or jre/)",
+            "Check whether the JDK version matches the Gradle project's required compatibility",
+        ],
+        do_not=[
+            "Do not unset JAVA_HOME entirely; Gradle requires it to be set explicitly",
+            "Do not point JAVA_HOME at a JRE if the project needs a full JDK",
+        ],
+        evidence_needed=[
+            "Capture the JAVA_HOME environment variable value",
+            "Capture the Gradle error message showing the invalid directory path",
+        ],
+        minimal_fix_scope=[
+            "The JAVA_HOME environment variable configuration",
+            "The shell profile or CI environment that sets JAVA_HOME",
+        ],
+        validation_ladder=[
+            "Run echo $JAVA_HOME and verify the directory exists and contains bin/javac",
+            "Run gradle --version and verify it reports the expected Java version",
+            "Run the Gradle build smoke test",
+        ],
+        regression_guard=[
+            "Add a CI check that validates JAVA_HOME before running Gradle builds"
+        ],
+        match_terms=[
+            "JAVA_HOME",
+            "invalid directory",
+            "JDK",
+            "JRE",
+            "Java Development Kit",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="gradle-build-troubleshooting",
+        failure_label="gradle daemon connection failed",
+        recipe_id="gradle-daemon-connection-failed",
+        failure_class="gradle/daemon",
+        symptoms=[
+            "Gradle build fails because a new daemon was started but could not be connected to"
+        ],
+        fingerprints=[
+            "A new daemon was started but could not be connected to",
+            "Gradle Daemon",
+            "could not reuse",
+            "Starting a Gradle Daemon",
+        ],
+        first_checks=[
+            "Check gradle --status to see existing daemon processes",
+            "Check whether a firewall or NAT masquerade is blocking the daemon connection",
+            "Check whether gradle.properties has org.gradle.jvmargs that conflict with available memory",
+        ],
+        do_not=[
+            "Do not disable the daemon with --no-daemon as a permanent fix; diagnose the connection issue first",
+            "Do not kill Gradle daemon processes without first checking whether another project is sharing them",
+        ],
+        evidence_needed=[
+            "Capture the full Gradle daemon startup failure message",
+            "Check gradle --status output for existing daemons",
+        ],
+        minimal_fix_scope=[
+            "The Gradle daemon configuration in gradle.properties",
+            "The system firewall or network settings blocking daemon connection",
+        ],
+        validation_ladder=[
+            "Run gradle --stop and retry the build",
+            "Verify gradle --status shows a healthy daemon process",
+            "Run the Gradle build smoke test",
+        ],
+        regression_guard=[
+            "Add a CI pre-build step that runs gradle --stop to clean stale daemons"
+        ],
+        match_terms=[
+            "daemon",
+            "could not be connected to",
+            "Gradle Daemon",
+            "gradle --status",
+            "Starting a Gradle Daemon",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="gradle-build-troubleshooting",
+        failure_label="gradle dependency resolution conflict",
+        recipe_id="gradle-dependency-resolution-conflict",
+        failure_class="gradle/dependencies",
+        symptoms=[
+            "Gradle build fails because of conflicting transitive dependency versions that cannot be resolved"
+        ],
+        fingerprints=[
+            "dependency resolution",
+            "dependency conflict",
+            "Could not resolve",
+            "Conflict with dependency",
+            "requested version",
+        ],
+        first_checks=[
+            "Run gradle dependencies or the Dependencies view to see the full transitive tree",
+            "Check whether a resolutionStrategy block forces a particular version",
+            "Check whether the conflict is between implementation and test classpath variants",
+        ],
+        do_not=[
+            "Do not add exclude rules globally; scope excludes to the minimum affected configuration",
+            "Do not force a version without first understanding whether the forced version is API-compatible",
+        ],
+        evidence_needed=[
+            "Capture the full dependency tree output showing the conflict",
+            "Identify which module versions are incompatible and why",
+        ],
+        minimal_fix_scope=[
+            "The build.gradle(.kts) dependency declaration or resolutionStrategy block",
+            "The dependency configuration (implementation, api, testImplementation) with the conflict",
+        ],
+        validation_ladder=[
+            "Run gradle dependencies and locate the conflicting transitive path",
+            "Apply a resolutionStrategy or version pin that resolves the conflict",
+            "Run the Gradle build and the affected module tests",
+        ],
+        regression_guard=[
+            "Add a dependency-lock check or resolution strategy test to the build pipeline"
+        ],
+        match_terms=[
+            "dependency resolution",
+            "Conflict with",
+            "Could not resolve",
+            "requested version",
+            "resolutionStrategy",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="react-native-debugging",
+        failure_label="react native logbox fatal error",
+        recipe_id="react-native-logbox-fatal-errors",
+        failure_class="react-native/debugging",
+        symptoms=[
+            "LogBox displays an undismissable fatal error because JavaScript cannot be executed due to a syntax or runtime error"
+        ],
+        fingerprints=[
+            "LogBox",
+            "fatal error",
+            "JavaScript syntax error",
+            "not dismissable",
+            "Fast Refresh",
+        ],
+        first_checks=[
+            "Check the LogBox error message for the file and line of the fatal syntax error",
+            "Check whether Fast Refresh will automatically resolve the error after fixing the syntax",
+            "Check whether the fatal error is coming from React Native DevTools console logs rather than app code",
+        ],
+        do_not=[
+            "Do not use LogBox.ignoreAllLogs() to hide fatal errors; it is meant for suppressing warnings during demos",
+            "Do not rely on LogBox as the sole debugging tool; open React Native DevTools Console for authoritative logs",
+        ],
+        evidence_needed=[
+            "Capture the LogBox error message and stack trace",
+            "Confirm whether React Native DevTools Console shows the same or more detail",
+        ],
+        minimal_fix_scope=[
+            "The file and line identified by LogBox as the fatal error source",
+            "The JavaScript module that fails to parse or execute",
+        ],
+        validation_ladder=[
+            "Fix the syntax error shown in LogBox",
+            "Verify the Redbox/LogBox automatically dismisses after Fast Refresh or manual reload",
+            "Run the app smoke test to verify functionality",
+        ],
+        regression_guard=[
+            "Add a build or lint check that catches the same class of syntax error before runtime"
+        ],
+        match_terms=[
+            "LogBox",
+            "fatal error",
+            "syntax error",
+            "Fast Refresh",
+            "DevTools",
+            "undismissable",
+        ],
+    ),
 )
 
 
 TEMPLATES_BY_LABEL = {template.failure_label: template for template in RECIPE_TEMPLATES}
-TEMPLATES_BY_SOURCE = {template.source_id: template for template in RECIPE_TEMPLATES}
+_templates_by_source: dict[str, list[RecipeTemplate]] = {}
+for _t in RECIPE_TEMPLATES:
+    _templates_by_source.setdefault(_t.source_id, []).append(_t)
+TEMPLATES_BY_SOURCE: dict[str, list[RecipeTemplate]] = _templates_by_source

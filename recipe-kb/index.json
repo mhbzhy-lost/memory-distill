@@ -2,6 +2,49 @@
   "recipes": [
     {
       "do_not": [
+        "Do not ignore Yellowbox warnings; they indicate issues that may become Redbox errors after upgrade",
+        "Do not suppress the error via error boundaries before identifying the root cause in the stack trace"
+      ],
+      "failure_class": "expo/debugging",
+      "fingerprints": [
+        "Redbox",
+        "Yellowbox",
+        "stack trace",
+        "LogBox",
+        "fatal error"
+      ],
+      "first_checks": [
+        "Check the stack trace for the file name and line number where the error occurred",
+        "Check whether console.warn or console.error is the source of a Yellowbox warning versus an uncaught error",
+        "Check whether a development build is showing the error or Expo Go is showing it, as stack traces differ"
+      ],
+      "id": "expo-redbox-stack-trace",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/expo-redbox-stack-trace.md",
+      "source_ids": [
+        "expo-errors-and-warnings"
+      ],
+      "source_urls": [
+        "https://docs.expo.dev/debugging/errors-and-warnings/"
+      ],
+      "stack": [
+        "expo",
+        "react-native"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "expo/debugging: A fatal error displays a Redbox with a stack trace that is unclear or the error location points to the wrong file",
+      "symptoms": [
+        "A fatal error displays a Redbox with a stack trace that is unclear or the error location points to the wrong file"
+      ],
+      "validation_ladder": [
+        "Re-read the stack trace and navigate to the source location",
+        "Fix the issue and verify the Redbox no longer appears on reload",
+        "Run the component test or app smoke test"
+      ]
+    },
+    {
+      "do_not": [
         "Do not return an HTTPException as a value; it must be raised with raise",
         "Do not override RequestValidationError handler without re-raising or returning all validation errors"
       ],
@@ -167,6 +210,391 @@
         "Inspect the response Content-Type header in development",
         "Verify the response body matches the documented schema",
         "Run the endpoint test for the affected route"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not disable the daemon with --no-daemon as a permanent fix; diagnose the connection issue first",
+        "Do not kill Gradle daemon processes without first checking whether another project is sharing them"
+      ],
+      "failure_class": "gradle/daemon",
+      "fingerprints": [
+        "A new daemon was started but could not be connected to",
+        "Gradle Daemon",
+        "could not reuse",
+        "Starting a Gradle Daemon"
+      ],
+      "first_checks": [
+        "Check gradle --status to see existing daemon processes",
+        "Check whether a firewall or NAT masquerade is blocking the daemon connection",
+        "Check whether gradle.properties has org.gradle.jvmargs that conflict with available memory"
+      ],
+      "id": "gradle-daemon-connection-failed",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/gradle-daemon-connection-failed.md",
+      "source_ids": [
+        "gradle-build-troubleshooting"
+      ],
+      "source_urls": [
+        "https://docs.gradle.org/current/userguide/troubleshooting.html"
+      ],
+      "stack": [
+        "android",
+        "kotlin",
+        "gradle"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "gradle/daemon: Gradle build fails because a new daemon was started but could not be connected to",
+      "symptoms": [
+        "Gradle build fails because a new daemon was started but could not be connected to"
+      ],
+      "validation_ladder": [
+        "Run gradle --stop and retry the build",
+        "Verify gradle --status shows a healthy daemon process",
+        "Run the Gradle build smoke test"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not add exclude rules globally; scope excludes to the minimum affected configuration",
+        "Do not force a version without first understanding whether the forced version is API-compatible"
+      ],
+      "failure_class": "gradle/dependencies",
+      "fingerprints": [
+        "dependency resolution",
+        "dependency conflict",
+        "Could not resolve",
+        "Conflict with dependency",
+        "requested version"
+      ],
+      "first_checks": [
+        "Run gradle dependencies or the Dependencies view to see the full transitive tree",
+        "Check whether a resolutionStrategy block forces a particular version",
+        "Check whether the conflict is between implementation and test classpath variants"
+      ],
+      "id": "gradle-dependency-resolution-conflict",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/gradle-dependency-resolution-conflict.md",
+      "source_ids": [
+        "gradle-build-troubleshooting"
+      ],
+      "source_urls": [
+        "https://docs.gradle.org/current/userguide/troubleshooting.html"
+      ],
+      "stack": [
+        "android",
+        "kotlin",
+        "gradle"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "gradle/dependencies: Gradle build fails because of conflicting transitive dependency versions that cannot be resolved",
+      "symptoms": [
+        "Gradle build fails because of conflicting transitive dependency versions that cannot be resolved"
+      ],
+      "validation_ladder": [
+        "Run gradle dependencies and locate the conflicting transitive path",
+        "Apply a resolutionStrategy or version pin that resolves the conflict",
+        "Run the Gradle build and the affected module tests"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not unset JAVA_HOME entirely; Gradle requires it to be set explicitly",
+        "Do not point JAVA_HOME at a JRE if the project needs a full JDK"
+      ],
+      "failure_class": "gradle/environment",
+      "fingerprints": [
+        "JAVA_HOME is set to an invalid directory",
+        "ERROR: JAVA_HOME",
+        "please set JAVA_HOME",
+        "Java Development Kit"
+      ],
+      "first_checks": [
+        "Check echo $JAVA_HOME to verify the directory exists",
+        "Check whether JAVA_HOME points to the JDK root (not bin/ or jre/)",
+        "Check whether the JDK version matches the Gradle project's required compatibility"
+      ],
+      "id": "gradle-java-home-invalid",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/gradle-java-home-invalid.md",
+      "source_ids": [
+        "gradle-build-troubleshooting"
+      ],
+      "source_urls": [
+        "https://docs.gradle.org/current/userguide/troubleshooting.html"
+      ],
+      "stack": [
+        "android",
+        "kotlin",
+        "gradle"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "gradle/environment: Gradle build fails with ERROR: JAVA_HOME is set to an invalid directory",
+      "symptoms": [
+        "Gradle build fails with ERROR: JAVA_HOME is set to an invalid directory"
+      ],
+      "validation_ladder": [
+        "Run echo $JAVA_HOME and verify the directory exists and contains bin/javac",
+        "Run gradle --version and verify it reports the expected Java version",
+        "Run the Gradle build smoke test"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not suppress NullPointerException with try-catch before adding null checks",
+        "Do not assume Java platform types are non-null; always treat them as potentially nullable"
+      ],
+      "failure_class": "kotlin/null-safety",
+      "fingerprints": [
+        "NullPointerException",
+        "platform type",
+        "Java interop",
+        "!! operator",
+        "null safety"
+      ],
+      "first_checks": [
+        "Check whether the value originates from a Java platform type (no nullability annotation)",
+        "Check whether a non-null assertion operator !! is applied to a platform type value",
+        "Check whether an explicit nullable type annotation (? suffix) is missing on the receiving side"
+      ],
+      "id": "kotlin-null-pointer-java-interop",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/kotlin-null-pointer-java-interop.md",
+      "source_ids": [
+        "kotlin-exceptions-language-doc"
+      ],
+      "source_urls": [
+        "https://kotlinlang.org/docs/exceptions.html"
+      ],
+      "stack": [
+        "kotlin",
+        "android"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "kotlin/null-safety: Kotlin code receives NullPointerException when calling Java platform types without null checks",
+      "symptoms": [
+        "Kotlin code receives NullPointerException when calling Java platform types without null checks"
+      ],
+      "validation_ladder": [
+        "Reproduce the NullPointerException with the failing input or call path",
+        "Add a safe call (?.) or explicit null check and verify no exception",
+        "Run the Kotlin/Java interop test for the affected call boundary"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not use require() for state checks; use check() instead",
+        "Do not use check() for input validation; use require() instead"
+      ],
+      "failure_class": "kotlin/preconditions",
+      "fingerprints": [
+        "require() throws",
+        "IllegalArgumentException",
+        "check() precondition",
+        "IllegalStateException",
+        "precondition"
+      ],
+      "first_checks": [
+        "Check whether require() is used for argument validation (IllegalArgumentException)",
+        "Check whether check() is used for state validation (IllegalStateException)",
+        "Check whether the lazyMessage lambda captures stale state when the condition evaluates late"
+      ],
+      "id": "kotlin-require-check-precondition",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/kotlin-require-check-precondition.md",
+      "source_ids": [
+        "kotlin-exceptions-language-doc"
+      ],
+      "source_urls": [
+        "https://kotlinlang.org/docs/exceptions.html"
+      ],
+      "stack": [
+        "kotlin",
+        "android"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "kotlin/preconditions: Kotlin require() throws IllegalArgumentException or check() throws IllegalStateException unexpectedly",
+      "symptoms": [
+        "Kotlin require() throws IllegalArgumentException or check() throws IllegalStateException unexpectedly"
+      ],
+      "validation_ladder": [
+        "Reproduce the IllegalArgumentException or IllegalStateException with the failing input",
+        "Fix the caller input or state transition and verify no exception",
+        "Run the unit test covering the precondition path"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not catch OutputParserException and return a default value without first improving the prompt",
+        "Do not rely on output parsers when tool calling or structured_output techniques are available"
+      ],
+      "failure_class": "langchain/output-parsing",
+      "fingerprints": [
+        "OUTPUT_PARSING_FAILURE",
+        "OutputParserException",
+        "output parser was unable to handle",
+        "formatting instructions",
+        "structured output"
+      ],
+      "first_checks": [
+        "Check whether the model output matches the expected format defined in the output parser",
+        "Check whether formatting instructions in the prompt are specific enough for the model",
+        "Check whether a more capable model would follow the formatting instructions reliably"
+      ],
+      "id": "langchain-output-parsing-failure",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/langchain-output-parsing-failure.md",
+      "source_ids": [
+        "langchain-output-parsing-failure"
+      ],
+      "source_urls": [
+        "https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE.md"
+      ],
+      "stack": [
+        "langchain"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "langchain/output-parsing: LangChain output parser raises OutputParserException because it was unable to handle model output",
+      "symptoms": [
+        "LangChain output parser raises OutputParserException because it was unable to handle model output"
+      ],
+      "validation_ladder": [
+        "Reproduce the parsing failure with the failing model output",
+        "Improve the prompt formatting and verify the model produces parseable output",
+        "Run the chain test covering the output parsing step"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not blindly increase recursion_limit without first verifying there is no infinite loop",
+        "Do not remove cycles by adding arbitrary stop nodes without understanding the intended graph behavior"
+      ],
+      "failure_class": "langgraph/graph-execution",
+      "fingerprints": [
+        "GRAPH_RECURSION_LIMIT",
+        "GraphRecursionError",
+        "reached the maximum number of steps",
+        "recursion_limit",
+        "infinite loop"
+      ],
+      "first_checks": [
+        "Check whether the graph has an unintended cycle (infinite loop) by reviewing edges between nodes",
+        "Check whether the default recursion_limit is too low for complex graphs that legitimately need many iterations",
+        "Check whether the graph has a proper stop condition or terminal node"
+      ],
+      "id": "langgraph-graph-recursion-limit",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/langgraph-graph-recursion-limit.md",
+      "source_ids": [
+        "langgraph-graph-recursion-limit"
+      ],
+      "source_urls": [
+        "https://docs.langchain.com/oss/python/langgraph/errors/GRAPH_RECURSION_LIMIT.md"
+      ],
+      "stack": [
+        "langchain"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "langgraph/graph-execution: LangGraph StateGraph raises GraphRecursionError because it reached the maximum number of steps before hitting a stop condition",
+      "symptoms": [
+        "LangGraph StateGraph raises GraphRecursionError because it reached the maximum number of steps before hitting a stop condition"
+      ],
+      "validation_ladder": [
+        "Reproduce the GraphRecursionError in development with the failing graph invocation",
+        "Inspect graph edges to confirm whether the cycle is intentional or a bug",
+        "Run the graph unit test covering the affected execution path"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not remove parallelism from the graph just to avoid concurrent update errors",
+        "Do not use a reducer that silently overwrites values unless that is the intended behavior"
+      ],
+      "failure_class": "langgraph/state-management",
+      "fingerprints": [
+        "INVALID_CONCURRENT_GRAPH_UPDATE",
+        "InvalidUpdateError",
+        "concurrent updates",
+        "reducer",
+        "Annotated",
+        "operator.add"
+      ],
+      "first_checks": [
+        "Check whether the state key being updated by multiple parallel nodes has a reducer function",
+        "Check whether the state schema uses Annotated[list, operator.add] or similar reducer for list/accumulator keys",
+        "Check whether the graph uses fanout or parallel execution that could trigger concurrent writes"
+      ],
+      "id": "langgraph-invalid-concurrent-update",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/langgraph-invalid-concurrent-update.md",
+      "source_ids": [
+        "langgraph-invalid-concurrent-update"
+      ],
+      "source_urls": [
+        "https://docs.langchain.com/oss/python/langgraph/errors/INVALID_CONCURRENT_GRAPH_UPDATE.md"
+      ],
+      "stack": [
+        "langchain"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "langgraph/state-management: LangGraph StateGraph raises InvalidUpdateError because multiple parallel nodes updated the same state key without a reducer",
+      "symptoms": [
+        "LangGraph StateGraph raises InvalidUpdateError because multiple parallel nodes updated the same state key without a reducer"
+      ],
+      "validation_ladder": [
+        "Reproduce the InvalidUpdateError with a graph invocation that triggers parallel writes",
+        "Add the appropriate reducer and verify the graph executes without error",
+        "Run the graph test covering the parallel node execution path"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not use InMemorySaver in production; use PostgresSaver or another persistent checkpointer",
+        "Do not skip checkpointer configuration if your graph uses interrupts, resume, or thread_id"
+      ],
+      "failure_class": "langgraph/persistence",
+      "fingerprints": [
+        "MISSING_CHECKPOINTER",
+        "checkpointer",
+        "compile() without checkpointer",
+        "InMemorySaver",
+        "human-in-the-loop"
+      ],
+      "first_checks": [
+        "Check whether compile() was called with checkpointer= parameter",
+        "Check whether human-in-the-loop, memory, or time-travel features require persistence",
+        "Check whether @entrypoint decorator received a checkpointer argument"
+      ],
+      "id": "langgraph-missing-checkpointer",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/langgraph-missing-checkpointer.md",
+      "source_ids": [
+        "langgraph-missing-checkpointer"
+      ],
+      "source_urls": [
+        "https://docs.langchain.com/oss/python/langgraph/errors/MISSING_CHECKPOINTER.md"
+      ],
+      "stack": [
+        "langchain"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "langgraph/persistence: LangGraph StateGraph raises an error because no checkpointer is configured for persistence-required features",
+      "symptoms": [
+        "LangGraph StateGraph raises an error because no checkpointer is configured for persistence-required features"
+      ],
+      "validation_ladder": [
+        "Instantiate the graph with a checkpointer and verify compile() succeeds",
+        "Invoke the graph with a thread_id and confirm state is persisted",
+        "Run the graph test covering the persistence-requiring feature"
       ]
     },
     {
@@ -505,6 +933,130 @@
         "Run the affected component path in development and confirm the warning is gone",
         "Run dependency inspection for react and react-dom",
         "Run the related component or smoke test"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not use LogBox.ignoreAllLogs() to hide fatal errors; it is meant for suppressing warnings during demos",
+        "Do not rely on LogBox as the sole debugging tool; open React Native DevTools Console for authoritative logs"
+      ],
+      "failure_class": "react-native/debugging",
+      "fingerprints": [
+        "LogBox",
+        "fatal error",
+        "JavaScript syntax error",
+        "not dismissable",
+        "Fast Refresh"
+      ],
+      "first_checks": [
+        "Check the LogBox error message for the file and line of the fatal syntax error",
+        "Check whether Fast Refresh will automatically resolve the error after fixing the syntax",
+        "Check whether the fatal error is coming from React Native DevTools console logs rather than app code"
+      ],
+      "id": "react-native-logbox-fatal-errors",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/react-native-logbox-fatal-errors.md",
+      "source_ids": [
+        "react-native-debugging"
+      ],
+      "source_urls": [
+        "https://reactnative.dev/docs/debugging"
+      ],
+      "stack": [
+        "react-native"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "react-native/debugging: LogBox displays an undismissable fatal error because JavaScript cannot be executed due to a syntax or runtime error",
+      "symptoms": [
+        "LogBox displays an undismissable fatal error because JavaScript cannot be executed due to a syntax or runtime error"
+      ],
+      "validation_ladder": [
+        "Fix the syntax error shown in LogBox",
+        "Verify the Redbox/LogBox automatically dismisses after Fast Refresh or manual reload",
+        "Run the app smoke test to verify functionality"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not reboot the machine as the first fix; terminating the occupying process is faster and safer",
+        "Do not change the default port permanently without documenting the change for the team"
+      ],
+      "failure_class": "react-native/metro-bundler",
+      "fingerprints": [
+        "port 8081",
+        "Port already in use",
+        "Metro bundler",
+        "lsof -i :8081"
+      ],
+      "first_checks": [
+        "Check whether another process is occupying port 8081 using sudo lsof -i :8081",
+        "Check whether a stale Metro process is still running from a previous session",
+        "Check whether you can start Metro on a different port to bypass the conflict"
+      ],
+      "id": "react-native-metro-port-8081",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/react-native-metro-port-8081.md",
+      "source_ids": [
+        "react-native-troubleshooting"
+      ],
+      "source_urls": [
+        "https://reactnative.dev/docs/troubleshooting"
+      ],
+      "stack": [
+        "react-native"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "react-native/metro-bundler: Metro bundler fails to start because another process is already listening on port 8081",
+      "symptoms": [
+        "Metro bundler fails to start because another process is already listening on port 8081"
+      ],
+      "validation_ladder": [
+        "Kill the occupying process and verify Metro starts on port 8081",
+        "Verify the app connects to the Metro bundler and hot reloads",
+        "Run the dev server smoke test"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not reinstall the Android SDK before restarting the ADB server",
+        "Do not increase Gradle timeout as a workaround without diagnosing the ADB unresponsiveness"
+      ],
+      "failure_class": "react-native/android-build",
+      "fingerprints": [
+        "ShellCommandUnresponsiveException",
+        "Execution failed for task",
+        ":app:installDebug",
+        "DeviceException"
+      ],
+      "first_checks": [
+        "Check whether the ADB server is running and responsive with adb devices",
+        "Check whether the ADB server needs to be restarted with adb kill-server && adb start-server",
+        "Check the USB cable or emulator connection if running on a physical device"
+      ],
+      "id": "react-native-shell-command-unresponsive",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/react-native-shell-command-unresponsive.md",
+      "source_ids": [
+        "react-native-troubleshooting"
+      ],
+      "source_urls": [
+        "https://reactnative.dev/docs/troubleshooting"
+      ],
+      "stack": [
+        "react-native"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "react-native/android-build: Android build fails with ShellCommandUnresponsiveException during task execution",
+      "symptoms": [
+        "Android build fails with ShellCommandUnresponsiveException during task execution"
+      ],
+      "validation_ladder": [
+        "Restart the ADB server and run adb devices to verify connectivity",
+        "Re-attempt the Android build and verify it completes successfully",
+        "Run the Android build smoke test"
       ]
     },
     {
