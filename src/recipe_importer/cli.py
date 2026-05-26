@@ -113,11 +113,16 @@ def manifest_check() -> None:
 
 
 @app.command()
-def refresh() -> None:
+def refresh(
+    refetch: Annotated[
+        Path | None,
+        typer.Option(help="Source list path for refetch-based stale check."),
+    ] = None,
+) -> None:
     """Mark accepted recipes stale when local refreshed evidence no longer matches."""
     paths = KbPaths(Path.cwd()).ensure()
-    for path in refresh_stale_status(paths):
-        typer.echo(f"stale: {path}")
+    for path in refresh_stale_status(paths, source_list_path=refetch):
+        print("stale: " + str(path))
 
 
 @app.command()

@@ -59,7 +59,7 @@ def test_cli_manifest_check_exits_nonzero_when_hashes_drift(monkeypatch, tmp_pat
 
 
 def test_cli_refresh_prints_stale_paths(monkeypatch, tmp_path):
-    def fake_refresh_stale_status(paths):
+    def fake_refresh_stale_status(paths, source_list_path=None):
         return [paths.stale_dir / "react-hydration-mismatch.md"]
 
     monkeypatch.setattr(recipe_importer.cli, "refresh_stale_status", fake_refresh_stale_status, raising=False)
@@ -71,6 +71,29 @@ def test_cli_refresh_prints_stale_paths(monkeypatch, tmp_path):
     assert result.exit_code == 0
     assert "stale: " in result.stdout
     assert "react-hydration-mismatch.md" in result.stdout
+
+
+def test_cli_refresh_with_refetch_prints_stale(monkeypatch, tmp_path):
+    received = {}
+
+    def fake_refresh_stale_status(paths, source_list_path=None):
+        received["source_list_path"] = source_list_path
+        return [paths.stale_dir / "some-recipe.md"]
+
+    monkeypatch.setattr(
+        recipe_importer.cli,
+        "refresh_stale_status",
+        fake_refresh_stale_status,
+        raising=False,
+    )
+
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        result = runner.invoke(app, ["refresh", "--refetch", "dummy-source.yml"])
+
+    assert result.exit_code == 0
+    assert "stale: " in result.stdout
+    assert received["source_list_path"] == Path("dummy-source.yml")
 
 
 def test_cli_extract_prints_section_count(monkeypatch, tmp_path):
