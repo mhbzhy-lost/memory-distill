@@ -1,6 +1,6 @@
 {
-  "captured_at": "2026-05-26T12:26:11.870151Z",
-  "content_hash": "sha256:979000e3bcbd6c9d9fda64cafa32c984bd5c51806cf17a9ff919a46fa44de789",
+  "captured_at": "2026-05-26T13:49:14.876449Z",
+  "content_hash": "sha256:22ea2fbc64663bd1992e4655289b1b41618e4d32ec6b45ca39bad27ef0520b2a",
   "content_type": "text/html; charset=utf-8",
   "expected_build_hints": [
     "server component vs client component",

@@ -1,0 +1,30 @@
+{
+  "captured_at": "2026-05-26T13:49:14.876449Z",
+  "content_hash": "sha256:a286669a76a353b5d09aed60cc13cb75578b7e6da1bd412151dd1c482251cbf3",
+  "content_type": "text/plain; charset=utf-8",
+  "expected_build_hints": [],
+  "expected_failure_hints": [
+    "reference to captured var in concurrently-executing code",
+    "capture with non-Sendable type in a @Sendable closure",
+    "data race",
+    "nonisolated(unsafe)"
+  ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
+  "final_url": "https://raw.githubusercontent.com/swiftlang/swift/main/userdocs/diagnostics/sendable-closure-captures.md",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "swift-sendable-closure-captures",
+  "source_type": "compiler_diagnostic",
+  "stacks": [
+    "swift",
+    "ios"
+  ],
+  "url": "https://raw.githubusercontent.com/swiftlang/swift/main/userdocs/diagnostics/sendable-closure-captures.md"
+}

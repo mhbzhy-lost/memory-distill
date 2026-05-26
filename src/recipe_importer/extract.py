@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from bs4 import BeautifulSoup
+from markdown_it import MarkdownIt
 from soupsieve.util import SelectorSyntaxError
 
 from recipe_importer.storage import read_json, write_json, write_text
@@ -438,10 +439,27 @@ def structured_texts(soup: BeautifulSoup, metadata: dict[str, object]) -> list[s
     return texts
 
 
+_MD_RE = re.compile(r"^#{1,6}\s", re.MULTILINE)
+_HTML_ROOT_RE = re.compile(r"<(?:html|body|article|main|div|p|h[1-6])\b", re.IGNORECASE)
+
+
+def _looks_like_plain_markdown(text: str) -> bool:
+    stripped = text.lstrip()
+    if _HTML_ROOT_RE.search(stripped[:500]):
+        return False
+    return bool(_MD_RE.search(stripped[:2000]))
+
+
+def _render_markdown_to_html(text: str) -> str:
+    return MarkdownIt("commonmark").render(text)
+
+
 def extract_snapshot(snapshot_dir: Path) -> ExtractionResult:
     metadata = read_json(snapshot_dir / "response.json")
     source_id = metadata["source_id"]
     html = (snapshot_dir / "raw.html").read_text(encoding="utf-8")
+    if _looks_like_plain_markdown(html):
+        html = _render_markdown_to_html(html)
     soup = BeautifulSoup(html, "html5lib")
     structured = structured_texts(soup, metadata)
     remove_noise_nodes(soup)

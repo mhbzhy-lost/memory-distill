@@ -347,6 +347,49 @@
     },
     {
       "do_not": [
+        "Do not assume ArkTS this always points to the class instance like Java; ArkTS this is determined by the call site",
+        "Do not pass class methods as naked callbacks without .bind() or arrow function wrapping"
+      ],
+      "failure_class": "harmonyos/arkts-semantics",
+      "fingerprints": [
+        "this is undefined",
+        "Cannot read properties of undefined",
+        "this.bar",
+        "callFunction(this.foo)",
+        "ArkTS this \u7ed1\u5b9a"
+      ],
+      "first_checks": [
+        "Check whether the method is passed as a callback (callFunction(a.foo)) instead of called directly (a.foo())",
+        "Check whether the method is used inside a closure or event handler where this is rebound",
+        "Check whether bind(this) or an arrow function wrapper is needed to preserve context"
+      ],
+      "id": "arkts-this-binding-context-confusion",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/arkts-this-binding-context-confusion.md",
+      "source_ids": [
+        "arkts-java-migration-guide"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/quick-start/getting-started-with-arkts-for-java-programmers.md"
+      ],
+      "stack": [
+        "harmonyos",
+        "arkts"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "harmonyos/arkts-semantics: ArkTS this reference points to wrong object because method passed as callback loses its context",
+      "symptoms": [
+        "ArkTS this reference points to wrong object because method passed as callback loses its context"
+      ],
+      "validation_ladder": [
+        "Reproduce the this binding failure with the failing call pattern",
+        "Apply bind() or arrow function wrapper and verify correct this value",
+        "Run the component or ability test covering the callback path"
+      ]
+    },
+    {
+      "do_not": [
         "Do not cache UIAbilityContext in a module-level variable before onCreate completes",
         "Do not pass context to child components via property assignment before the context is initialized in onCreate"
       ],
@@ -777,6 +820,92 @@
     },
     {
       "do_not": [
+        "Do not catch CancellationException and suppress it; always re-throw after logging",
+        "Do not install CoroutineExceptionHandler on a child Job; it only works on the root"
+      ],
+      "failure_class": "kotlin/coroutines",
+      "fingerprints": [
+        "CoroutineExceptionHandler got uncaught exception",
+        "CoroutineExceptionHandler",
+        "SupervisorJob cancellation",
+        "supervisorScope",
+        "coroutineScope"
+      ],
+      "first_checks": [
+        "Check whether a CoroutineExceptionHandler is installed on the root CoroutineScope or Job",
+        "Check whether the failing coroutine is inside a supervisorScope (child failure does not cancel parent) vs coroutineScope (child failure propagates)",
+        "Check whether a CancellationException is being swallowed instead of re-thrown"
+      ],
+      "id": "kotlin-coroutine-uncaught-exception",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/kotlin-coroutine-uncaught-exception.md",
+      "source_ids": [
+        "kotlin-coroutines-exception-handling"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Kotlin/kotlinx.coroutines/master/docs/topics/exception-handling.md"
+      ],
+      "stack": [
+        "kotlin",
+        "android"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "kotlin/coroutines: Coroutine throws uncaught exception that crashes the process instead of being handled by parent scope",
+      "symptoms": [
+        "Coroutine throws uncaught exception that crashes the process instead of being handled by parent scope"
+      ],
+      "validation_ladder": [
+        "Reproduce the uncaught exception with the failing coroutine input",
+        "Add a SupervisorJob or supervisorScope and verify the exception is contained",
+        "Run the coroutine test covering the failure path"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not use withContext inside a flow { } builder; use flowOn instead",
+        "Do not catch exceptions in collect {} and expect the flow to continue; use catch operator before collect"
+      ],
+      "failure_class": "kotlin/flow",
+      "fingerprints": [
+        "Flow exception transparency violation",
+        "Flow invariant is violated",
+        "emission happened in",
+        "flowOn instead",
+        "catch operator"
+      ],
+      "first_checks": [
+        "Check whether the exception originated inside the flow { } builder vs upstream operators",
+        "Check whether catch only catches upstream exceptions (it does not catch downstream collect failures)",
+        "Check whether flowOn was used instead of withContext to change the execution context"
+      ],
+      "id": "kotlin-flow-exception-transparency",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/kotlin-flow-exception-transparency.md",
+      "source_ids": [
+        "kotlin-flow-exception-handling"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Kotlin/kotlinx.coroutines/master/docs/topics/flow.md"
+      ],
+      "stack": [
+        "kotlin",
+        "android"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "kotlin/flow: Flow throws Flow exception transparency violation because an exception was emitted from an unexpected place",
+      "symptoms": [
+        "Flow throws Flow exception transparency violation because an exception was emitted from an unexpected place"
+      ],
+      "validation_ladder": [
+        "Reproduce the exception with the failing flow emission",
+        "Move the catch operator upstream and verify the exception is handled",
+        "Run the flow test covering the failure path"
+      ]
+    },
+    {
+      "do_not": [
         "Do not suppress NullPointerException with try-catch before adding null checks",
         "Do not assume Java platform types are non-null; always treat them as potentially nullable"
       ],
@@ -859,6 +988,49 @@
         "Reproduce the IllegalArgumentException or IllegalStateException with the failing input",
         "Fix the caller input or state transition and verify no exception",
         "Run the unit test covering the precondition path"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not pass a class without @Serializable to Json.encodeToString or decodeFromString",
+        "Do not make nullable fields non-nullable to fix MissingFieldException; handle the missing value explicitly"
+      ],
+      "failure_class": "kotlin/serialization",
+      "fingerprints": [
+        "Serializer for class",
+        "is not found",
+        "marked as @Serializable",
+        "MissingFieldException",
+        "JsonDecodingException"
+      ],
+      "first_checks": [
+        "Check whether the class is annotated with @Serializable",
+        "Check whether the kotlinx.serialization compiler plugin is applied in the build",
+        "Check whether all non-nullable fields have values in the JSON input"
+      ],
+      "id": "kotlin-serialization-missing-serializable",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/kotlin-serialization-missing-serializable.md",
+      "source_ids": [
+        "kotlin-serialization-basic-errors"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/Kotlin/kotlinx.serialization/master/docs/basic-serialization.md"
+      ],
+      "stack": [
+        "kotlin",
+        "android"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "kotlin/serialization: Kotlin serialization fails because Serializer for class is not found; the class is not marked @Serializable",
+      "symptoms": [
+        "Kotlin serialization fails because Serializer for class is not found; the class is not marked @Serializable"
+      ],
+      "validation_ladder": [
+        "Add @Serializable annotation and verify compile succeeds",
+        "Decode a sample JSON input and verify all fields are correctly populated",
+        "Run the serialization unit test for the affected class"
       ]
     },
     {
@@ -1531,6 +1703,221 @@
         "Reproduce the state reset with a minimal interaction",
         "Verify the component keeps or resets state according to the chosen identity",
         "Run the focused component test for the affected branch"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not mark the member nonisolated unless it truly requires no synchronization",
+        "Do not bypass actor isolation by calling through global functions without proving thread safety"
+      ],
+      "failure_class": "swift/concurrency",
+      "fingerprints": [
+        "actor-isolated",
+        "non-isolated context",
+        "MainActor-isolated",
+        "actor isolation violation",
+        "cannot be referenced from"
+      ],
+      "first_checks": [
+        "Check whether the access is from a nonisolated function or a different actor",
+        "Check whether the accessed member is marked @MainActor or belongs to an actor struct/class",
+        "Check whether await is used at the call site to cross the isolation boundary"
+      ],
+      "id": "swift-actor-isolation-violation",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/swift-actor-isolation-violation.md",
+      "source_ids": [
+        "swift-actor-isolated-call"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/swiftlang/swift/main/userdocs/diagnostics/actor-isolated-call.md"
+      ],
+      "stack": [
+        "swift",
+        "ios"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "swift/concurrency: Swift compiler error: actor-isolated property or method cannot be accessed from a non-isolated or different isolation context",
+      "symptoms": [
+        "Swift compiler error: actor-isolated property or method cannot be accessed from a non-isolated or different isolation context"
+      ],
+      "validation_ladder": [
+        "Add await at the call site or mark the caller with the matching actor; verify compile succeeds",
+        "Verify the actor's invariants are preserved at runtime",
+        "Run the concurrency test covering the cross-actor access"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not add as! force cast without understanding why the types do not match",
+        "Do not suppress the diagnostic with @_silgen_name or @objc without fixing the underlying type mismatch"
+      ],
+      "failure_class": "swift/type-checking",
+      "fingerprints": [
+        "Cannot convert value of type",
+        "binary operator cannot be applied",
+        "missing argument label",
+        "type has no member",
+        "cannot force unwrap"
+      ],
+      "first_checks": [
+        "Check whether the mismatch is due to optional vs non-optional type (Int? vs Int)",
+        "Check whether the mismatch is due to protocol conformance missing (concrete type vs protocol existential)",
+        "Check whether force unwrap (!) is applied to a value that is not optional"
+      ],
+      "id": "swift-cannot-convert-value-of-type",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/swift-cannot-convert-value-of-type.md",
+      "source_ids": [
+        "swift-new-diagnostic-arch"
+      ],
+      "source_urls": [
+        "https://www.swift.org/blog/new-diagnostic-arch-overview/"
+      ],
+      "stack": [
+        "swift",
+        "ios"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "swift/type-checking: Swift compiler reports Cannot convert value of type X to expected type Y with unclear fix-it suggestion",
+      "symptoms": [
+        "Swift compiler reports Cannot convert value of type X to expected type Y with unclear fix-it suggestion"
+      ],
+      "validation_ladder": [
+        "Fix the type annotation, unwrap, or convert explicitly; verify compile succeeds",
+        "Verify runtime behavior matches the corrected type",
+        "Run the unit test covering the affected expression"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not replace protocol existential with a struct wrapper without understanding the performance implications (existential boxes)",
+        "Do not add any to generic type parameters; use <T: MyProtocol> constraint syntax instead"
+      ],
+      "failure_class": "swift/type-system",
+      "fingerprints": [
+        "any",
+        "existential type",
+        "protocol used as a type",
+        "ExistentialAny",
+        "protocol as type"
+      ],
+      "first_checks": [
+        "Check whether a protocol name is used directly as a type (e.g. let x: MyProtocol) without any prefix",
+        "Check whether the code targets Swift 5.6+ with ExistentialAny upcoming feature enabled",
+        "Check whether a generic constraint uses protocol as type instead of where T: MyProtocol"
+      ],
+      "id": "swift-existential-any-required",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/swift-existential-any-required.md",
+      "source_ids": [
+        "swift-existential-any-diagnostic"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/swiftlang/swift/main/userdocs/diagnostics/existential-any.md"
+      ],
+      "stack": [
+        "swift",
+        "ios"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "swift/type-system: Swift 5.6+ compiler error: protocol used as a type requires any keyword before the protocol name",
+      "symptoms": [
+        "Swift 5.6+ compiler error: protocol used as a type requires any keyword before the protocol name"
+      ],
+      "validation_ladder": [
+        "Add any keyword before the protocol name and verify compile succeeds",
+        "Verify runtime behavior is unchanged",
+        "Run the module test covering the affected type signature"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not wrap the closure in Task { } without @Sendable; the compiler will still report the violation",
+        "Do not use nonisolated(unsafe) to suppress the error without proving thread safety"
+      ],
+      "failure_class": "swift/concurrency",
+      "fingerprints": [
+        "reference to captured var",
+        "concurrently-executing code",
+        "non-Sendable type",
+        "@Sendable closure",
+        "data race"
+      ],
+      "first_checks": [
+        "Check whether the closure is annotated with @Sendable or passed to Task { ... } or async context",
+        "Check whether a mutable var is captured by the concurrently-executing closure (data race risk)",
+        "Check whether the captured type conforms to Sendable"
+      ],
+      "id": "swift-sendable-closure-race",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/swift-sendable-closure-race.md",
+      "source_ids": [
+        "swift-sendable-closure-captures"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/swiftlang/swift/main/userdocs/diagnostics/sendable-closure-captures.md"
+      ],
+      "stack": [
+        "swift",
+        "ios"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "swift/concurrency: Swift compiler error: reference to captured var in concurrently-executing code violates Sendable",
+      "symptoms": [
+        "Swift compiler error: reference to captured var in concurrently-executing code violates Sendable"
+      ],
+      "validation_ladder": [
+        "Convert the mutable var to let or add actor isolation; verify compile succeeds",
+        "Verify no data race at runtime with concurrent access",
+        "Run the concurrency test or TSAN check covering the affected code"
+      ]
+    },
+    {
+      "do_not": [
+        "Do not use try! in production code unless the function's contract guarantees success",
+        "Do not catch all errors broadly; match specific error types to avoid masking unrelated failures"
+      ],
+      "failure_class": "swift/error-handling",
+      "fingerprints": [
+        "Call can throw",
+        "try keyword required",
+        "function can throw",
+        "non-throwing context",
+        "throws keyword"
+      ],
+      "first_checks": [
+        "Check whether the calling function is marked throws",
+        "Check whether the call site wraps the throwing call in do { try ... } catch { ... }",
+        "Check whether try? or try! is used where the error cannot be ignored"
+      ],
+      "id": "swift-throws-missing-try",
+      "kind": "debug-recipe",
+      "path": "recipe-kb/accepted/swift-throws-missing-try.md",
+      "source_ids": [
+        "swift-error-handling-design"
+      ],
+      "source_urls": [
+        "https://raw.githubusercontent.com/swiftlang/swift/main/docs/ErrorHandling.md"
+      ],
+      "stack": [
+        "swift",
+        "ios"
+      ],
+      "stale": false,
+      "status": "accepted",
+      "summary": "swift/error-handling: Calling a throwing function without try keyword or outside do-catch block produces compile error",
+      "symptoms": [
+        "Calling a throwing function without try keyword or outside do-catch block produces compile error"
+      ],
+      "validation_ladder": [
+        "Add try keyword and appropriate error handling; verify compile succeeds",
+        "Test the code path with both success and failure inputs",
+        "Run the unit test covering the throwing function boundary"
       ]
     },
     {

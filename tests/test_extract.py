@@ -344,3 +344,56 @@ def test_extract_snapshot_marks_qa_gate_for_agentic_fallback_when_hints_are_miss
     assert any(check["name"] == "expected_hints_matched" and not check["passed"] for check in qa["checks"])
     assert "状态: 需要 agentic fallback" in review
     assert "raw.html" in review
+
+
+def test_extract_snapshot_handles_plain_markdown(kb_root):
+    paths = KbPaths(kb_root).ensure()
+    snapshot_dir = paths.snapshots_dir / "swift-doc"
+    write_text(
+        snapshot_dir / "raw.html",
+        "# Error Handling in Swift\n\n"
+        "Swift uses a `throws` keyword to mark functions that can propagate errors.\n\n"
+        "## Calling Throwing Functions\n\n"
+        "Use `try` before a throwing call and wrap it in `do { ... } catch { ... }`.\n"
+        "The `try keyword required` rule prevents calling a throwing function from a non-throwing context.\n\n"
+        "```swift\n"
+        "do {\n"
+        "    try fetchData()\n"
+        "} catch {\n"
+        "    print(error)\n"
+        "}\n"
+        "```\n",
+    )
+    write_json(
+        snapshot_dir / "response.json",
+        {
+            "source_id": "swift-doc",
+            "url": "https://raw.githubusercontent.com/swiftlang/swift/main/test.md",
+            "final_url": "https://raw.githubusercontent.com/swiftlang/swift/main/test.md",
+            "source_type": "compiler_doc",
+            "captured_at": "2026-05-26T00:00:00Z",
+            "retrieved_status": 200,
+            "content_hash": "sha256:md",
+            "expected_failure_hints": ["try keyword required"],
+        },
+    )
+
+    result = extract_snapshot(snapshot_dir)
+
+    sections = read_json(snapshot_dir / "sections.json")
+    qa = read_json(snapshot_dir / "qa.json")
+
+    assert result.source_id == "swift-doc"
+    assert result.section_count >= 2
+    assert any("throws" in section["short_excerpt"] for section in sections)
+    assert any("try" in section["short_excerpt"] for section in sections)
+    assert qa["status"] == "passed"
+
+
+def test_plain_markdown_detection_preserves_html_content(kb_root):
+    from recipe_importer.extract import _looks_like_plain_markdown
+
+    assert _looks_like_plain_markdown("# Heading\n\nSome text\n\n## Sub\n") is True
+    assert _looks_like_plain_markdown("<html><body><h1>Title</h1></body></html>") is False
+    assert _looks_like_plain_markdown("<!DOCTYPE html><html><body></body></html>") is False
+    assert _looks_like_plain_markdown("  \n  # Markdown with leading whitespace\n") is True

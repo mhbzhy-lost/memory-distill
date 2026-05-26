@@ -410,3 +410,77 @@ sources:
       - arkts-no-comma-op
       - arkts-no-function-constructors
     refresh_policy: monthly
+  - source_id: arkts-java-migration-guide
+    url: https://raw.githubusercontent.com/openharmony/docs/master/zh-cn/application-dev/quick-start/getting-started-with-arkts-for-java-programmers.md
+    source_type: language_doc
+    stacks:
+      - harmonyos
+      - arkts
+    expected_failure_hints:
+      - this binding context
+      - ArkTS number vs Java int
+      - async Promise await vs Java Future
+      - function overload type declaration
+      - Map set get has
+      - namespace vs Java package
+    refresh_policy: monthly
+  - source_id: swift-error-handling-design
+    url: https://raw.githubusercontent.com/swiftlang/swift/main/docs/ErrorHandling.md
+    source_type: compiler_doc
+    stacks:
+      - swift
+      - ios
+    expected_failure_hints:
+      - throws keyword required
+      - try keyword required before throwing call
+      - function can throw out of non-throwing context
+      - rethrows function only throws if parameter throws
+      - defer execution order
+    refresh_policy: monthly
+  - source_id: swift-existential-any-diagnostic
+    url: https://raw.githubusercontent.com/swiftlang/swift/main/userdocs/diagnostics/existential-any.md
+    source_type: compiler_diagnostic
+    stacks:
+      - swift
+      - ios
+    expected_failure_hints:
+      - "'any' existential type syntax missing"
+      - protocol used as a type requires any
+      - ExistentialAny upcoming feature
+    refresh_policy: monthly
+  - source_id: swift-sendable-closure-captures
+    url: https://raw.githubusercontent.com/swiftlang/swift/main/userdocs/diagnostics/sendable-closure-captures.md
+    source_type: compiler_diagnostic
+    stacks:
+      - swift
+      - ios
+    expected_failure_hints:
+      - reference to captured var in concurrently-executing code
+      - capture with non-Sendable type in a @Sendable closure
+      - data race
+      - nonisolated(unsafe)
+    refresh_policy: monthly
+  - source_id: swift-actor-isolated-call
+    url: https://raw.githubusercontent.com/swiftlang/swift/main/userdocs/diagnostics/actor-isolated-call.md
+    source_type: compiler_diagnostic
+    stacks:
+      - swift
+      - ios
+    expected_failure_hints:
+      - actor-isolated property can not be referenced from a non-isolated context
+      - call to main actor-isolated method
+      - actor isolation violation
+    refresh_policy: monthly
+  - source_id: swift-new-diagnostic-arch
+    url: https://www.swift.org/blog/new-diagnostic-arch-overview/
+    source_type: official_blog_post
+    stacks:
+      - swift
+      - ios
+    expected_failure_hints:
+      - Cannot convert value of type
+      - binary operator cannot be applied to arguments
+      - cannot force unwrap value of non-optional type
+      - missing argument label
+      - type has no member
+    refresh_policy: monthly

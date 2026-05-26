@@ -1,0 +1,31 @@
+{
+  "captured_at": "2026-05-26T13:49:14.876449Z",
+  "content_hash": "sha256:6b16e5ecfa9fca0deb03aeb9fda4ff04f300d09c980d39b1ef7bb8a0e459e4b9",
+  "content_type": "text/html; charset=UTF-8",
+  "expected_build_hints": [],
+  "expected_failure_hints": [
+    "Cannot convert value of type",
+    "binary operator cannot be applied to arguments",
+    "cannot force unwrap value of non-optional type",
+    "missing argument label",
+    "type has no member"
+  ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
+  "final_url": "https://www.swift.org/blog/new-diagnostic-arch-overview/",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "swift-new-diagnostic-arch",
+  "source_type": "official_blog_post",
+  "stacks": [
+    "swift",
+    "ios"
+  ],
+  "url": "https://www.swift.org/blog/new-diagnostic-arch-overview/"
+}

@@ -1,0 +1,29 @@
+{
+  "captured_at": "2026-05-26T13:49:14.876449Z",
+  "content_hash": "sha256:06ccf6de3da653f54783ac7d9cccf99e6e18bfd9c422d51efb025a5ad35f22f7",
+  "content_type": "text/plain; charset=utf-8",
+  "expected_build_hints": [],
+  "expected_failure_hints": [
+    "actor-isolated property can not be referenced from a non-isolated context",
+    "call to main actor-isolated method",
+    "actor isolation violation"
+  ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
+  "final_url": "https://raw.githubusercontent.com/swiftlang/swift/main/userdocs/diagnostics/actor-isolated-call.md",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "swift-actor-isolated-call",
+  "source_type": "compiler_diagnostic",
+  "stacks": [
+    "swift",
+    "ios"
+  ],
+  "url": "https://raw.githubusercontent.com/swiftlang/swift/main/userdocs/diagnostics/actor-isolated-call.md"
+}

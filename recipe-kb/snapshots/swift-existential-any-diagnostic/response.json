@@ -1,0 +1,29 @@
+{
+  "captured_at": "2026-05-26T13:49:14.876449Z",
+  "content_hash": "sha256:69d0360842059387e92ca5d1c1cec7a0040ab1a9e67d7084aaaf1ed50c661bbe",
+  "content_type": "text/plain; charset=utf-8",
+  "expected_build_hints": [],
+  "expected_failure_hints": [
+    "'any' existential type syntax missing",
+    "protocol used as a type requires any",
+    "ExistentialAny upcoming feature"
+  ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
+  "final_url": "https://raw.githubusercontent.com/swiftlang/swift/main/userdocs/diagnostics/existential-any.md",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "swift-existential-any-diagnostic",
+  "source_type": "compiler_diagnostic",
+  "stacks": [
+    "swift",
+    "ios"
+  ],
+  "url": "https://raw.githubusercontent.com/swiftlang/swift/main/userdocs/diagnostics/existential-any.md"
+}

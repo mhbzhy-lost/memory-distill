@@ -1,19 +1,18 @@
 {
   "checks": [
     {
-      "details": "\u62bd\u53d6\u6bb5\u843d\u6570: 0",
+      "details": "\u62bd\u53d6\u6bb5\u843d\u6570: 125",
       "name": "sections_non_empty",
-      "passed": false
+      "passed": true
     },
     {
       "details": "\u671f\u671b\u8303\u56f4: 1-500",
       "name": "section_count_within_bounds",
-      "passed": false
+      "passed": true
     },
     {
-      "details": "\u547d\u4e2d 0/6 \u6761 expected_failure_hints",
-      "matched_hints": [],
-      "missing_hints": [
+      "details": "\u547d\u4e2d 6/6 \u6761 expected_failure_hints",
+      "matched_hints": [
         "Serializer for class ... is not found",
         "Please ensure that class is marked as '@Serializable'",
         "MissingFieldException",
@@ -21,12 +20,13 @@
         "Encountered an unknown key",
         "Expected string literal but 'null' literal was found"
       ],
+      "missing_hints": [],
       "name": "expected_hints_matched",
-      "passed": false
+      "passed": true
     }
   ],
   "fallback": {
-    "enabled": true,
+    "enabled": false,
     "inputs": [
       "raw.html",
       "response.json",
@@ -37,5 +37,5 @@
     "mode": "agentic_loop"
   },
   "source_id": "kotlin-serialization-basic-errors",
-  "status": "needs_agentic_fallback"
+  "status": "passed"
 }

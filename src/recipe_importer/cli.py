@@ -362,6 +362,9 @@ def search(
         _exit_error("recipe index not found; run `recipe-importer index rebuild`")
     except (KeyError, ValueError):
         _exit_error("recipe index is invalid; run `recipe-importer index rebuild`")
+    if not records:
+        typer.echo(f"No recipes matched query: {query}")
+        return
     for record in records:
         warning = " [stale]" if record["stale"] else ""
         typer.echo(f"{record['id']}{warning}")

@@ -1805,6 +1805,438 @@ RECIPE_TEMPLATES: tuple[RecipeTemplate, ...] = (
         ],
     ),
     RecipeTemplate(
+        source_id="arkts-java-migration-guide",
+        failure_label="arkts this binding context confusion",
+        recipe_id="arkts-this-binding-context-confusion",
+        failure_class="harmonyos/arkts-semantics",
+        symptoms=[
+            "ArkTS this reference points to wrong object because method passed as callback loses its context"
+        ],
+        fingerprints=[
+            "this is undefined",
+            "Cannot read properties of undefined",
+            "this.bar",
+            "callFunction(this.foo)",
+            "ArkTS this 绑定",
+        ],
+        first_checks=[
+            "Check whether the method is passed as a callback (callFunction(a.foo)) instead of called directly (a.foo())",
+            "Check whether the method is used inside a closure or event handler where this is rebound",
+            "Check whether bind(this) or an arrow function wrapper is needed to preserve context",
+        ],
+        do_not=[
+            "Do not assume ArkTS this always points to the class instance like Java; ArkTS this is determined by the call site",
+            "Do not pass class methods as naked callbacks without .bind() or arrow function wrapping",
+        ],
+        evidence_needed=[
+            "Capture the stack trace showing this is undefined or points to wrong object",
+            "Identify the call site where the method is passed as a callback versus called directly",
+        ],
+        minimal_fix_scope=[
+            "The callback invocation site where this context is lost",
+            "The method reference and its binding (bind or arrow wrapper)",
+        ],
+        validation_ladder=[
+            "Reproduce the this binding failure with the failing call pattern",
+            "Apply bind() or arrow function wrapper and verify correct this value",
+            "Run the component or ability test covering the callback path",
+        ],
+        regression_guard=[
+            "Add a test asserting the callback correctly accesses class instance properties via this"
+        ],
+        match_terms=[
+            "this.bar",
+            "this is undefined",
+            "callFunction",
+            "this binding",
+            "bind(",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="swift-error-handling-design",
+        failure_label="swift throws missing try in throwing context",
+        recipe_id="swift-throws-missing-try",
+        failure_class="swift/error-handling",
+        symptoms=[
+            "Calling a throwing function without try keyword or outside do-catch block produces compile error"
+        ],
+        fingerprints=[
+            "Call can throw",
+            "try keyword required",
+            "function can throw",
+            "non-throwing context",
+            "throws keyword",
+        ],
+        first_checks=[
+            "Check whether the calling function is marked throws",
+            "Check whether the call site wraps the throwing call in do { try ... } catch { ... }",
+            "Check whether try? or try! is used where the error cannot be ignored",
+        ],
+        do_not=[
+            "Do not use try! in production code unless the function's contract guarantees success",
+            "Do not catch all errors broadly; match specific error types to avoid masking unrelated failures",
+        ],
+        evidence_needed=[
+            "Capture the compile error message identifying the throwing function call site",
+            "Identify whether the enclosing function is marked throws to propagate errors",
+        ],
+        minimal_fix_scope=[
+            "The throwing function call site",
+            "The enclosing do-catch block or the calling function's throws declaration",
+        ],
+        validation_ladder=[
+            "Add try keyword and appropriate error handling; verify compile succeeds",
+            "Test the code path with both success and failure inputs",
+            "Run the unit test covering the throwing function boundary",
+        ],
+        regression_guard=[
+            "Add a test that exercises both the throwing and success paths of the function call"
+        ],
+        match_terms=[
+            "Call can throw",
+            "try keyword",
+            "throws",
+            "non-throwing context",
+            "do catch",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="swift-existential-any-diagnostic",
+        failure_label="swift any keyword required for existential types",
+        recipe_id="swift-existential-any-required",
+        failure_class="swift/type-system",
+        symptoms=[
+            "Swift 5.6+ compiler error: protocol used as a type requires any keyword before the protocol name"
+        ],
+        fingerprints=[
+            "any",
+            "existential type",
+            "protocol used as a type",
+            "ExistentialAny",
+            "protocol as type",
+        ],
+        first_checks=[
+            "Check whether a protocol name is used directly as a type (e.g. let x: MyProtocol) without any prefix",
+            "Check whether the code targets Swift 5.6+ with ExistentialAny upcoming feature enabled",
+            "Check whether a generic constraint uses protocol as type instead of where T: MyProtocol",
+        ],
+        do_not=[
+            "Do not replace protocol existential with a struct wrapper without understanding the performance implications (existential boxes)",
+            "Do not add any to generic type parameters; use <T: MyProtocol> constraint syntax instead",
+        ],
+        evidence_needed=[
+            "Capture the compile error showing the protocol name used as a type",
+            "Identify whether the type site is a variable declaration, parameter type, or return type",
+        ],
+        minimal_fix_scope=[
+            "The protocol type annotation site needing any prefix",
+            "Any generic constraint that uses the protocol as a type constraint",
+        ],
+        validation_ladder=[
+            "Add any keyword before the protocol name and verify compile succeeds",
+            "Verify runtime behavior is unchanged",
+            "Run the module test covering the affected type signature",
+        ],
+        regression_guard=[
+            "Add a compile-time test that verifies no bare protocol-as-type usage remains"
+        ],
+        match_terms=[
+            "any",
+            "existential",
+            "protocol used as a type",
+            "ExistentialAny",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="swift-sendable-closure-captures",
+        failure_label="swift sendable closure data race on captured var",
+        recipe_id="swift-sendable-closure-race",
+        failure_class="swift/concurrency",
+        symptoms=[
+            "Swift compiler error: reference to captured var in concurrently-executing code violates Sendable"
+        ],
+        fingerprints=[
+            "reference to captured var",
+            "concurrently-executing code",
+            "non-Sendable type",
+            "@Sendable closure",
+            "data race",
+        ],
+        first_checks=[
+            "Check whether the closure is annotated with @Sendable or passed to Task { ... } or async context",
+            "Check whether a mutable var is captured by the concurrently-executing closure (data race risk)",
+            "Check whether the captured type conforms to Sendable",
+        ],
+        do_not=[
+            "Do not wrap the closure in Task { } without @Sendable; the compiler will still report the violation",
+            "Do not use nonisolated(unsafe) to suppress the error without proving thread safety",
+        ],
+        evidence_needed=[
+            "Capture the compile error identifying the captured var and the @Sendable closure",
+            "Identify the concurrency context (Task, async let, async sequence, actor)",
+        ],
+        minimal_fix_scope=[
+            "The captured variable and its mutability in the closure site",
+            "The actor isolation or synchronization mechanism around the capture",
+        ],
+        validation_ladder=[
+            "Convert the mutable var to let or add actor isolation; verify compile succeeds",
+            "Verify no data race at runtime with concurrent access",
+            "Run the concurrency test or TSAN check covering the affected code",
+        ],
+        regression_guard=[
+            "Add a concurrency test asserting no data race with @Sendable closure captures"
+        ],
+        match_terms=[
+            "reference to captured var",
+            "concurrently-executing",
+            "@Sendable",
+            "data race",
+            "Task",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="swift-actor-isolated-call",
+        failure_label="swift actor isolation violation on cross-context access",
+        recipe_id="swift-actor-isolation-violation",
+        failure_class="swift/concurrency",
+        symptoms=[
+            "Swift compiler error: actor-isolated property or method cannot be accessed from a non-isolated or different isolation context"
+        ],
+        fingerprints=[
+            "actor-isolated",
+            "non-isolated context",
+            "MainActor-isolated",
+            "actor isolation violation",
+            "cannot be referenced from",
+        ],
+        first_checks=[
+            "Check whether the access is from a nonisolated function or a different actor",
+            "Check whether the accessed member is marked @MainActor or belongs to an actor struct/class",
+            "Check whether await is used at the call site to cross the isolation boundary",
+        ],
+        do_not=[
+            "Do not mark the member nonisolated unless it truly requires no synchronization",
+            "Do not bypass actor isolation by calling through global functions without proving thread safety",
+        ],
+        evidence_needed=[
+            "Capture the compile error naming the actor-isolated member and the accessing context",
+            "Identify the isolation domains of both the caller and the accessed member",
+        ],
+        minimal_fix_scope=[
+            "The cross-isolation access site needing await",
+            "The isolation annotation of the affected member or the calling context",
+        ],
+        validation_ladder=[
+            "Add await at the call site or mark the caller with the matching actor; verify compile succeeds",
+            "Verify the actor's invariants are preserved at runtime",
+            "Run the concurrency test covering the cross-actor access",
+        ],
+        regression_guard=[
+            "Add a compile-time test asserting the access requires await across isolation domains"
+        ],
+        match_terms=[
+            "actor-isolated",
+            "non-isolated",
+            "MainActor",
+            "actor isolation",
+            "await",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="swift-new-diagnostic-arch",
+        failure_label="swift cannot convert value of type diagnostic",
+        recipe_id="swift-cannot-convert-value-of-type",
+        failure_class="swift/type-checking",
+        symptoms=[
+            "Swift compiler reports Cannot convert value of type X to expected type Y with unclear fix-it suggestion"
+        ],
+        fingerprints=[
+            "Cannot convert value of type",
+            "binary operator cannot be applied",
+            "missing argument label",
+            "type has no member",
+            "cannot force unwrap",
+        ],
+        first_checks=[
+            "Check whether the mismatch is due to optional vs non-optional type (Int? vs Int)",
+            "Check whether the mismatch is due to protocol conformance missing (concrete type vs protocol existential)",
+            "Check whether force unwrap (!) is applied to a value that is not optional",
+        ],
+        do_not=[
+            "Do not add as! force cast without understanding why the types do not match",
+            "Do not suppress the diagnostic with @_silgen_name or @objc without fixing the underlying type mismatch",
+        ],
+        evidence_needed=[
+            "Capture the full compile error with the expected and actual types",
+            "Identify the expression or argument site where the type mismatch occurs",
+        ],
+        minimal_fix_scope=[
+            "The expression or call site producing the type mismatch",
+            "The variable or parameter type annotation that constrains the expression",
+        ],
+        validation_ladder=[
+            "Fix the type annotation, unwrap, or convert explicitly; verify compile succeeds",
+            "Verify runtime behavior matches the corrected type",
+            "Run the unit test covering the affected expression",
+        ],
+        regression_guard=[
+            "Add a compile-time test asserting the corrected type at the expression boundary"
+        ],
+        match_terms=[
+            "Cannot convert value of type",
+            "binary operator cannot",
+            "missing argument",
+            "has no member",
+            "force unwrap",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="kotlin-coroutines-exception-handling",
+        failure_label="kotlin coroutine uncaught exception via handler",
+        recipe_id="kotlin-coroutine-uncaught-exception",
+        failure_class="kotlin/coroutines",
+        symptoms=[
+            "Coroutine throws uncaught exception that crashes the process instead of being handled by parent scope"
+        ],
+        fingerprints=[
+            "CoroutineExceptionHandler got uncaught exception",
+            "CoroutineExceptionHandler",
+            "SupervisorJob cancellation",
+            "supervisorScope",
+            "coroutineScope",
+        ],
+        first_checks=[
+            "Check whether a CoroutineExceptionHandler is installed on the root CoroutineScope or Job",
+            "Check whether the failing coroutine is inside a supervisorScope (child failure does not cancel parent) vs coroutineScope (child failure propagates)",
+            "Check whether a CancellationException is being swallowed instead of re-thrown",
+        ],
+        do_not=[
+            "Do not catch CancellationException and suppress it; always re-throw after logging",
+            "Do not install CoroutineExceptionHandler on a child Job; it only works on the root",
+        ],
+        evidence_needed=[
+            "Capture the process crash log showing CoroutineExceptionHandler got uncaught exception",
+            "Identify whether the failure is in a child coroutine and how it propagates to the scope",
+        ],
+        minimal_fix_scope=[
+            "The root CoroutineScope or the supervisorScope boundary where the failure should be contained",
+            "The coroutine launch block that throws the uncaught exception",
+        ],
+        validation_ladder=[
+            "Reproduce the uncaught exception with the failing coroutine input",
+            "Add a SupervisorJob or supervisorScope and verify the exception is contained",
+            "Run the coroutine test covering the failure path",
+        ],
+        regression_guard=[
+            "Add a coroutine test asserting the exception is handled and does not cancel the parent scope"
+        ],
+        match_terms=[
+            "CoroutineExceptionHandler",
+            "uncaught exception",
+            "supervisorScope",
+            "coroutineScope",
+            "SupervisorJob",
+            "CancellationException",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="kotlin-flow-exception-handling",
+        failure_label="kotlin flow exception transparency violation",
+        recipe_id="kotlin-flow-exception-transparency",
+        failure_class="kotlin/flow",
+        symptoms=[
+            "Flow throws Flow exception transparency violation because an exception was emitted from an unexpected place"
+        ],
+        fingerprints=[
+            "Flow exception transparency violation",
+            "Flow invariant is violated",
+            "emission happened in",
+            "flowOn instead",
+            "catch operator",
+        ],
+        first_checks=[
+            "Check whether the exception originated inside the flow { } builder vs upstream operators",
+            "Check whether catch only catches upstream exceptions (it does not catch downstream collect failures)",
+            "Check whether flowOn was used instead of withContext to change the execution context",
+        ],
+        do_not=[
+            "Do not use withContext inside a flow { } builder; use flowOn instead",
+            "Do not catch exceptions in collect {} and expect the flow to continue; use catch operator before collect",
+        ],
+        evidence_needed=[
+            "Capture the Flow exception transparency violation stack trace",
+            "Identify which flow operator or collect site threw the exception",
+        ],
+        minimal_fix_scope=[
+            "The flow { } builder block or the operator chain",
+            "The catch operator placement relative to upstream and downstream failures",
+        ],
+        validation_ladder=[
+            "Reproduce the exception with the failing flow emission",
+            "Move the catch operator upstream and verify the exception is handled",
+            "Run the flow test covering the failure path",
+        ],
+        regression_guard=[
+            "Add a flow test asserting the catch operator handles the specific error type"
+        ],
+        match_terms=[
+            "exception transparency violation",
+            "Flow invariant is violated",
+            "flowOn",
+            "catch operator",
+            "withContext",
+        ],
+    ),
+    RecipeTemplate(
+        source_id="kotlin-serialization-basic-errors",
+        failure_label="kotlin serialization missing serializable annotation",
+        recipe_id="kotlin-serialization-missing-serializable",
+        failure_class="kotlin/serialization",
+        symptoms=[
+            "Kotlin serialization fails because Serializer for class is not found; the class is not marked @Serializable"
+        ],
+        fingerprints=[
+            "Serializer for class",
+            "is not found",
+            "marked as @Serializable",
+            "MissingFieldException",
+            "JsonDecodingException",
+        ],
+        first_checks=[
+            "Check whether the class is annotated with @Serializable",
+            "Check whether the kotlinx.serialization compiler plugin is applied in the build",
+            "Check whether all non-nullable fields have values in the JSON input",
+        ],
+        do_not=[
+            "Do not pass a class without @Serializable to Json.encodeToString or decodeFromString",
+            "Do not make nullable fields non-nullable to fix MissingFieldException; handle the missing value explicitly",
+        ],
+        evidence_needed=[
+            "Capture the compile or runtime error showing the class name that is missing @Serializable",
+            "Identify the JSON input that triggers the decode failure",
+        ],
+        minimal_fix_scope=[
+            "The class definition needing @Serializable annotation",
+            "The build.gradle(.kts) serialization plugin configuration",
+        ],
+        validation_ladder=[
+            "Add @Serializable annotation and verify compile succeeds",
+            "Decode a sample JSON input and verify all fields are correctly populated",
+            "Run the serialization unit test for the affected class",
+        ],
+        regression_guard=[
+            "Add a serialization test asserting round-trip encode/decode for the affected class"
+        ],
+        match_terms=[
+            "Serializer for class",
+            "@Serializable",
+            "MissingFieldException",
+            "JsonDecodingException",
+            "Unknown key",
+        ],
+    ),
+    RecipeTemplate(
         source_id="openharmony-stage-model-lifecycle",
         failure_label="arkts uiability context null or invalid",
         recipe_id="arkts-uiability-context-not-ready",

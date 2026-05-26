@@ -1,0 +1,31 @@
+{
+  "captured_at": "2026-05-26T13:49:14.876449Z",
+  "content_hash": "sha256:f11837cf5ac4cec5af990411fe3374b170eea3f4bfeced7ef1e39440d2ebb040",
+  "content_type": "text/plain; charset=utf-8",
+  "expected_build_hints": [],
+  "expected_failure_hints": [
+    "throws keyword required",
+    "try keyword required before throwing call",
+    "function can throw out of non-throwing context",
+    "rethrows function only throws if parameter throws",
+    "defer execution order"
+  ],
+  "extraction_profile": {
+    "agentic_fallback": true,
+    "content_selectors": [],
+    "max_sections": 500,
+    "min_sections": 1,
+    "require_expected_hints": true,
+    "structured_text_paths": []
+  },
+  "final_url": "https://raw.githubusercontent.com/swiftlang/swift/main/docs/ErrorHandling.md",
+  "refresh_policy": "monthly",
+  "retrieved_status": 200,
+  "source_id": "swift-error-handling-design",
+  "source_type": "compiler_doc",
+  "stacks": [
+    "swift",
+    "ios"
+  ],
+  "url": "https://raw.githubusercontent.com/swiftlang/swift/main/docs/ErrorHandling.md"
+}

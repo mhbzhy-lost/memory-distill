@@ -470,6 +470,20 @@ def test_cli_search_reports_missing_index(tmp_path):
     assert "run `recipe-importer index rebuild`" in result.stderr
 
 
+def test_cli_search_shows_message_on_no_matches(monkeypatch, tmp_path):
+    def fake_search_recipes(paths, query, *, fresh_only=False):
+        return []
+
+    monkeypatch.setattr(recipe_importer.cli, "search_recipes", fake_search_recipes, raising=False)
+
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        result = runner.invoke(app, ["search", "nonexistent keyword"])
+
+    assert result.exit_code == 0
+    assert "No recipes matched query: nonexistent keyword" in result.stdout
+
+
 def test_cli_search_reports_invalid_index(tmp_path):
     runner = CliRunner()
     with runner.isolated_filesystem(temp_dir=tmp_path):
