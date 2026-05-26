@@ -273,8 +273,6 @@ def test_refresh_marks_stale_when_final_url_changed(kb_root):
 def test_refresh_marks_stale_when_section_anchor_gone(kb_root):
     paths = KbPaths(kb_root).ensure()
     accepted, snapshot_dir = _published_recipe(paths)
-    recipe = parse_recipe_file(accepted)
-    old_span_id = recipe.evidence_refs[0].span_id
 
     source_list_path = paths.sources_dir / "source-list.yml"
     source_list_path.write_text(
