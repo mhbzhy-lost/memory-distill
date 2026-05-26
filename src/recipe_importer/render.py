@@ -95,7 +95,12 @@ def parse_recipe_file(path: Path) -> AnyRecipe:
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---\n"):
         raise ValueError("recipe file must start with YAML frontmatter")
-    _, frontmatter, _body = text.split("---", 2)
+    close = text.find("\n---\n", 3)
+    if close == -1:
+        close = text.rfind("\n---")
+    if close == -1:
+        raise ValueError("recipe file missing closing frontmatter delimiter")
+    frontmatter = text[4 : close + 1]
     data = yaml.safe_load(frontmatter)
     if data.get("kind") == "build-recipe":
         return BuildRecipe.model_validate(data)

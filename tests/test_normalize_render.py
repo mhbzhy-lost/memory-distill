@@ -269,15 +269,41 @@ def test_render_build_recipe_file_round_trip(kb_root):
     assert check_render_equivalence(target)
 
 
-def test_parse_build_recipe_file(kb_root):
-    paths = KbPaths(kb_root).ensure()
-    build = _build_recipe_fixture()
-    target = paths.proposed_dir / f"{build.id}.md"
-    render_recipe_file(build, target)
-
+def test_parse_recipe_file_with_dashes_in_excerpt(kb_root: Path) -> None:
+    from recipe_importer.models import Recipe
     from recipe_importer.render import parse_recipe_file
 
+    paths = KbPaths(kb_root).ensure()
+    ref_with_dashes = EvidenceRef(
+        source_id="gradle-build-troubleshooting",
+        url="https://docs.gradle.org/current/userguide/troubleshooting.html",
+        final_url="https://docs.gradle.org/current/userguide/troubleshooting.html",
+        source_type="build_tool_doc",
+        captured_at="2026-05-26T00:00:00Z",
+        section_anchor="root",
+        span_id="root-8",
+        short_excerpt="------------------------------------------------------------ Gradle 8.0 ------------------------------------------------------------",
+        quote_hash="sha256:abc",
+    )
+    recipe = Recipe(
+        id="gradle-dashes-test",
+        status=RecipeStatus.PROPOSED,
+        stack=["gradle"],
+        failure_class="gradle/test",
+        symptoms=["test symptom"],
+        fingerprints=["test fingerprint"],
+        first_checks=["test check"],
+        do_not=["test do_not"],
+        evidence_needed=["test evidence"],
+        minimal_fix_scope=["test scope"],
+        validation_ladder=["test validation"],
+        regression_guard=["test guard"],
+        evidence_refs=[ref_with_dashes],
+    )
+    target = paths.proposed_dir / f"{recipe.id}.md"
+    render_recipe_file(recipe, target)
+
     parsed = parse_recipe_file(target)
-    assert parsed.kind == "build-recipe"
-    assert parsed.id == build.id
-    assert parsed.constraints == build.constraints
+    assert parsed.id == "gradle-dashes-test"
+    assert isinstance(parsed, Recipe)
+    assert parsed.evidence_refs[0].short_excerpt.startswith("---")
