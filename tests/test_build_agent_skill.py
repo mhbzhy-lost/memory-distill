@@ -56,6 +56,7 @@ def test_build_agent_skill_packages_cli_code_and_static_assets(tmp_path):
 
     bundle = output_dir / "assets" / "recipe-importer"
     for packaged_path in [
+        ".python-version",
         "pyproject.toml",
         "uv.lock",
         "src/recipe_importer/cli.py",

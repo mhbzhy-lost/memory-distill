@@ -14,6 +14,7 @@ BUNDLE_DIR = Path("assets") / "recipe-importer"
 DEFAULT_OUTPUT = Path("dist") / "skills" / SKILL_NAME
 
 COPY_ENTRIES = [
+    Path(".python-version"),
     Path("pyproject.toml"),
     Path("uv.lock"),
     Path("bin"),
