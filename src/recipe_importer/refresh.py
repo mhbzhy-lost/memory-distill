@@ -1,18 +1,14 @@
-import hashlib
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
 
+from recipe_importer.fetch import sha256_text
 from recipe_importer.models import RecipeStatus, Source
 from recipe_importer.paths import KbPaths
 from recipe_importer.render import parse_recipe_file, render_recipe_file
 from recipe_importer.storage import read_json, write_json, write_text
-
-
-def sha256_text(content: str) -> str:
-    return "sha256:" + hashlib.sha256(content.encode("utf-8")).hexdigest()
 
 
 @dataclass(frozen=True)

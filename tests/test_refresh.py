@@ -139,6 +139,10 @@ def test_refetch_single_source_writes_metadata(kb_root):
     assert result.final_url == "https://react.dev/errors/418"
     raw_html = (paths.snapshots_dir / "react-error-418" / "raw.html").read_text(encoding="utf-8")
     assert "hydration mismatch" in raw_html
+    metadata = read_json(paths.snapshots_dir / "react-error-418" / "response.json")
+    assert metadata["source_id"] == "react-error-418"
+    assert metadata["final_url"] == "https://react.dev/errors/418"
+    assert metadata["content_hash"].startswith("sha256:")
 
 
 def test_refetch_single_source_removed_on_404(kb_root):
@@ -162,5 +166,25 @@ def test_refetch_single_source_removed_on_404(kb_root):
         stacks=["react"],
     )
     result = _refetch_single_source(source, paths, Fake404Client())
+    assert result.removed is True
+    assert result.final_url is None
+
+
+def test_refetch_single_source_removed_on_network_error(kb_root):
+    paths = KbPaths(kb_root).ensure()
+
+    class FakeNetworkError:
+        def get(self, url, **kwargs):
+            raise httpx.ConnectError("connection refused")
+        def close(self):
+            pass
+
+    source = Source(
+        source_id="timeout-source",
+        url="https://example.com/timeout",
+        source_type="official_error_doc",
+        stacks=["react"],
+    )
+    result = _refetch_single_source(source, paths, FakeNetworkError())
     assert result.removed is True
     assert result.final_url is None
