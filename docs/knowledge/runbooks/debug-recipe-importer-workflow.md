@@ -6,7 +6,7 @@ applies_to:
   - src/recipe_importer
   - recipe-kb
   - scripts/build_agent_skill.py
-last_verified: 2026-05-25
+last_verified: 2026-05-26
 source: docs/bugs/bug-react-error-next-data-message-missing.md
 ---
 
@@ -38,6 +38,8 @@ source: docs/bugs/bug-react-error-next-data-message-missing.md
 - `index.json` 统一存储两种 kind 的 record，`search` 同时返回两种结果。
 - React / Next 等站点可能把关键正文放在 `pre/code` 或 `#__NEXT_DATA__` 里，
   不要只依赖普通 `p/li/h*` 可见文本。
+- `raw.html` 可以是 HTML 或纯 Markdown。extractor 会自动检测 Markdown 格式并用
+  `markdown-it-py` 渲染为 HTML 再抽取。GitHub raw 的 `.md` 文件无需额外配置。
 - `publish` 是状态迁移：成功后 accepted 成为唯一正式产物，同名 stale 和源 proposed
   都必须被清理。
 - 打包交付使用 `python3 scripts/build_agent_skill.py --force`，生成目录在 `dist/`
